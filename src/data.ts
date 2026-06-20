@@ -94,7 +94,7 @@ export const chats: Chat[] = [
     sent: true,
     type: 'private',
     status: 'last seen recently',
-    username: 'may233333',
+    username: 'maya_lebedeva',
     messages: [
       { type: 'date', text: 'June 12' },
       { type: 'text', out: false, text: 'Привет', time: '23:34' },
