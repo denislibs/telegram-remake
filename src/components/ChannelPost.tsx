@@ -1,10 +1,7 @@
 import { Box, Typography, useTheme } from '@mui/material'
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded'
-import { motion } from 'framer-motion'
 import type { ChannelPost as Post } from '../data'
 import Reaction from './Reaction'
-
-const MotionBox = motion(Box)
 
 export default function ChannelPost({
   post,
@@ -18,12 +15,7 @@ export default function ChannelPost({
   const linkSx = { color: tg.link, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }
 
   return (
-    <MotionBox
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-      sx={{ maxWidth: 520, width: '100%', mb: 1.5 }}
-    >
+    <Box sx={{ maxWidth: 520, width: '100%', mb: 1.5 }}>
       <Box
         sx={{
           background: tg.bubble,
@@ -109,6 +101,6 @@ export default function ChannelPost({
           </Box>
         </Box>
       </Box>
-    </MotionBox>
+    </Box>
   )
 }
