@@ -11,7 +11,7 @@ export default function VerifiedBadge({ size = 16, color = '#3aa0e3' }: Props) {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      style={{ flexShrink: 0 }}
+      style={{ flexShrink: 0, display: 'block' }}
       aria-label="verified"
     >
       <path
