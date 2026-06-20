@@ -127,10 +127,10 @@ export function buildTheme(mode: Mode): Theme {
     components: {
       MuiCssBaseline: {
         styleOverrides: {
-          '*::-webkit-scrollbar': { width: 8, height: 8 },
+          '*::-webkit-scrollbar': { width: 6, height: 6 },
           '*::-webkit-scrollbar-thumb': {
-            background: mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.18)',
-            borderRadius: 8,
+            background: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+            borderRadius: 16,
           },
           '*::-webkit-scrollbar-track': { background: 'transparent' },
         },

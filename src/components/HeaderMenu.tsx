@@ -119,8 +119,8 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
               py: 0.75,
               borderRadius: '12px',
               background: tg.menuBg,
-              backdropFilter: 'blur(30px)',
-              WebkitBackdropFilter: 'blur(30px)',
+              backdropFilter: 'blur(40px)',
+              WebkitBackdropFilter: 'blur(40px)',
               boxShadow: tg.menuShadow,
               transformOrigin: 'top right',
             }}
@@ -145,8 +145,8 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
             py: 0.75,
             borderRadius: '12px',
             background: tg.menuBg,
-            backdropFilter: 'blur(30px)',
-            WebkitBackdropFilter: 'blur(30px)',
+            backdropFilter: 'blur(40px)',
+            WebkitBackdropFilter: 'blur(40px)',
             boxShadow: tg.menuShadow,
             transformOrigin: 'top right',
           }}

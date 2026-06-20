@@ -29,6 +29,7 @@ export interface Chat {
   type: ChatType
   owned?: boolean
   status?: string // header subtitle: "last seen recently" / "12 345 members" / "4 566 subscribers"
+  online?: boolean // private chats: show the green online dot
   username?: string
   description?: string
   links?: { label: string; value: string }[]
@@ -93,7 +94,8 @@ export const chats: Chat[] = [
     preview: '😭',
     sent: true,
     type: 'private',
-    status: 'last seen recently',
+    status: 'online',
+    online: true,
     username: 'maya_lebedeva',
     messages: [
       { type: 'date', text: 'June 12' },
@@ -429,7 +431,8 @@ export const chats: Chat[] = [
     date: 'Jun 12',
     preview: 'скинул проект, глянь на досуге',
     type: 'private',
-    status: 'last seen recently',
+    status: 'online',
+    online: true,
     username: 'igor_dev',
     messages: [
       { type: 'date', text: 'June 12' },

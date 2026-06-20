@@ -129,7 +129,14 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
           }}
         />
       ))}
-      <Avatar background={chat.avatar} text={chat.avatarText} emoji={chat.avatarEmoji} size={54} />
+      <Avatar
+        background={chat.avatar}
+        text={chat.avatarText}
+        emoji={chat.avatarEmoji}
+        size={54}
+        online={chat.online}
+        ringColor={selected ? tg.accent : tg.sidebarBg}
+      />
 
       <Box sx={{ minWidth: 0, flex: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -145,7 +152,7 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
           >
             {chat.name}
           </Typography>
-          {chat.verified && <VerifiedBadge size={16} color={onAccent ? '#fff' : tg.accent} />}
+          {chat.verified && <VerifiedBadge size={20} color={onAccent ? '#fff' : tg.accent} />}
           {chat.muted && (
             <VolumeOffRoundedIcon
               sx={{ fontSize: 17, color: onAccent ? 'rgba(255,255,255,0.7)' : tg.textFaint }}
@@ -225,8 +232,8 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
               py: 0.75,
               borderRadius: '12px',
               background: tg.menuBg,
-              backdropFilter: 'blur(30px)',
-              WebkitBackdropFilter: 'blur(30px)',
+              backdropFilter: 'blur(40px)',
+              WebkitBackdropFilter: 'blur(40px)',
               boxShadow: tg.menuShadow,
               transformOrigin: 'top left',
             }}

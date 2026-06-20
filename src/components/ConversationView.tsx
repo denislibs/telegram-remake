@@ -83,8 +83,22 @@ export default function ConversationView({ chat }: Props) {
   const [chatSearch, setChatSearch] = useState(false)
   const [chatSearchQuery, setChatSearchQuery] = useState('')
   const [headerMenu, setHeaderMenu] = useState<{ top: number; right: number } | null>(null)
+  const [showScrollDown, setShowScrollDown] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Show the "scroll to bottom" button once the user scrolls up away from the latest messages
+  useEffect(() => {
+    const onScroll = () => {
+      const dist = document.body.scrollHeight - window.scrollY - window.innerHeight
+      setShowScrollDown(dist > 240)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [msgs])
+  const scrollToBottom = () =>
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 
   const openMsgMenu = (e: React.MouseEvent, idx: number) => {
     e.preventDefault()
@@ -164,6 +178,43 @@ export default function ConversationView({ chat }: Props) {
   }
 
   const hasText = input.trim().length > 0
+
+  // Floating "scroll to bottom" button (tweb .bubbles-go-down), shown above the composer
+  const scrollDownFab = (
+    <AnimatePresence>
+      {showScrollDown && (
+        <Box
+          key="scroll-down"
+          component={motion.div}
+          onClick={scrollToBottom}
+          whileTap={{ scale: 0.92 }}
+          initial={{ y: 60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 60, opacity: 0 }}
+          transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
+          sx={{
+            position: 'absolute',
+            right: 0,
+            top: -64,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
+            background: tg.bubble,
+            boxShadow:
+              mode === 'dark' ? '0 2px 12px rgba(0,0,0,0.5)' : '0 2px 12px rgba(0,0,0,0.18)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: tg.textSecondary,
+            zIndex: 7,
+          }}
+        >
+          <KeyboardArrowDownRounded />
+        </Box>
+      )}
+    </AnimatePresence>
+  )
 
   return (
     <Box
@@ -267,12 +318,26 @@ export default function ConversationView({ chat }: Props) {
                   onClick={() => setInfoOpen((o) => !o)}
                   sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0, cursor: 'pointer' }}
                 >
-                  <Avatar background={chat.avatar} text={chat.avatarText} emoji={chat.avatarEmoji} size={40} />
+                  <Avatar
+                    background={chat.avatar}
+                    text={chat.avatarText}
+                    emoji={chat.avatarEmoji}
+                    size={40}
+                    online={chat.online}
+                    ringColor={tg.bubble}
+                  />
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography noWrap sx={{ fontWeight: 500, fontSize: 16, color: tg.textPrimary }}>
                       {chat.name}
                     </Typography>
-                    <Typography noWrap sx={{ fontSize: 13.5, color: typing ? tg.accent : tg.textSecondary }}>
+                    <Typography
+                      noWrap
+                      sx={{
+                        fontSize: 13.5,
+                        color:
+                          typing || chat.status === 'online' ? tg.accent : tg.textSecondary,
+                      }}
+                    >
                       {typing ? 'печатает…' : chat.status}
                     </Typography>
                   </Box>
@@ -356,13 +421,26 @@ export default function ConversationView({ chat }: Props) {
             {msgs.map((m, i) => {
               if (m.type === 'date') {
                 return (
-                  <Box key={i} sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
+                  <Box
+                    key={i}
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      my: 1,
+                      position: 'sticky',
+                      top: 66,
+                      zIndex: 4,
+                      pointerEvents: 'none',
+                    }}
+                  >
                     <Box
                       sx={{
                         px: 1.5,
                         py: 0.4,
                         borderRadius: '14px',
                         background: 'rgba(0,0,0,0.45)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
                         color: '#fff',
                         fontSize: 15,
                         fontWeight: 500,
@@ -532,6 +610,7 @@ export default function ConversationView({ chat }: Props) {
               mt: 1,
             }}
           >
+            {scrollDownFab}
             {/* Composer container: reply section + input row in ONE box */}
             <Box
               sx={{
@@ -662,6 +741,7 @@ export default function ConversationView({ chat }: Props) {
               py: 0,
             }}
           >
+            {scrollDownFab}
             <Box
               component={motion.div}
               whileTap={{ scale: 0.995 }}
@@ -737,8 +817,8 @@ export default function ConversationView({ chat }: Props) {
                   py: 0.5,
                   borderRadius: '24px',
                   background: tg.menuBg,
-                  backdropFilter: 'blur(30px)',
-                  WebkitBackdropFilter: 'blur(30px)',
+                  backdropFilter: 'blur(40px)',
+                  WebkitBackdropFilter: 'blur(40px)',
                   boxShadow: tg.menuShadow,
                 }}
               >
@@ -768,8 +848,8 @@ export default function ConversationView({ chat }: Props) {
                   py: 0.75,
                   borderRadius: '12px',
                   background: tg.menuBg,
-                  backdropFilter: 'blur(30px)',
-                  WebkitBackdropFilter: 'blur(30px)',
+                  backdropFilter: 'blur(40px)',
+                  WebkitBackdropFilter: 'blur(40px)',
                   boxShadow: tg.menuShadow,
                   transformOrigin: 'top left',
                 }}
