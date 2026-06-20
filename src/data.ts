@@ -2,7 +2,7 @@ export type ChatType = 'private' | 'group' | 'channel' | 'bot' | 'saved'
 export type MsgStatus = 'sent' | 'read'
 
 export interface ConvMsg {
-  type: 'date' | 'text' | 'sticker'
+  type: 'date' | 'text' | 'sticker' | 'voice'
   out?: boolean
   sender?: string
   senderColor?: string
@@ -11,6 +11,8 @@ export interface ConvMsg {
   time?: string
   status?: MsgStatus
   reply?: { name: string; text: string; color?: string }
+  duration?: string // voice message length, e.g. "0:14"
+  waveform?: number[] // voice waveform bar heights (0..1)
 }
 
 export interface Chat {
@@ -124,6 +126,13 @@ export const chats: Chat[] = [
       { type: 'date', text: 'June 12' },
       { type: 'text', out: false, text: 'ты на тренировку идёшь сегодня?', time: '18:02' },
       { type: 'text', out: true, text: 'да, в 8 буду', time: '18:10', status: 'read' },
+      {
+        type: 'voice',
+        out: false,
+        time: '18:10',
+        duration: '0:14',
+        waveform: [0.3, 0.6, 0.4, 0.8, 1, 0.7, 0.5, 0.9, 0.6, 0.3, 0.5, 0.8, 0.6, 0.4, 0.7, 1, 0.6, 0.4, 0.5, 0.3, 0.7, 0.9, 0.5, 0.4, 0.6, 0.8, 0.5, 0.3],
+      },
       { type: 'text', out: false, text: 'огонь, возьми мне воды по пути', time: '18:11' },
       { type: 'text', out: true, text: 'ок 👍', time: '18:12', status: 'read' },
       { type: 'text', out: false, text: 'скинь как доедешь', time: '18:30' },

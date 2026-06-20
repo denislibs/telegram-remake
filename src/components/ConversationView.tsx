@@ -12,6 +12,7 @@ import AttachFileRounded from '@mui/icons-material/AttachFileRounded'
 import SentimentSatisfiedAltRounded from '@mui/icons-material/SentimentSatisfiedAltRounded'
 import KeyboardVoiceRounded from '@mui/icons-material/KeyboardVoiceRounded'
 import SendRounded from '@mui/icons-material/SendRounded'
+import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import VolumeOffRounded from '@mui/icons-material/VolumeOffRounded'
 import CardGiftcardRounded from '@mui/icons-material/CardGiftcardRounded'
 import DoneRounded from '@mui/icons-material/DoneRounded'
@@ -94,8 +95,38 @@ export default function ConversationView({ chat, onBack }: Props) {
   const [showScrollDown, setShowScrollDown] = useState(false)
   const [emojiOpen, setEmojiOpen] = useState(false)
   const [attachAnchor, setAttachAnchor] = useState<{ left: number; bottom: number } | null>(null)
+  const [recording, setRecording] = useState(false)
+  const [recSecs, setRecSecs] = useState(0)
+  const recTimer = useRef<number | undefined>(undefined)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const fmtDur = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+  const startRec = () => {
+    setRecording(true)
+    setRecSecs(0)
+    recTimer.current = window.setInterval(() => setRecSecs((s) => s + 1), 1000)
+  }
+  const stopRec = (sendIt: boolean) => {
+    window.clearInterval(recTimer.current)
+    setRecording(false)
+    const secs = recSecs
+    setRecSecs(0)
+    if (!sendIt || secs < 1) return
+    const waveform = Array.from({ length: 28 }, () => 0.25 + Math.random() * 0.75)
+    setMsgs((prev) => [
+      ...prev,
+      { type: 'voice', out: true, time: nowTime(), status: 'sent', duration: fmtDur(secs), waveform },
+    ])
+    window.dispatchEvent(new Event('tg-send'))
+    setTyping(true)
+    window.setTimeout(() => {
+      const r = replies[Math.floor(Math.random() * replies.length)]
+      setMsgs((prev) => [...prev, { type: 'text', out: false, text: r, time: nowTime() }])
+      setTyping(false)
+    }, 1100 + Math.random() * 900)
+  }
+  useEffect(() => () => window.clearInterval(recTimer.current), [])
 
   // Show the "scroll to bottom" button once the user scrolls up away from the latest messages
   useEffect(() => {
@@ -522,6 +553,65 @@ export default function ConversationView({ chat, onBack }: Props) {
                         <Ticks status={m.status} color={tickColor} />
                       </Box>
                     </Box>
+                  ) : m.type === 'voice' ? (
+                    <Box
+                      sx={{
+                        maxWidth: 'min(320px, 82%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.25,
+                        px: 1.25,
+                        py: 1,
+                        background: out ? tg.accent : incomingBg,
+                        color: out ? '#fff' : tg.textPrimary,
+                        borderRadius: out
+                          ? `15px 15px ${lastInGroup ? 0 : 5}px 15px`
+                          : `15px 15px 15px ${lastInGroup ? 0 : 5}px`,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          flexShrink: 0,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: out ? 'rgba(255,255,255,0.22)' : tg.accent,
+                          color: '#fff',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <PlayArrowRounded />
+                      </Box>
+                      <Box sx={{ minWidth: 150 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '2px', height: 22 }}>
+                          {(m.waveform ?? []).map((h, wi) => (
+                            <Box
+                              key={wi}
+                              sx={{
+                                width: '2.5px',
+                                flexShrink: 0,
+                                borderRadius: '2px',
+                                height: `${Math.round(6 + h * 16)}px`,
+                                background: out ? 'rgba(255,255,255,0.75)' : tg.textFaint,
+                              }}
+                            />
+                          ))}
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                          <Typography sx={{ fontSize: 12.5, color: out ? 'rgba(255,255,255,0.85)' : tg.textSecondary }}>
+                            {m.duration}
+                          </Typography>
+                          <Box sx={{ flex: 1 }} />
+                          <Typography sx={{ fontSize: 12, color: out ? 'rgba(255,255,255,0.8)' : tg.textFaint }}>
+                            {m.time}
+                          </Typography>
+                          <Ticks status={m.status} color={tickColor} />
+                        </Box>
+                      </Box>
+                    </Box>
                   ) : (
                     <Box
                       sx={{
@@ -693,44 +783,66 @@ export default function ConversationView({ chat, onBack }: Props) {
 
               {/* Input row */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minHeight: 48, pl: 0.5, pr: 0.5, py: 0.5 }}>
-                <IconButton
-                  onClick={(e) => {
-                    const r = e.currentTarget.getBoundingClientRect()
-                    setAttachAnchor({ left: r.left, bottom: window.innerHeight - r.top + 8 })
-                  }}
-                  sx={{ width: 40, height: 40, color: tg.textSecondary }}
-                >
-                  <AttachFileRounded sx={{ transform: 'rotate(45deg)' }} />
-                </IconButton>
-                <InputBase
-                  inputRef={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      send()
-                    }
-                  }}
-                  placeholder={t('Message')}
-                  sx={{
-                    flex: 1,
-                    fontSize: 16,
-                    lineHeight: '21px',
-                    color: tg.textPrimary,
-                    '& input::placeholder': { color: tg.textFaint, opacity: 1 },
-                  }}
-                />
-                <IconButton
-                  onClick={() => setEmojiOpen((o) => !o)}
-                  sx={{ width: 40, height: 40, color: emojiOpen ? tg.accent : tg.textSecondary }}
-                >
-                  <SentimentSatisfiedAltRounded />
-                </IconButton>
+                {recording ? (
+                  <>
+                    <IconButton onClick={() => stopRec(false)} sx={{ width: 40, height: 40, color: '#ff5a5a' }}>
+                      <DeleteOutlineRounded />
+                    </IconButton>
+                    <Box
+                      component={motion.span}
+                      animate={{ opacity: [1, 0.25, 1] }}
+                      transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+                      sx={{ width: 10, height: 10, borderRadius: '50%', background: '#ff3b30', flexShrink: 0, ml: 0.5 }}
+                    />
+                    <Typography sx={{ ml: 1.25, fontSize: 16, color: tg.textPrimary, fontVariantNumeric: 'tabular-nums' }}>
+                      {fmtDur(recSecs)}
+                    </Typography>
+                    <Typography sx={{ flex: 1, textAlign: 'center', fontSize: 14, color: tg.textFaint, pr: 1 }}>
+                      {t('Recording…')}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <IconButton
+                      onClick={(e) => {
+                        const r = e.currentTarget.getBoundingClientRect()
+                        setAttachAnchor({ left: r.left, bottom: window.innerHeight - r.top + 8 })
+                      }}
+                      sx={{ width: 40, height: 40, color: tg.textSecondary }}
+                    >
+                      <AttachFileRounded sx={{ transform: 'rotate(45deg)' }} />
+                    </IconButton>
+                    <InputBase
+                      inputRef={inputRef}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          send()
+                        }
+                      }}
+                      placeholder={t('Message')}
+                      sx={{
+                        flex: 1,
+                        fontSize: 16,
+                        lineHeight: '21px',
+                        color: tg.textPrimary,
+                        '& input::placeholder': { color: tg.textFaint, opacity: 1 },
+                      }}
+                    />
+                    <IconButton
+                      onClick={() => setEmojiOpen((o) => !o)}
+                      sx={{ width: 40, height: 40, color: emojiOpen ? tg.accent : tg.textSecondary }}
+                    >
+                      <SentimentSatisfiedAltRounded />
+                    </IconButton>
+                  </>
+                )}
                 {/* Mic / Send — 48×40 rounded pill inside the bar (1:1 with TG .btn-send) */}
                 <Box
                   component={motion.div}
-                  onClick={send}
+                  onClick={() => (hasText ? send() : recording ? stopRec(true) : startRec())}
                   whileTap={{ scale: 0.92 }}
                   sx={{
                     width: 48,
@@ -747,14 +859,14 @@ export default function ConversationView({ chat, onBack }: Props) {
                 >
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                      key={hasText ? 'send' : 'mic'}
+                      key={hasText || recording ? 'send' : 'mic'}
                       initial={{ scale: 0.5, opacity: 0.8 }}
                       animate={{ scale: [0.5, 1.1, 1], opacity: 1 }}
                       exit={{ scale: 0.5, opacity: 0 }}
                       transition={{ duration: 0.4, ease: 'easeInOut' }}
                       style={{ display: 'inline-flex' }}
                     >
-                      {hasText ? <SendRounded /> : <KeyboardVoiceRounded />}
+                      {hasText || recording ? <SendRounded /> : <KeyboardVoiceRounded />}
                     </motion.span>
                   </AnimatePresence>
                 </Box>
