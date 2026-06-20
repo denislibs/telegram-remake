@@ -31,6 +31,7 @@ import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
 import EmojiPicker from './EmojiPicker'
 import AttachMenu from './AttachMenu'
+import RichText, { emojiOnlyCount } from './RichText'
 import type { Chat, ConvMsg, MsgStatus } from '../data'
 import { useT } from '../i18n'
 
@@ -478,6 +479,8 @@ export default function ConversationView({ chat, onBack }: Props) {
               const nextKey = next && next.type !== 'date' ? (next.out ? '__out__' : next.sender ?? '__in__') : null
               const firstInGroup = prevKey !== authorKey
               const lastInGroup = nextKey !== authorKey
+              // 1–3 emoji-only text -> render big (like a sticker), transparent bubble
+              const bigEmoji = m.type === 'text' && m.text ? emojiOnlyCount(m.text) : 0
 
               return (
                 <Box
@@ -489,9 +492,18 @@ export default function ConversationView({ chat, onBack }: Props) {
                     mb: lastInGroup ? '6px' : '2px',
                   }}
                 >
-                  {m.type === 'sticker' ? (
+                  {m.type === 'sticker' || bigEmoji ? (
                     <Box sx={{ position: 'relative', display: 'inline-block', px: 0.5 }}>
-                      <Box sx={{ fontSize: 64, lineHeight: 1, userSelect: 'none' }}>{m.emoji}</Box>
+                      <Box
+                        sx={{
+                          fontSize: bigEmoji ? (bigEmoji === 1 ? 56 : bigEmoji === 2 ? 46 : 38) : 64,
+                          lineHeight: 1.1,
+                          userSelect: 'none',
+                          py: bigEmoji ? 0.25 : 0,
+                        }}
+                      >
+                        {m.type === 'sticker' ? m.emoji : m.text}
+                      </Box>
                       <Box
                         sx={{
                           position: 'absolute',
@@ -551,7 +563,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                       )}
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 0.75 }}>
                         <Typography component="span" sx={{ fontSize: 16, lineHeight: 1.35 }}>
-                          {m.text}
+                          <RichText text={m.text ?? ''} linkColor={out ? '#fff' : tg.link} />
                         </Typography>
                         <Box
                           sx={{
