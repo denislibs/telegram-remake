@@ -25,6 +25,7 @@ import DevicesOutlined from '@mui/icons-material/DevicesOutlined'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import KeyboardOutlined from '@mui/icons-material/KeyboardOutlined'
 import Avatar from './Avatar'
+import { useT } from '../i18n'
 
 const settingsItems: { icon: ReactNode; label: string; value?: string }[] = [
   { icon: <NotificationsNoneRounded />, label: 'Notifications and Sounds' },
@@ -46,6 +47,7 @@ export default function SettingsView({
   onBack: () => void
   onToggleMode: (coords?: { x: number; y: number }) => void
 }) {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const isDark = theme.palette.mode === 'dark'
@@ -74,7 +76,7 @@ export default function SettingsView({
           <ArrowBackRounded />
         </IconButton>
         <Typography sx={{ flex: 1, fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-          Settings
+          {t('Settings')}
         </Typography>
         <IconButton sx={{ color: tg.textSecondary }}>
           <QrCode2Rounded />
@@ -104,13 +106,13 @@ export default function SettingsView({
           <Typography sx={{ fontSize: 21, fontWeight: 600, color: tg.textPrimary, mt: 1 }}>
             Дн
           </Typography>
-          <Typography sx={{ fontSize: 14, color: tg.textSecondary }}>online</Typography>
+          <Typography sx={{ fontSize: 14, color: tg.textSecondary }}>{t('online')}</Typography>
         </Box>
 
         {/* Contact card */}
         <Box sx={{ mx: 1.25, mb: 1.5, borderRadius: '16px', background: cardBg, py: 0.5 }}>
-          <InfoRow icon={<CallOutlined />} title="+7 925 481 7290" subtitle="Phone" />
-          <InfoRow icon={<AlternateEmailRounded />} title="denis_m" subtitle="Username" />
+          <InfoRow icon={<CallOutlined />} title="+7 925 481 7290" subtitle={t('Phone')} />
+          <InfoRow icon={<AlternateEmailRounded />} title="denis_m" subtitle={t('Username')} />
         </Box>
 
         {/* Appearance — theme toggle */}
@@ -130,7 +132,7 @@ export default function SettingsView({
             }}
           >
             <DarkModeOutlined sx={{ color: tg.textSecondary, fontSize: 24 }} />
-            <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Night Mode</Typography>
+            <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>{t('Night Mode')}</Typography>
             <TgSwitch checked={isDark} />
           </Box>
         </Box>
@@ -163,10 +165,12 @@ export default function SettingsView({
                   {it.icon}
                 </Box>
                 <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>
-                  {it.label}
+                  {t(it.label)}
                 </Typography>
                 {it.value && (
-                  <Typography sx={{ fontSize: 15, color: tg.textFaint }}>{it.value}</Typography>
+                  <Typography sx={{ fontSize: 15, color: tg.textFaint }}>
+                    {it.value === 'English' ? it.value : t(it.value)}
+                  </Typography>
                 )}
               </Box>
             )
@@ -190,7 +194,7 @@ export default function SettingsView({
           >
             <StarRounded sx={{ color: tg.accent, fontSize: 24 }} />
             <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>
-              Telegram Premium
+              {t('Telegram Premium')}
             </Typography>
           </Box>
           <Box
@@ -207,7 +211,7 @@ export default function SettingsView({
             }}
           >
             <CardGiftcardRounded sx={{ color: tg.textSecondary, fontSize: 24 }} />
-            <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Send a Gift</Typography>
+            <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>{t('Send a Gift')}</Typography>
           </Box>
         </Box>
       </Box>

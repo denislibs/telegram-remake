@@ -21,6 +21,7 @@ import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded'
 import TuneRounded from '@mui/icons-material/TuneRounded'
 import TimerOffOutlined from '@mui/icons-material/TimerOffOutlined'
 import type { Chat } from '../data'
+import { useT } from '../i18n'
 
 type Item = { icon: ReactNode; label: string; danger?: boolean; submenu?: boolean }
 
@@ -33,6 +34,7 @@ interface Props {
 export default function HeaderMenu({ chat, anchor, onClose }: Props) {
   const theme = useTheme()
   const tg = theme.tg
+  const t = useT()
   const [autoOpen, setAutoOpen] = useState(false)
   const muted = !!chat.muted
   const owned = !!chat.owned
@@ -128,7 +130,7 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
             {autoItems.map((a) => (
               <Box key={a} onClick={onClose} sx={rowSx()}>
                 {a === 'Other' ? <TuneRounded /> : a === 'Never' ? <TimerOffOutlined /> : <HistoryToggleOffRounded />}
-                <Typography sx={{ fontSize: 15, color: tg.textPrimary }}>{a}</Typography>
+                <Typography sx={{ fontSize: 15, color: tg.textPrimary }}>{t(a)}</Typography>
               </Box>
             ))}
           </Box>
@@ -159,7 +161,7 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
             >
               {it.icon}
               <Typography sx={{ flex: 1, fontSize: 15, color: it.danger ? '#ff595a' : tg.textPrimary }}>
-                {it.label}
+                {t(it.label)}
               </Typography>
               {it.submenu && <ChevronRightRounded sx={{ fontSize: 20, color: tg.textFaint }} />}
             </Box>

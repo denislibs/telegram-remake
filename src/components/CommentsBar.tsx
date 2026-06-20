@@ -3,6 +3,7 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import ReplyRoundedIcon from '@mui/icons-material/ReplyRounded'
 import { motion } from 'framer-motion'
+import { useT } from '../i18n'
 
 const MotionBox = motion(Box)
 
@@ -13,6 +14,7 @@ const commenters = [
 ]
 
 export default function CommentsBar() {
+  const t = useT()
   const tg = useTheme().tg
 
   const roundBtn = {
@@ -69,7 +71,7 @@ export default function CommentsBar() {
           ))}
         </Box>
         <Typography sx={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: tg.accent }}>
-          4 Comments
+          4 {t('Comments')}
         </Typography>
         <ChevronRightRoundedIcon sx={{ color: tg.textFaint }} />
       </MotionBox>

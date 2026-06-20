@@ -29,6 +29,7 @@ import Avatar from './Avatar'
 import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
 import type { Chat, ConvMsg, MsgStatus } from '../data'
+import { useT } from '../i18n'
 
 const REACTIONS = ['❤️', '👍', '👎', '🔥', '🥰', '👏', '😁']
 
@@ -67,6 +68,7 @@ interface Props {
 }
 
 export default function ConversationView({ chat }: Props) {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const mode = theme.palette.mode
@@ -283,7 +285,7 @@ export default function ConversationView({ chat }: Props) {
                     autoFocus
                     value={chatSearchQuery}
                     onChange={(e) => setChatSearchQuery(e.target.value)}
-                    placeholder="Search"
+                    placeholder={t('Search')}
                     sx={{
                       flex: 1,
                       fontSize: 16,
@@ -340,7 +342,7 @@ export default function ConversationView({ chat }: Props) {
                           typing || chat.status === 'online' ? tg.accent : tg.textSecondary,
                       }}
                     >
-                      {typing ? 'печатает…' : chat.status}
+                      {typing ? t('typing…') : chat.status ? t(chat.status) : ''}
                     </Typography>
                   </Box>
                 </Box>
@@ -386,11 +388,11 @@ export default function ConversationView({ chat }: Props) {
                 }}
               >
                 <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>
-                  There were no results for{' '}
+                  {t('There were no results for')}{' '}
                   <Box component="span" sx={{ fontWeight: 700, color: tg.textPrimary }}>
                     “{chatSearchQuery}”
                   </Box>
-                  . Try a new search.
+                  {t('. Try a new search.')}
                 </Typography>
               </Box>
             </motion.div>
@@ -652,7 +654,7 @@ export default function ConversationView({ chat }: Props) {
                       <ReplyRounded sx={{ color: reply.color, fontSize: 22 }} />
                       <Box sx={{ flex: 1, minWidth: 0, borderLeft: `2px solid ${reply.color}`, pl: 1.25 }}>
                         <Typography sx={{ fontSize: 14, fontWeight: 600, color: reply.color }}>
-                          Reply to {reply.name}
+                          {t('Reply to')} {reply.name}
                         </Typography>
                         <Typography noWrap sx={{ fontSize: 14, color: tg.textSecondary }}>
                           {reply.text}
@@ -681,7 +683,7 @@ export default function ConversationView({ chat }: Props) {
                       send()
                     }
                   }}
-                  placeholder="Message"
+                  placeholder={t('Message')}
                   sx={{
                     flex: 1,
                     fontSize: 16,
@@ -761,7 +763,7 @@ export default function ConversationView({ chat }: Props) {
               }}
             >
               <VolumeOffRounded sx={{ fontSize: 20, color: tg.textSecondary }} />
-              <Typography sx={{ fontWeight: 600, fontSize: 15.5 }}>Mute</Typography>
+              <Typography sx={{ fontWeight: 600, fontSize: 15.5 }}>{t('Mute')}</Typography>
             </Box>
             <Box
               sx={{
@@ -876,7 +878,7 @@ export default function ConversationView({ chat }: Props) {
                       {it.icon}
                     </Box>
                     <Typography sx={{ fontSize: 15, color: it.danger ? '#ff595a' : tg.textPrimary }}>
-                      {it.label}
+                      {t(it.label)}
                     </Typography>
                   </Box>
                 ))}

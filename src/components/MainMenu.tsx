@@ -11,6 +11,7 @@ import SettingsOutlined from '@mui/icons-material/SettingsOutlined'
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import Avatar from './Avatar'
+import { useT } from '../i18n'
 
 interface Props {
   open: boolean
@@ -54,6 +55,7 @@ function Row({
 
 export default function MainMenu({ open, onClose, onOpenSettings }: Props) {
   const tg = useTheme().tg
+  const t = useT()
   const divider = (
     <Box sx={{ height: '1px', background: tg.divider, mx: 0, my: 0.75 }} />
   )
@@ -102,16 +104,16 @@ export default function MainMenu({ open, onClose, onOpenSettings }: Props) {
                   Дн
                 </Typography>
               </Box>
-              <Row icon={<AddRounded />} label="Add Account" onClick={onClose} />
+              <Row icon={<AddRounded />} label={t('Add Account')} onClick={onClose} />
               {divider}
-              <Row icon={<BookmarkBorderRounded />} label="Saved Messages" onClick={onClose} />
-              <Row icon={<RadioButtonUncheckedRounded />} label="My Stories" onClick={onClose} />
-              <Row icon={<PersonOutlineRounded />} label="Contacts" onClick={onClose} />
+              <Row icon={<BookmarkBorderRounded />} label={t('Saved Messages')} onClick={onClose} />
+              <Row icon={<RadioButtonUncheckedRounded />} label={t('My Stories')} onClick={onClose} />
+              <Row icon={<PersonOutlineRounded />} label={t('Contacts')} onClick={onClose} />
               {divider}
-              <Row icon={<AccountBalanceWalletOutlined />} label="Wallet" onClick={onClose} />
+              <Row icon={<AccountBalanceWalletOutlined />} label={t('Wallet')} onClick={onClose} />
               {divider}
-              <Row icon={<SettingsOutlined />} label="Settings" onClick={onOpenSettings} />
-              <Row icon={<MoreVertRounded />} label="More" chevron onClick={onClose} />
+              <Row icon={<SettingsOutlined />} label={t('Settings')} onClick={onOpenSettings} />
+              <Row icon={<MoreVertRounded />} label={t('More')} chevron onClick={onClose} />
             </Box>
           </Box>
         </>,

@@ -15,11 +15,13 @@ import CommentsBar from './CommentsBar'
 import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
 import { chats, kyzdarPosts } from '../data'
+import { useT } from '../i18n'
 
 const MotionBox = motion(Box)
 const dollhouse = chats.find((c) => c.id === 'dollhouse-work')!
 
 export default function ChatView() {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const mode = theme.palette.mode
@@ -96,7 +98,7 @@ export default function ChatView() {
                   autoFocus
                   value={chatSearchQuery}
                   onChange={(e) => setChatSearchQuery(e.target.value)}
-                  placeholder="Search"
+                  placeholder={t('Search')}
                   sx={{ flex: 1, fontSize: 16, color: tg.textPrimary, '& input::placeholder': { color: tg.textFaint, opacity: 1 } }}
                 />
                 <IconButton
@@ -130,7 +132,7 @@ export default function ChatView() {
                   <Typography noWrap sx={{ fontWeight: 500, fontSize: 16, color: tg.textPrimary }}>
                     kyzdar.ai
                   </Typography>
-                  <Typography sx={{ fontSize: 13.5, color: tg.accent }}>4 566 subscribers</Typography>
+                  <Typography sx={{ fontSize: 13.5, color: tg.accent }}>4 566 {t('subscribers')}</Typography>
                 </Box>
               </Box>
               <IconButton onClick={() => setChatSearch(true)} sx={{ color: tg.textSecondary }}>
@@ -162,11 +164,11 @@ export default function ChatView() {
           >
             <Box sx={{ background: tg.bubble, borderRadius: '14px', px: 2, py: 2, textAlign: 'center' }}>
               <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>
-                There were no results for{' '}
+                {t('There were no results for')}{' '}
                 <Box component="span" sx={{ fontWeight: 700, color: tg.textPrimary }}>
                   “{chatSearchQuery}”
                 </Box>
-                . Try a new search.
+                {t('. Try a new search.')}
               </Typography>
             </Box>
           </motion.div>
@@ -205,7 +207,7 @@ export default function ChatView() {
               <PushPinRoundedIcon sx={{ color: tg.accent, fontSize: 20, transform: 'rotate(45deg)' }} />
               <Box sx={{ flex: 1, minWidth: 0, borderLeft: `3px solid ${tg.accent}`, pl: 1.25 }}>
                 <Typography sx={{ fontSize: 14, fontWeight: 500, color: tg.accent, lineHeight: '20px' }}>
-                  Pinned Message
+                  {t('Pinned Message')}
                 </Typography>
                 <Typography noWrap sx={{ fontSize: 14, color: tg.textPrimary, lineHeight: '20px' }}>
                   📌 Запись и вопросы — @kyzdar_manager · Расписание на неделю закреплено ниже 💜
@@ -306,7 +308,7 @@ export default function ChatView() {
           }}
         >
           <VolumeOffRoundedIcon sx={{ fontSize: 20, color: tg.textSecondary }} />
-          <Typography sx={{ fontWeight: 600, fontSize: 15.5 }}>Mute</Typography>
+          <Typography sx={{ fontWeight: 600, fontSize: 15.5 }}>{t('Mute')}</Typography>
         </MotionBox>
         <MotionBox
           whileHover={{ scale: 1.06 }}

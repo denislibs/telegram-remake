@@ -5,6 +5,7 @@ import { slideInRight } from '../motion'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
 import AddAPhotoRounded from '@mui/icons-material/AddAPhotoRounded'
+import { useT } from '../i18n'
 
 interface Props {
   onClose: () => void
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function NewChannelFlow({ onClose, onCreate }: Props) {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const cardBg = theme.palette.mode === 'dark' ? '#2b2b2b' : '#ffffff'
@@ -54,7 +56,7 @@ export default function NewChannelFlow({ onClose, onCreate }: Props) {
           <ArrowBackRounded />
         </IconButton>
         <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-          New Channel
+          {t('New Channel')}
         </Typography>
       </Box>
 
@@ -83,7 +85,7 @@ export default function NewChannelFlow({ onClose, onCreate }: Props) {
           <TextField
             autoFocus
             fullWidth
-            label="Channel name"
+            label={t('Channel name')}
             variant="outlined"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -91,7 +93,7 @@ export default function NewChannelFlow({ onClose, onCreate }: Props) {
           />
           <TextField
             fullWidth
-            label="Description (optional)"
+            label={t('Description (optional)')}
             variant="outlined"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
@@ -99,7 +101,7 @@ export default function NewChannelFlow({ onClose, onCreate }: Props) {
           />
         </Box>
         <Typography sx={{ fontSize: 14.5, color: tg.textSecondary, px: 3 }}>
-          You can provide an optional description for your channel.
+          {t('You can provide an optional description for your channel.')}
         </Typography>
       </Box>
 

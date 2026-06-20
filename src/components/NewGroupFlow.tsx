@@ -6,6 +6,7 @@ import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
 import AddAPhotoRounded from '@mui/icons-material/AddAPhotoRounded'
 import SearchRounded from '@mui/icons-material/SearchRounded'
+import { useT } from '../i18n'
 
 interface Props {
   onClose: () => void
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function NewGroupFlow({ onClose, onCreate }: Props) {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const mode = theme.palette.mode
@@ -53,7 +55,7 @@ export default function NewGroupFlow({ onClose, onCreate }: Props) {
           <ArrowBackRounded />
         </IconButton>
         <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-          {step === 0 ? 'New Group' : 'Add Members'}
+          {step === 0 ? t('New Group') : t('Add Members')}
         </Typography>
       </Box>
 
@@ -91,7 +93,7 @@ export default function NewGroupFlow({ onClose, onCreate }: Props) {
                 <TextField
                   autoFocus
                   fullWidth
-                  label="Group Name"
+                  label={t('Group Name')}
                   variant="outlined"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -139,7 +141,7 @@ export default function NewGroupFlow({ onClose, onCreate }: Props) {
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search"
+                  placeholder={t('Search')}
                   sx={{ flex: 1, fontSize: 16, color: tg.textPrimary, '& input::placeholder': { color: tg.textFaint, opacity: 1 } }}
                 />
               </Box>
@@ -156,8 +158,8 @@ export default function NewGroupFlow({ onClose, onCreate }: Props) {
                 }}
               >
                 <Box sx={{ fontSize: 90, lineHeight: 1 }}>🐤</Box>
-                <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>No Results</Typography>
-                <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>Try searching.</Typography>
+                <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>{t('No Results')}</Typography>
+                <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>{t('Try searching.')}</Typography>
               </Box>
             </motion.div>
           )}

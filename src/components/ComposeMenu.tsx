@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import CampaignRounded from '@mui/icons-material/CampaignRounded'
 import GroupRounded from '@mui/icons-material/GroupRounded'
 import PersonRounded from '@mui/icons-material/PersonRounded'
+import { useT } from '../i18n'
 
 interface Props {
   open: boolean
@@ -41,6 +42,7 @@ function Row({ icon, label, onClick }: { icon: ReactNode; label: string; onClick
 
 export default function ComposeMenu({ open, onClose, onNewGroup, onNewPrivate, onNewChannel }: Props) {
   const tg = useTheme().tg
+  const t = useT()
   if (!open) return null
   return createPortal(
     <>
@@ -70,7 +72,7 @@ export default function ComposeMenu({ open, onClose, onNewGroup, onNewPrivate, o
             >
               <Row
                 icon={<CampaignRounded />}
-                label="New Channel"
+                label={t('New Channel')}
                 onClick={() => {
                   onClose()
                   onNewChannel?.()
@@ -78,7 +80,7 @@ export default function ComposeMenu({ open, onClose, onNewGroup, onNewPrivate, o
               />
               <Row
                 icon={<GroupRounded />}
-                label="New Group"
+                label={t('New Group')}
                 onClick={() => {
                   onClose()
                   onNewGroup?.()
@@ -86,7 +88,7 @@ export default function ComposeMenu({ open, onClose, onNewGroup, onNewPrivate, o
               />
               <Row
                 icon={<PersonRounded />}
-                label="New Private Chat"
+                label={t('New Private Chat')}
                 onClick={() => {
                   onClose()
                   onNewPrivate?.()

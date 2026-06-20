@@ -17,6 +17,7 @@ import NewGroupFlow from './NewGroupFlow'
 import NewChannelFlow from './NewChannelFlow'
 import NewPrivateChat from './NewPrivateChat'
 import SearchView from './SearchView'
+import { useT } from '../i18n'
 
 const MotionFab = motion(IconButton)
 interface Props {
@@ -37,6 +38,7 @@ export default function Sidebar({
   onToggleMode,
 }: Props) {
   const theme = useTheme()
+  const t = useT()
   const tg = theme.tg
   const mode = theme.palette.mode
   const [showBanner, setShowBanner] = useState(true)
@@ -125,7 +127,7 @@ export default function Sidebar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setSearching(true)}
-            placeholder="Search"
+            placeholder={t('Search')}
             sx={{
               flex: 1,
               fontFamily:

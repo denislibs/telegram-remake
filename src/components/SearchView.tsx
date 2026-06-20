@@ -6,6 +6,7 @@ import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Avatar from './Avatar'
 import VerifiedBadge from './VerifiedBadge'
 import type { Chat } from '../data'
+import { useT } from '../i18n'
 
 const TABS = ['Chats', 'Channels', 'Apps', 'Posts', 'Media', 'Links', 'Files', 'Music']
 
@@ -64,6 +65,7 @@ function Highlighted({ text, q, color }: { text: string; q: string; color: strin
 }
 
 export default function SearchView({ query, chats, onSelect }: Props) {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const cardBg = theme.palette.mode === 'dark' ? '#1c1c1c' : '#f0f0f2'
@@ -102,11 +104,11 @@ export default function SearchView({ query, chats, onSelect }: Props) {
         }}
       >
         <Box sx={{ position: 'relative', display: 'flex', gap: 0.5, minWidth: 'max-content' }}>
-          {TABS.map((t, i) => {
+          {TABS.map((label, i) => {
             const active = i === tab
             return (
               <Box
-                key={t}
+                key={label}
                 ref={(el: HTMLDivElement | null) => (tabRefs.current[i] = el)}
                 onClick={() => goTab(i)}
                 sx={{ position: 'relative', flexShrink: 0, px: 2.25, py: 0.9, borderRadius: '14px', cursor: 'pointer' }}
@@ -134,7 +136,7 @@ export default function SearchView({ query, chats, onSelect }: Props) {
                     color: active ? tg.accent : tg.textSecondary,
                   }}
                 >
-                  {t}
+                  {t(label)}
                 </Typography>
               </Box>
             )
@@ -162,14 +164,14 @@ export default function SearchView({ query, chats, onSelect }: Props) {
             <Box sx={{ pb: 2 }}>
               {tab === 0 && (
                 <>
-                  <Section title="Global search" tg={tg} cardBg={cardBg}>
+                  <Section title={t('Global search')} tg={tg} cardBg={cardBg}>
                     {globalChannels.map((c) => (
                       <ResultRow key={c.name} bg={c.bg} t={c.t} tc={c.tc} title={c.name} subtitle={c.sub} verified={c.verified} tg={tg} />
                     ))}
                   </Section>
                   <Box sx={{ display: 'flex', alignItems: 'center', px: 2.5, pt: 1.5, pb: 0.5 }}>
-                    <Typography sx={{ flex: 1, fontSize: 15, fontWeight: 600, color: tg.accent }}>Messages</Typography>
-                    <Typography sx={{ fontSize: 15, fontWeight: 600, color: tg.accent, cursor: 'pointer' }}>All Chats</Typography>
+                    <Typography sx={{ flex: 1, fontSize: 15, fontWeight: 600, color: tg.accent }}>{t('Messages')}</Typography>
+                    <Typography sx={{ fontSize: 15, fontWeight: 600, color: tg.accent, cursor: 'pointer' }}>{t('All Chats')}</Typography>
                   </Box>
                   {messages.map((m) => (
                     <Box
@@ -202,10 +204,10 @@ export default function SearchView({ query, chats, onSelect }: Props) {
 
               {tab === 2 && (
                 <>
-                  <Section title="Apps you use" tg={tg} cardBg={cardBg}>
+                  <Section title={t('Apps you use')} tg={tg} cardBg={cardBg}>
                     <ResultRow bg="linear-gradient(135deg,#2a2a2a,#000)" t="👁" title="Telescope" subtitle="1 554 419 users" tg={tg} />
                   </Section>
-                  <Section title="Popular Apps" tg={tg} cardBg={cardBg}>
+                  <Section title={t('Popular Apps')} tg={tg} cardBg={cardBg}>
                     {popularApps.map((a) => (
                       <ResultRow key={a.name} bg={a.bg} t={a.t} title={a.name} subtitle={a.sub} verified={a.verified} tg={tg} />
                     ))}
@@ -213,7 +215,7 @@ export default function SearchView({ query, chats, onSelect }: Props) {
                 </>
               )}
 
-              {tab === 3 && <Empty text="Nothing interesting here yet…" tg={tg} />}
+              {tab === 3 && <Empty text={t('Nothing interesting here yet…')} tg={tg} />}
 
               {tab === 4 && (
                 <Section title="" tg={tg} cardBg={cardBg}>
@@ -242,8 +244,8 @@ export default function SearchView({ query, chats, onSelect }: Props) {
                 </Section>
               )}
 
-              {tab === 6 && <Empty text="Nothing interesting here yet…" tg={tg} />}
-              {tab === 7 && <Empty text="Nothing interesting here yet…" tg={tg} />}
+              {tab === 6 && <Empty text={t('Nothing interesting here yet…')} tg={tg} />}
+              {tab === 7 && <Empty text={t('Nothing interesting here yet…')} tg={tg} />}
             </Box>
           </motion.div>
         </AnimatePresence>
