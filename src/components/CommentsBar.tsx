@@ -13,7 +13,7 @@ const commenters = [
   { bg: 'linear-gradient(135deg,#5b5b5b,#1a1a1a)', label: '' },
 ]
 
-export default function CommentsBar() {
+export default function CommentsBar({ count = 4 }: { count?: number }) {
   const t = useT()
   const tg = useTheme().tg
 
@@ -71,7 +71,7 @@ export default function CommentsBar() {
           ))}
         </Box>
         <Typography sx={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: tg.accent }}>
-          4 {t('Comments')}
+          {count} {t('Comments')}
         </Typography>
         <ChevronRightRoundedIcon sx={{ color: tg.textFaint }} />
       </MotionBox>

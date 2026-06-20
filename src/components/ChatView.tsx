@@ -44,6 +44,10 @@ export default function ChatView() {
       }}
     >
       <Box sx={{ flex: 1, minWidth: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Top fade — messages dissolve into the background under the floating header */}
+      <Box sx={{ position: 'sticky', top: 0, height: 0, zIndex: 5, width: '100%', maxWidth: 688, mx: 'auto', pointerEvents: 'none' }}>
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 90, background: `linear-gradient(${tg.appBg} 30%, transparent)` }} />
+      </Box>
       {/* Header — floating rounded pill over the global pattern */}
       <Box
         sx={{
@@ -244,7 +248,7 @@ export default function ChatView() {
           }}
         >
           <Box sx={{ width: '100%', maxWidth: 520, display: 'flex', flexDirection: 'column' }}>
-            {kyzdarPosts.map((post) => (
+            {kyzdarPosts.map((post, i) => (
               <Box key={post.id} sx={{ display: 'flex', flexDirection: 'column' }}>
                 {post.date && (
                   <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
@@ -266,11 +270,18 @@ export default function ChatView() {
                   </Box>
                 )}
                 <ChannelPost post={post} />
+                <Box sx={{ mb: 1.5 }}>
+                  <CommentsBar count={[4, 1, 12, 7, 23][i % 5]} />
+                </Box>
               </Box>
             ))}
-            <CommentsBar />
           </Box>
         </Box>
+      </Box>
+
+      {/* Bottom fade — messages dissolve into the background above the footer */}
+      <Box sx={{ position: 'sticky', bottom: 0, height: 0, zIndex: 5, width: '100%', maxWidth: 688, mx: 'auto', pointerEvents: 'none' }}>
+        <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 100, background: `linear-gradient(transparent, ${tg.appBg} 70%)` }} />
       </Box>
 
       {/* Footer / Mute bar — sticky to viewport bottom */}
