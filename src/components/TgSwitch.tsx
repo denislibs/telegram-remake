@@ -1,9 +1,17 @@
 import { Box, useTheme } from '@mui/material'
 
 /**
- * Telegram-style toggle (tweb _checkbox.scss): 31x14 track, 20px round thumb in
- * surface-color (so it reads dark in night theme), accent track when on.
+ * Telegram-style toggle, 1:1 with tweb's .checkbox-field-toggle:
+ * track 31x14 (pill), 20px round thumb in surface-color with a 2px border that
+ * matches the track colour (grey off / accent on), thumb overhangs the track by
+ * the 3px offset on each side.
  */
+const TRACK_W = 31
+const TRACK_H = 14
+const THUMB = 20
+const OFFSET = 3
+const CONTAINER_W = TRACK_W + OFFSET * 2 // 37
+
 export default function TgSwitch({
   checked,
   onClick,
@@ -13,35 +21,40 @@ export default function TgSwitch({
 }) {
   const theme = useTheme()
   const tg = theme.tg
-  const off = theme.palette.mode === 'dark' ? '#54585c' : '#c4c9cc'
+  const off = theme.palette.mode === 'dark' ? '#707579' : '#c4c9cc'
+  const lineColor = checked ? tg.accent : off
+
   return (
     <Box
       onClick={onClick}
-      sx={{ position: 'relative', width: 31, height: 20, flexShrink: 0, cursor: 'pointer' }}
+      sx={{ position: 'relative', width: CONTAINER_W, height: THUMB, flexShrink: 0, cursor: 'pointer' }}
     >
+      {/* track */}
       <Box
         sx={{
           position: 'absolute',
-          top: 3,
-          left: 0,
-          width: 31,
-          height: 14,
-          borderRadius: 7,
-          background: checked ? tg.accent : off,
-          transition: 'background .15s ease',
+          top: (THUMB - TRACK_H) / 2,
+          left: OFFSET,
+          width: TRACK_W,
+          height: TRACK_H,
+          borderRadius: TRACK_H / 2,
+          background: lineColor,
+          transition: 'background-color .1s ease',
         }}
       />
+      {/* thumb */}
       <Box
         sx={{
           position: 'absolute',
           top: 0,
-          left: checked ? 11 : 0,
-          width: 20,
-          height: 20,
+          left: checked ? CONTAINER_W - THUMB : 0,
+          width: THUMB,
+          height: THUMB,
+          boxSizing: 'border-box',
           borderRadius: '50%',
           background: tg.sidebarBg,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.35)',
-          transition: 'left .16s cubic-bezier(.22,.75,.7,1.3)',
+          border: `2px solid ${lineColor}`,
+          transition: 'left .14s cubic-bezier(.22,.75,.7,1.3), border-color .1s ease',
         }}
       />
     </Box>
