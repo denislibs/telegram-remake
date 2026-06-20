@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { flushSync } from 'react-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Box, CssBaseline, ThemeProvider, useMediaQuery, useTheme } from '@mui/material'
 import { buildTheme, type Mode } from './theme'
 import Sidebar from './components/Sidebar'
@@ -64,16 +65,32 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
 
   const selected = chatList.find((c) => c.id === selectedId) ?? chatList[0]
 
-  // Responsive: below 900px collapse to a single column (list <-> chat with a back arrow)
+  // Responsive: below 900px the chat is full-width and the sidebar is hidden,
+  // sliding out from the left (over the chat) when the back arrow is tapped.
   const narrow = useMediaQuery('(max-width:900px)')
-  const [mobileChatOpen, setMobileChatOpen] = useState(false)
-  const openChat = (id: string) => {
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const selectChat = (id: string) => {
     setSelectedId(id)
-    if (narrow) setMobileChatOpen(true)
+    setDrawerOpen(false)
   }
-  const back = () => setMobileChatOpen(false)
-  const showSidebar = !narrow || !mobileChatOpen
-  const showChat = !narrow || mobileChatOpen
+  const openDrawer = narrow ? () => setDrawerOpen(true) : undefined
+
+  const sidebar = (
+    <Sidebar
+      chats={chatList}
+      selectedId={selectedId}
+      onSelect={selectChat}
+      onCreateGroup={(name) => {
+        createGroup(name)
+        setDrawerOpen(false)
+      }}
+      onCreateChannel={(name, description) => {
+        createChannel(name, description)
+        setDrawerOpen(false)
+      }}
+      onToggleMode={onToggleMode}
+    />
+  )
 
   return (
     <Box
@@ -86,29 +103,44 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
     >
       {/* Animated 4-point gradient wallpaper + doodle pattern (tweb-style) */}
       <ChatBackground />
-      {showSidebar && (
-        <Sidebar
-          chats={chatList}
-          selectedId={selectedId}
-          onSelect={openChat}
-          onCreateGroup={(name) => {
-            createGroup(name)
-            if (narrow) setMobileChatOpen(true)
-          }}
-          onCreateChannel={(name, description) => {
-            createChannel(name, description)
-            if (narrow) setMobileChatOpen(true)
-          }}
-          onToggleMode={onToggleMode}
-          fullWidth={narrow}
-        />
+
+      {/* Wide: sidebar inline next to the chat */}
+      {!narrow && sidebar}
+
+      {/* Chat is always rendered (full-width on narrow) */}
+      {selectedId === 'dollhouse-work' ? (
+        <ChatView onBack={openDrawer} />
+      ) : (
+        <ConversationView key={selectedId} chat={selected} onBack={openDrawer} />
       )}
-      {showChat &&
-        (selectedId === 'dollhouse-work' ? (
-          <ChatView onBack={narrow ? back : undefined} />
-        ) : (
-          <ConversationView key={selectedId} chat={selected} onBack={narrow ? back : undefined} />
-        ))}
+
+      {/* Narrow: sidebar as a slide-in drawer over the chat */}
+      {narrow && (
+        <AnimatePresence>
+          {drawerOpen && (
+            <Box key="drawer">
+              <Box
+                component={motion.div}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setDrawerOpen(false)}
+                sx={{ position: 'fixed', inset: 0, zIndex: 1900, background: 'rgba(0,0,0,0.45)' }}
+              />
+              <Box
+                component={motion.div}
+                initial={{ x: '-106%' }}
+                animate={{ x: '0%' }}
+                exit={{ x: '-106%' }}
+                transition={{ duration: 0.26, ease: [0.4, 0, 0.2, 1] }}
+                sx={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 2000 }}
+              >
+                {sidebar}
+              </Box>
+            </Box>
+          )}
+        </AnimatePresence>
+      )}
     </Box>
   )
 }
