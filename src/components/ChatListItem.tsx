@@ -26,7 +26,7 @@ interface Props {
   index?: number
 }
 
-export default function ChatListItem({ chat, selected, onClick, index = 0 }: Props) {
+export default function ChatListItem({ chat, selected, onClick }: Props) {
   const theme = useTheme()
   const tg = theme.tg
   const t = useT()
@@ -86,9 +86,6 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
       onClick={onClick}
       onMouseDown={addRipple}
       onContextMenu={openMenu}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.26, delay: Math.min(index * 0.03, 0.3), ease: [0.16, 1, 0.3, 1] }}
       whileTap={{ scale: 0.985 }}
       sx={{
         position: 'relative',

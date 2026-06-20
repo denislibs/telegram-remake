@@ -73,8 +73,11 @@ export default function Sidebar({
   // direction for the folder-switch slide (right tab -> slide from right, etc.)
   const FOLDER_ORDER: FolderKey[] = ['all', 'private', 'groups', 'channels']
   const dirRef = useRef(0)
+  const didChangeFolderRef = useRef(false)
   const changeFolder = (k: FolderKey) => {
+    if (k === folder) return
     dirRef.current = FOLDER_ORDER.indexOf(k) > FOLDER_ORDER.indexOf(folder) ? 1 : -1
+    didChangeFolderRef.current = true
     setFolder(k)
   }
 
@@ -197,7 +200,9 @@ export default function Sidebar({
           <Box
             component={motion.div}
             key={folder}
-            initial={{ x: dirRef.current > 0 ? '100%' : '-100%' }}
+            initial={
+              didChangeFolderRef.current ? { x: dirRef.current > 0 ? '100%' : '-100%' } : false
+            }
             animate={{ x: '0%' }}
             transition={{ duration: DUR.in, ease: EASE }}
             sx={{ pt: 0.5, pb: 2 }}
