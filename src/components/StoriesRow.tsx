@@ -1,3 +1,4 @@
+import { useEffect, useState, type RefObject } from 'react'
 import { Box, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
 import Avatar from './Avatar'
@@ -21,17 +22,51 @@ export const STORIES: Story[] = [
   { id: 's8', name: 'Grace', bg: 'linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)', emoji: '✨' },
 ]
 
-export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void }) {
+const FULL_H = 92
+const FOLDED_H = 44
+const ITEM_W = 74
+const STACK = 3 // how many avatars stay in the folded cluster
+const FOLD_DISTANCE = 80 // px of list scroll to fully fold
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+
+export default function StoriesRow({
+  onOpen,
+  scrollRef,
+}: {
+  onOpen: (index: number) => void
+  scrollRef?: RefObject<HTMLDivElement | null>
+}) {
   const tg = useTheme().tg
+  // p: 0 = fully expanded row, 1 = folded stack — driven by the chat-list scroll
+  const [p, setP] = useState(0)
+
+  useEffect(() => {
+    const el = scrollRef?.current
+    if (!el) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() =>
+        setP(Math.min(1, Math.max(0, el.scrollTop / FOLD_DISTANCE))),
+      )
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [scrollRef])
 
   return (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'row',
         alignItems: 'flex-start',
-        padding: '6px 8px 8px',
-        overflowX: 'auto',
+        height: lerp(FULL_H, FOLDED_H, p),
+        padding: '6px 8px 0',
+        overflowX: p > 0.02 ? 'hidden' : 'auto',
+        overflowY: 'hidden',
         '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
       }}
@@ -40,6 +75,12 @@ export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void
         const ringBg = story.seen
           ? tg.textFaint
           : 'linear-gradient(215deg, #34c76f -1.61%, #3da1fd 97.44%)'
+        const stacked = index < STACK
+        // folded target: pull each item left so the first few overlap into a stack
+        const tx = p * -index * 56
+        const sc = lerp(1, 0.42, p)
+        const itemOpacity = stacked ? 1 : Math.max(0, 1 - p * 2.2)
+        const nameOpacity = Math.max(0, 1 - p * 1.6)
         return (
           <Box
             key={story.id}
@@ -47,12 +88,18 @@ export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void
             whileTap={{ scale: 0.95 }}
             onClick={() => onOpen(index)}
             sx={{
+              position: 'relative',
+              flexShrink: 0,
+              width: ITEM_W,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              flexShrink: 0,
-              width: 74,
               cursor: 'pointer',
+              transform: `translateX(${tx}px) scale(${sc})`,
+              transformOrigin: 'top left',
+              opacity: itemOpacity,
+              zIndex: stacked ? STACK - index : 0,
+              pointerEvents: p > 0.6 && !stacked ? 'none' : 'auto',
             }}
           >
             {/* Gradient ring wrapper */}
@@ -68,9 +115,9 @@ export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
               }}
             >
-              {/* Inner gap ring (surface-coloured) */}
               <Box
                 sx={{
                   width: '100%',
@@ -97,6 +144,7 @@ export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void
                 lineHeight: '15px',
                 color: tg.textSecondary,
                 textAlign: 'center',
+                opacity: nameOpacity,
               }}
             >
               {story.name}

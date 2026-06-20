@@ -58,6 +58,7 @@ export default function Sidebar({
   const [storyIndex, setStoryIndex] = useState<number | null>(null)
   const [folder, setFolder] = useState<FolderKey>('all')
   const inputRef = useRef<HTMLInputElement>(null)
+  const listScrollRef = useRef<HTMLDivElement>(null)
 
   const filtered = chats.filter((c) =>
     folder === 'all'
@@ -181,7 +182,7 @@ export default function Sidebar({
       {/* Stories + folder tabs (hidden while searching) */}
       {!searching && (
         <>
-          <StoriesRow onOpen={(i) => setStoryIndex(i)} />
+          <StoriesRow onOpen={(i) => setStoryIndex(i)} scrollRef={listScrollRef} />
           <FolderTabs value={folder} onChange={changeFolder} />
         </>
       )}
@@ -189,7 +190,7 @@ export default function Sidebar({
       {/* Body — chat list always mounted; search view overlays it */}
       <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
         {/* Chat list (always present) */}
-        <Box sx={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+        <Box ref={listScrollRef} sx={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
