@@ -1,6 +1,5 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { Box, Typography, useTheme } from '@mui/material'
-import { motion } from 'framer-motion'
 import Avatar from './Avatar'
 
 export interface Story {
@@ -84,8 +83,6 @@ export default function StoriesRow({
         return (
           <Box
             key={story.id}
-            component={motion.div}
-            whileTap={{ scale: 0.95 }}
             onClick={() => onOpen(index)}
             sx={{
               position: 'relative',
