@@ -178,11 +178,13 @@ export default function Sidebar({
         </Box>
       </Box>
 
-      {/* Stories row (above the folder tabs) */}
-      <StoriesRow onOpen={(i) => setStoryIndex(i)} />
-
-      {/* Folder filter tabs */}
-      <FolderTabs value={folder} onChange={changeFolder} />
+      {/* Stories + folder tabs (hidden while searching) */}
+      {!searching && (
+        <>
+          <StoriesRow onOpen={(i) => setStoryIndex(i)} />
+          <FolderTabs value={folder} onChange={changeFolder} />
+        </>
+      )}
 
       {/* Body — chat list always mounted; search view overlays it */}
       <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
