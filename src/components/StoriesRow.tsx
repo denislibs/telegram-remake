@@ -135,7 +135,9 @@ export function StoriesStack({
   onOpen: (index: number) => void
   progress: number
 }) {
-  const tg = useTheme().tg
+  const theme = useTheme()
+  const tg = theme.tg
+  const searchBg = theme.palette.mode === 'dark' ? '#181818' : '#f0f0f2'
   const p = Math.min(1, Math.max(0, (progress - 0.4) / 0.6)) // appear in the second half of the fold
   if (p <= 0) return null
   const items = STORIES.slice(0, 3)
@@ -151,9 +153,9 @@ export function StoriesStack({
         flexShrink: 0,
         cursor: 'pointer',
         opacity: p,
-        width: p * (24 + 2 * 14 + 8), // collapse the reserved width as it fades
-        transform: `scale(${0.8 + p * 0.2})`,
-        transformOrigin: 'left center',
+        width: p * 52,
+        transform: `scale(${0.85 + p * 0.15})`,
+        transformOrigin: 'right center',
         overflow: 'hidden',
       }}
     >
@@ -165,30 +167,20 @@ export function StoriesStack({
           <Box
             key={story.id}
             sx={{
-              width: 26,
-              height: 26,
+              width: 24,
+              height: 24,
               borderRadius: '50%',
               background: ringBg,
-              padding: '1.5px',
+              padding: '2px',
               boxSizing: 'border-box',
               flexShrink: 0,
-              ml: i === 0 ? 0 : '-12px',
+              ml: i === 0 ? 0 : '-10px',
               zIndex: 3 - i,
-              border: `2px solid ${tg.sidebarBg}`,
+              // clean separator ring in the search-bar colour so overlaps cut cleanly
+              boxShadow: `0 0 0 2px ${searchBg}`,
             }}
           >
-            <Box
-              sx={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                background: tg.sidebarBg,
-                padding: '1.5px',
-                boxSizing: 'border-box',
-              }}
-            >
-              <Avatar background={story.bg} emoji={story.emoji} size={19} />
-            </Box>
+            <Avatar background={story.bg} emoji={story.emoji} size={20} />
           </Box>
         )
       })}

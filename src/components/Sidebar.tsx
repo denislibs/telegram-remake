@@ -169,9 +169,6 @@ export default function Sidebar({
             },
           }}
         >
-          {!searching && (
-            <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={foldP} />
-          )}
           <SearchRoundedIcon sx={{ color: searching ? tg.accent : tg.textFaint, fontSize: 22 }} />
           <InputBase
             inputRef={inputRef}
@@ -199,6 +196,7 @@ export default function Sidebar({
               '& input::placeholder': { color: tg.textFaint, opacity: 1 },
             }}
           />
+          {!searching && <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={foldP} />}
         </Box>
       </Box>
 
