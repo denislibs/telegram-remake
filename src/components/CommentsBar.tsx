@@ -13,7 +13,7 @@ const commenters = [
   { bg: 'linear-gradient(135deg,#5b5b5b,#1a1a1a)', label: '' },
 ]
 
-export default function CommentsBar() {
+export default function CommentsBar({ onOpen }: { onOpen?: () => void }) {
   const t = useT()
   const tg = useTheme().tg
 
@@ -33,6 +33,7 @@ export default function CommentsBar() {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, maxWidth: 520, width: '100%', mt: 0.75 }}>
       <MotionBox
+        onClick={onOpen}
         whileHover={{ background: tg.hover }}
         sx={{
           flex: 1,

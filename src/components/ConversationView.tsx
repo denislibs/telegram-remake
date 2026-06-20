@@ -29,6 +29,8 @@ import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined'
 import Avatar from './Avatar'
 import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
+import EmojiPicker from './EmojiPicker'
+import AttachMenu from './AttachMenu'
 import type { Chat, ConvMsg, MsgStatus } from '../data'
 import { useT } from '../i18n'
 
@@ -89,6 +91,8 @@ export default function ConversationView({ chat, onBack }: Props) {
   const [chatSearchQuery, setChatSearchQuery] = useState('')
   const [headerMenu, setHeaderMenu] = useState<{ top: number; right: number } | null>(null)
   const [showScrollDown, setShowScrollDown] = useState(false)
+  const [emojiOpen, setEmojiOpen] = useState(false)
+  const [attachAnchor, setAttachAnchor] = useState<{ left: number; bottom: number } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -677,7 +681,13 @@ export default function ConversationView({ chat, onBack }: Props) {
 
               {/* Input row */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minHeight: 48, pl: 0.5, pr: 0.5, py: 0.5 }}>
-                <IconButton sx={{ width: 40, height: 40, color: tg.textSecondary }}>
+                <IconButton
+                  onClick={(e) => {
+                    const r = e.currentTarget.getBoundingClientRect()
+                    setAttachAnchor({ left: r.left, bottom: window.innerHeight - r.top + 8 })
+                  }}
+                  sx={{ width: 40, height: 40, color: tg.textSecondary }}
+                >
                   <AttachFileRounded sx={{ transform: 'rotate(45deg)' }} />
                 </IconButton>
                 <InputBase
@@ -699,7 +709,10 @@ export default function ConversationView({ chat, onBack }: Props) {
                     '& input::placeholder': { color: tg.textFaint, opacity: 1 },
                   }}
                 />
-                <IconButton sx={{ width: 40, height: 40, color: tg.textSecondary }}>
+                <IconButton
+                  onClick={() => setEmojiOpen((o) => !o)}
+                  sx={{ width: 40, height: 40, color: emojiOpen ? tg.accent : tg.textSecondary }}
+                >
                   <SentimentSatisfiedAltRounded />
                 </IconButton>
                 {/* Mic / Send — 48×40 rounded pill inside the bar (1:1 with TG .btn-send) */}
@@ -735,6 +748,14 @@ export default function ConversationView({ chat, onBack }: Props) {
                 </Box>
               </Box>
             </Box>
+            <AnimatePresence>
+              {emojiOpen && (
+                <EmojiPicker
+                  onPick={(em) => setInput((v) => v + em)}
+                  onClose={() => setEmojiOpen(false)}
+                />
+              )}
+            </AnimatePresence>
           </Box>
         ) : (
           <Box
@@ -799,6 +820,9 @@ export default function ConversationView({ chat, onBack }: Props) {
       {headerMenu && (
         <HeaderMenu chat={chat} anchor={headerMenu} onClose={() => setHeaderMenu(null)} />
       )}
+
+      {/* Attach menu */}
+      {attachAnchor && <AttachMenu anchor={attachAnchor} onClose={() => setAttachAnchor(null)} />}
 
       {/* Message context menu — reactions strip + actions */}
       {msgMenu &&

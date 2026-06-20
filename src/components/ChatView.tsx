@@ -13,6 +13,8 @@ import { EASE, DUR } from '../motion'
 import Avatar from './Avatar'
 import ChannelPost from './ChannelPost'
 import CommentsBar from './CommentsBar'
+import MediaViewer from './MediaViewer'
+import DiscussionView from './DiscussionView'
 import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
 import { chats, kyzdarPosts } from '../data'
@@ -31,6 +33,8 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
   const [chatSearch, setChatSearch] = useState(false)
   const [chatSearchQuery, setChatSearchQuery] = useState('')
   const [headerMenu, setHeaderMenu] = useState<{ top: number; right: number } | null>(null)
+  const [media, setMedia] = useState<{ gradient: string; emoji?: string; time?: string } | null>(null)
+  const [discussion, setDiscussion] = useState<(typeof kyzdarPosts)[number] | null>(null)
 
   return (
     <Box
@@ -271,10 +275,10 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
                     </Typography>
                   </Box>
                 )}
-                <ChannelPost post={post} />
+                <ChannelPost post={post} onOpenMedia={setMedia} />
               </Box>
             ))}
-            <CommentsBar />
+            <CommentsBar onOpen={() => setDiscussion(kyzdarPosts[kyzdarPosts.length - 1])} />
           </Box>
         </Box>
       </Box>
@@ -345,6 +349,26 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
       {headerMenu && (
         <HeaderMenu chat={dollhouse} anchor={headerMenu} onClose={() => setHeaderMenu(null)} />
       )}
+
+      {/* Media lightbox */}
+      <AnimatePresence>
+        {media && <MediaViewer media={media} onClose={() => setMedia(null)} />}
+      </AnimatePresence>
+
+      {/* Comments / discussion thread */}
+      <AnimatePresence>
+        {discussion && (
+          <DiscussionView
+            post={{
+              title: discussion.title,
+              text: discussion.paras.map((p) => p.map((s) => s.t).join('')).join('\n'),
+              gradient: discussion.photo?.gradient,
+              emoji: discussion.photo?.emoji,
+            }}
+            onBack={() => setDiscussion(null)}
+          />
+        )}
+      </AnimatePresence>
     </Box>
   )
 }

@@ -17,6 +17,9 @@ import NewGroupFlow from './NewGroupFlow'
 import NewChannelFlow from './NewChannelFlow'
 import NewPrivateChat from './NewPrivateChat'
 import SearchView from './SearchView'
+import StoriesRow from './StoriesRow'
+import StoryViewer from './StoryViewer'
+import FolderTabs, { type FolderKey } from './FolderTabs'
 import { useT } from '../i18n'
 
 const MotionFab = motion(IconButton)
@@ -52,7 +55,19 @@ export default function Sidebar({
   const [newGroupOpen, setNewGroupOpen] = useState(false)
   const [newChannelOpen, setNewChannelOpen] = useState(false)
   const [newPrivateOpen, setNewPrivateOpen] = useState(false)
+  const [storyIndex, setStoryIndex] = useState<number | null>(null)
+  const [folder, setFolder] = useState<FolderKey>('all')
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const filtered = chats.filter((c) =>
+    folder === 'all'
+      ? true
+      : folder === 'private'
+        ? c.type === 'private'
+        : folder === 'groups'
+          ? c.type === 'group'
+          : c.type === 'channel',
+  )
 
   const closeSearch = () => {
     setSearching(false)
@@ -155,6 +170,9 @@ export default function Sidebar({
         </Box>
       </Box>
 
+      {/* Folder filter tabs */}
+      <FolderTabs value={folder} onChange={setFolder} />
+
       {/* Body — chat list always mounted; search view overlays it */}
       <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
         {/* Chat list (always present) */}
@@ -162,8 +180,9 @@ export default function Sidebar({
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
+          <StoriesRow onOpen={(i) => setStoryIndex(i)} />
           <Box sx={{ pt: 0.5, pb: 2 }}>
-            {chats.map((chat, i) => (
+            {filtered.map((chat, i) => (
               <ChatListItem
                 key={chat.id}
                 chat={chat}
@@ -283,6 +302,11 @@ export default function Sidebar({
             onClose={() => setNewPrivateOpen(false)}
             onSelect={onSelect}
           />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {storyIndex !== null && (
+          <StoryViewer index={storyIndex} onClose={() => setStoryIndex(null)} />
         )}
       </AnimatePresence>
     </Box>
