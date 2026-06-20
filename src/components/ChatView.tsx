@@ -232,10 +232,6 @@ export default function ChatView() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-end',
-          maskImage:
-            'linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 88px), transparent 100%)',
-          WebkitMaskImage:
-            'linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 88px), transparent 100%)',
         }}
       >
         <Box
