@@ -6,7 +6,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { AnimatePresence, motion } from 'framer-motion'
-import { EASE } from '../motion'
+import { EASE, DUR } from '../motion'
 import type { Chat } from '../data'
 import ChatListItem from './ChatListItem'
 import NotificationBanner from './NotificationBanner'
@@ -178,6 +178,9 @@ export default function Sidebar({
         </Box>
       </Box>
 
+      {/* Stories row (above the folder tabs) */}
+      <StoriesRow onOpen={(i) => setStoryIndex(i)} />
+
       {/* Folder filter tabs */}
       <FolderTabs value={folder} onChange={changeFolder} />
 
@@ -188,13 +191,12 @@ export default function Sidebar({
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
-          <StoriesRow onOpen={(i) => setStoryIndex(i)} />
           <Box
             component={motion.div}
             key={folder}
             initial={{ x: dirRef.current > 0 ? '100%' : '-100%' }}
             animate={{ x: '0%' }}
-            transition={{ duration: 0.22, ease: EASE }}
+            transition={{ duration: DUR.in, ease: EASE }}
             sx={{ pt: 0.5, pb: 2 }}
           >
             {filtered.map((chat, i) => (
