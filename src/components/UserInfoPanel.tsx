@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, IconButton, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import TgSwitch from './TgSwitch'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EASE, DUR } from '../motion'
@@ -30,6 +30,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
   const tg = theme.tg
   const t = useT()
   const mode = theme.palette.mode
+  const narrow = useMediaQuery('(max-width:900px)')
   const cardBg = mode === 'dark' ? '#2b2b2b' : '#ffffff'
   const [tab, setTab] = useState('Media')
   const [editing, setEditing] = useState(false)
@@ -53,33 +54,62 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
 
   return (
     <motion.div
-      initial={{ width: 0, opacity: 0 }}
-      animate={{ width: 404, opacity: 1 }}
-      exit={{ width: 0, opacity: 0 }}
+      initial={narrow ? { opacity: 0 } : { width: 0, opacity: 0 }}
+      animate={narrow ? { opacity: 1 } : { width: 404, opacity: 1 }}
+      exit={narrow ? { opacity: 0 } : { width: 0, opacity: 0 }}
       transition={{ duration: DUR.in, ease: EASE }}
-      style={{
-        overflow: 'hidden',
-        flexShrink: 0,
-        position: 'sticky',
-        top: '16px',
-        alignSelf: 'flex-start',
-        height: 'calc(100vh - 32px)',
-        zIndex: 15,
-      }}
+      style={
+        narrow
+          ? { position: 'fixed', inset: 0, zIndex: 1900 }
+          : {
+              overflow: 'hidden',
+              flexShrink: 0,
+              position: 'sticky',
+              top: '16px',
+              alignSelf: 'flex-start',
+              height: 'calc(100vh - 32px)',
+              zIndex: 15,
+            }
+      }
     >
+      {narrow && (
+        <Box
+          onClick={onClose}
+          sx={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }}
+        />
+      )}
       <Box
-        sx={{
-          width: 380,
-          height: '100%',
-          ml: '8px',
-          mr: '16px',
-          background: tg.sidebarBg,
-          borderRadius: '18px',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-        }}
+        component={motion.div}
+        {...(narrow
+          ? { initial: { x: '100%' }, animate: { x: '0%' }, transition: { duration: DUR.in, ease: EASE } }
+          : {})}
+        sx={
+          narrow
+            ? {
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                bottom: '16px',
+                width: 'min(380px, calc(100vw - 32px))',
+                background: tg.sidebarBg,
+                borderRadius: '18px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+              }
+            : {
+                width: 380,
+                height: '100%',
+                ml: '8px',
+                mr: '16px',
+                background: tg.sidebarBg,
+                borderRadius: '18px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+              }
+        }
       >
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 1.5, py: 1.5 }}>

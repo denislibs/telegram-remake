@@ -27,6 +27,7 @@ interface Props {
   onCreateGroup: (name: string) => void
   onCreateChannel: (name: string, description: string) => void
   onToggleMode: (coords?: { x: number; y: number }) => void
+  fullWidth?: boolean
 }
 
 export default function Sidebar({
@@ -36,6 +37,7 @@ export default function Sidebar({
   onCreateGroup,
   onCreateChannel,
   onToggleMode,
+  fullWidth = false,
 }: Props) {
   const theme = useTheme()
   const t = useT()
@@ -64,10 +66,12 @@ export default function Sidebar({
         position: 'sticky',
         top: '16px',
         zIndex: 20,
-        width: 360,
-        flexShrink: 0,
+        width: fullWidth ? 'auto' : 360,
+        flex: fullWidth ? '1 1 auto' : '0 0 auto',
+        minWidth: 0,
         mt: 2,
         ml: '16px',
+        mr: fullWidth ? '16px' : 0,
         height: 'calc(100vh - 32px)',
         background: tg.sidebarBg,
         borderRadius: '24px',

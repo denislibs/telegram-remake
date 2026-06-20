@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { Box, CssBaseline, ThemeProvider, useTheme } from '@mui/material'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Box, CssBaseline, ThemeProvider, useMediaQuery, useTheme } from '@mui/material'
 import { buildTheme, type Mode } from './theme'
 import Sidebar from './components/Sidebar'
 import ChatView from './components/ChatView'
@@ -64,6 +65,33 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
 
   const selected = chatList.find((c) => c.id === selectedId) ?? chatList[0]
 
+  // Responsive: below 900px the chat is full-width and the sidebar is hidden,
+  // sliding out from the left (over the chat) when the back arrow is tapped.
+  const narrow = useMediaQuery('(max-width:900px)')
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const selectChat = (id: string) => {
+    setSelectedId(id)
+    setDrawerOpen(false)
+  }
+  const openDrawer = narrow ? () => setDrawerOpen(true) : undefined
+
+  const sidebar = (
+    <Sidebar
+      chats={chatList}
+      selectedId={selectedId}
+      onSelect={selectChat}
+      onCreateGroup={(name) => {
+        createGroup(name)
+        setDrawerOpen(false)
+      }}
+      onCreateChannel={(name, description) => {
+        createChannel(name, description)
+        setDrawerOpen(false)
+      }}
+      onToggleMode={onToggleMode}
+    />
+  )
+
   return (
     <Box
       sx={{
@@ -75,18 +103,43 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
     >
       {/* Animated 4-point gradient wallpaper + doodle pattern (tweb-style) */}
       <ChatBackground />
-      <Sidebar
-        chats={chatList}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onCreateGroup={createGroup}
-        onCreateChannel={createChannel}
-        onToggleMode={onToggleMode}
-      />
+
+      {/* Wide: sidebar inline next to the chat */}
+      {!narrow && sidebar}
+
+      {/* Chat is always rendered (full-width on narrow) */}
       {selectedId === 'dollhouse-work' ? (
-        <ChatView />
+        <ChatView onBack={openDrawer} />
       ) : (
-        <ConversationView key={selectedId} chat={selected} />
+        <ConversationView key={selectedId} chat={selected} onBack={openDrawer} />
+      )}
+
+      {/* Narrow: sidebar as a slide-in drawer over the chat */}
+      {narrow && (
+        <AnimatePresence>
+          {drawerOpen && (
+            <Box key="drawer">
+              <Box
+                component={motion.div}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setDrawerOpen(false)}
+                sx={{ position: 'fixed', inset: 0, zIndex: 1900, background: 'rgba(0,0,0,0.45)' }}
+              />
+              <Box
+                component={motion.div}
+                initial={{ x: '-106%' }}
+                animate={{ x: '0%' }}
+                exit={{ x: '-106%' }}
+                transition={{ duration: 0.26, ease: [0.4, 0, 0.2, 1] }}
+                sx={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 2000 }}
+              >
+                {sidebar}
+              </Box>
+            </Box>
+          )}
+        </AnimatePresence>
       )}
     </Box>
   )
