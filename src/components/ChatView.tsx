@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
 import PushPinRoundedIcon from '@mui/icons-material/PushPinRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
@@ -20,7 +21,7 @@ import { useT } from '../i18n'
 const MotionBox = motion(Box)
 const dollhouse = chats.find((c) => c.id === 'dollhouse-work')!
 
-export default function ChatView() {
+export default function ChatView({ onBack }: { onBack?: () => void }) {
   const t = useT()
   const theme = useTheme()
   const tg = theme.tg
@@ -123,6 +124,11 @@ export default function ChatView() {
               transition={{ duration: 0.2, ease: EASE }}
               sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}
             >
+              {onBack && (
+                <IconButton onClick={onBack} sx={{ color: tg.textSecondary, ml: -0.5 }}>
+                  <ArrowBackRoundedIcon />
+                </IconButton>
+              )}
               <Box
                 onClick={() => setShowInfo((o) => !o)}
                 sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0, cursor: 'pointer' }}

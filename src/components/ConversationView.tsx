@@ -5,6 +5,7 @@ import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EASE, DUR } from '../motion'
 import CallOutlined from '@mui/icons-material/CallOutlined'
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
 import AttachFileRounded from '@mui/icons-material/AttachFileRounded'
@@ -65,9 +66,10 @@ function Ticks({ status, color }: { status?: MsgStatus; color: string }) {
 
 interface Props {
   chat: Chat
+  onBack?: () => void
 }
 
-export default function ConversationView({ chat }: Props) {
+export default function ConversationView({ chat, onBack }: Props) {
   const t = useT()
   const theme = useTheme()
   const tg = theme.tg
@@ -318,6 +320,11 @@ export default function ConversationView({ chat }: Props) {
                 transition={{ duration: DUR_IN, ease: EASE_STD }}
                 sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}
               >
+                {onBack && (
+                  <IconButton onClick={onBack} sx={{ color: tg.textSecondary, ml: -0.5 }}>
+                    <ArrowBackRoundedIcon />
+                  </IconButton>
+                )}
                 <Box
                   onClick={() => setInfoOpen((o) => !o)}
                   sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0, cursor: 'pointer' }}

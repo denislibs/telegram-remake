@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { Box, CssBaseline, ThemeProvider, useTheme } from '@mui/material'
+import { Box, CssBaseline, ThemeProvider, useMediaQuery, useTheme } from '@mui/material'
 import { buildTheme, type Mode } from './theme'
 import Sidebar from './components/Sidebar'
 import ChatView from './components/ChatView'
@@ -64,6 +64,17 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
 
   const selected = chatList.find((c) => c.id === selectedId) ?? chatList[0]
 
+  // Responsive: below 900px collapse to a single column (list <-> chat with a back arrow)
+  const narrow = useMediaQuery('(max-width:900px)')
+  const [mobileChatOpen, setMobileChatOpen] = useState(false)
+  const openChat = (id: string) => {
+    setSelectedId(id)
+    if (narrow) setMobileChatOpen(true)
+  }
+  const back = () => setMobileChatOpen(false)
+  const showSidebar = !narrow || !mobileChatOpen
+  const showChat = !narrow || mobileChatOpen
+
   return (
     <Box
       sx={{
@@ -75,19 +86,29 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
     >
       {/* Animated 4-point gradient wallpaper + doodle pattern (tweb-style) */}
       <ChatBackground />
-      <Sidebar
-        chats={chatList}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onCreateGroup={createGroup}
-        onCreateChannel={createChannel}
-        onToggleMode={onToggleMode}
-      />
-      {selectedId === 'dollhouse-work' ? (
-        <ChatView />
-      ) : (
-        <ConversationView key={selectedId} chat={selected} />
+      {showSidebar && (
+        <Sidebar
+          chats={chatList}
+          selectedId={selectedId}
+          onSelect={openChat}
+          onCreateGroup={(name) => {
+            createGroup(name)
+            if (narrow) setMobileChatOpen(true)
+          }}
+          onCreateChannel={(name, description) => {
+            createChannel(name, description)
+            if (narrow) setMobileChatOpen(true)
+          }}
+          onToggleMode={onToggleMode}
+          fullWidth={narrow}
+        />
       )}
+      {showChat &&
+        (selectedId === 'dollhouse-work' ? (
+          <ChatView onBack={narrow ? back : undefined} />
+        ) : (
+          <ConversationView key={selectedId} chat={selected} onBack={narrow ? back : undefined} />
+        ))}
     </Box>
   )
 }
