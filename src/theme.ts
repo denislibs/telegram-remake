@@ -21,6 +21,7 @@ interface TgTokens {
   bannerBg: string
   badge: string
   pattern: string
+  patternMask: string // solid-stroke doodle used as a CSS mask (gradient shows through)
   composeShadow: string
   menuBg: string
   menuShadow: string
@@ -75,6 +76,7 @@ const darkTokens: TgTokens = {
   bannerBg: 'rgba(255,255,255,0.04)',
   badge: '#8774e1',
   pattern: doodle('rgba(140,120,225,0.06)'),
+  patternMask: doodle('#ffffff'),
   composeShadow: '0 6px 22px rgba(135,116,225,0.5)',
   menuBg: 'rgba(30,30,30,0.8)',
   menuShadow: '0 12px 44px rgba(0,0,0,0.55)',
@@ -99,6 +101,7 @@ const lightTokens: TgTokens = {
   bannerBg: 'rgba(125,99,232,0.06)',
   badge: '#7d63e8',
   pattern: doodle('rgba(120,90,200,0.10)'),
+  patternMask: doodle('#ffffff'),
   composeShadow: '0 6px 22px rgba(120,90,240,0.4)',
   menuBg: 'rgba(255,255,255,0.82)',
   menuShadow: '0 12px 44px rgba(80,60,160,0.20)',

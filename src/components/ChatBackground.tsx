@@ -117,29 +117,50 @@ export default function ChatBackground() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tg.bgGradient.join()])
 
+  const isDark = mode === 'dark'
+
   return (
     <Box sx={{ position: 'fixed', inset: 0, zIndex: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+      {/* Dark base — the bright gradient only shows through the doodle mask */}
+      {isDark && <Box sx={{ position: 'absolute', inset: 0, background: tg.appBg }} />}
+
       <canvas
         ref={canvasRef}
         width={W}
         height={H}
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
-      />
-      {/* Dark themes mute the bright gradient (tweb does this via the masked pattern) */}
-      {mode === 'dark' && (
-        <Box sx={{ position: 'absolute', inset: 0, background: tg.appBg, opacity: 0.66 }} />
-      )}
-      {/* Doodle pattern on top */}
-      <Box
-        sx={{
+        style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: tg.pattern,
-          backgroundSize: '420px',
-          mixBlendMode: mode === 'dark' ? 'normal' : 'soft-light',
-          opacity: mode === 'dark' ? 1 : 0.85,
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          // tweb night: the doodle pattern masks the gradient -> coloured line-art on dark
+          ...(isDark
+            ? {
+                WebkitMaskImage: tg.patternMask,
+                maskImage: tg.patternMask,
+                WebkitMaskSize: '420px',
+                maskSize: '420px',
+                WebkitMaskRepeat: 'repeat',
+                maskRepeat: 'repeat',
+              }
+            : null),
         }}
       />
+
+      {/* Light theme: full gradient + subtle soft-light doodles on top */}
+      {!isDark && (
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: tg.pattern,
+            backgroundSize: '420px',
+            mixBlendMode: 'soft-light',
+            opacity: 0.85,
+          }}
+        />
+      )}
     </Box>
   )
 }
