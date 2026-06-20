@@ -25,7 +25,7 @@ import DevicesOutlined from '@mui/icons-material/DevicesOutlined'
 import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import KeyboardOutlined from '@mui/icons-material/KeyboardOutlined'
 import Avatar from './Avatar'
-import { useT } from '../i18n'
+import { useT, useLang, LANGS } from '../i18n'
 
 const settingsItems: { icon: ReactNode; label: string; value?: string }[] = [
   { icon: <NotificationsNoneRounded />, label: 'Notifications and Sounds' },
@@ -48,6 +48,8 @@ export default function SettingsView({
   onToggleMode: (coords?: { x: number; y: number }) => void
 }) {
   const t = useT()
+  const [lang] = useLang()
+  const currentLangName = LANGS.find((l) => l.code === lang)?.name ?? 'English'
   const theme = useTheme()
   const tg = theme.tg
   const isDark = theme.palette.mode === 'dark'
@@ -169,7 +171,7 @@ export default function SettingsView({
                 </Typography>
                 {it.value && (
                   <Typography sx={{ fontSize: 15, color: tg.textFaint }}>
-                    {it.value === 'English' ? it.value : t(it.value)}
+                    {it.label === 'Language' ? currentLangName : t(it.value)}
                   </Typography>
                 )}
               </Box>
