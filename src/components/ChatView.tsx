@@ -8,6 +8,7 @@ import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined'
 import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded'
 import CardGiftcardRoundedIcon from '@mui/icons-material/CardGiftcardRounded'
 import { AnimatePresence, motion } from 'framer-motion'
+import { EASE, DUR } from '../motion'
 import Avatar from './Avatar'
 import ChannelPost from './ChannelPost'
 import CommentsBar from './CommentsBar'
@@ -74,7 +75,7 @@ export default function ChatView() {
               initial={{ opacity: 0, x: 26 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 26 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.2, ease: EASE }}
               sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}
             >
               <Avatar background="linear-gradient(135deg,#8a5bff,#5b8dff)" emoji="✨" size={32} />
@@ -117,7 +118,7 @@ export default function ChatView() {
               initial={{ opacity: 0, x: -26 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -26 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.2, ease: EASE }}
               sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}
             >
               <Box
@@ -156,7 +157,7 @@ export default function ChatView() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.2, ease: EASE }}
             style={{ overflow: 'hidden', position: 'sticky', top: 72, zIndex: 5, width: '100%', maxWidth: 688, margin: '0 auto' }}
           >
             <Box sx={{ background: tg.bubble, borderRadius: '14px', px: 2, py: 2, textAlign: 'center' }}>
@@ -179,7 +180,7 @@ export default function ChatView() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: DUR.out, ease: EASE }}
             style={{ overflow: 'hidden', position: 'sticky', top: '72px', zIndex: 5 }}
           >
             <Box

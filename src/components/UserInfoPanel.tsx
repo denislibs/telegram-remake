@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, IconButton, Switch, Typography, useTheme } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
+import { EASE, DUR } from '../motion'
 import CloseRounded from '@mui/icons-material/CloseRounded'
 import EditRounded from '@mui/icons-material/EditRounded'
 import AlternateEmailRounded from '@mui/icons-material/AlternateEmailRounded'
@@ -55,7 +56,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
       initial={{ width: 0, opacity: 0 }}
       animate={{ width: 404, opacity: 1 }}
       exit={{ width: 0, opacity: 0 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: DUR.in, ease: EASE }}
       style={{
         overflow: 'hidden',
         flexShrink: 0,

@@ -6,6 +6,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { AnimatePresence, motion } from 'framer-motion'
+import { EASE } from '../motion'
 import type { Chat } from '../data'
 import ChatListItem from './ChatListItem'
 import NotificationBanner from './NotificationBanner'
@@ -183,7 +184,7 @@ export default function Sidebar({
               component={motion.div}
               initial={{ opacity: 0, scale: 0.96, y: -6 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.22, ease: EASE }}
               sx={{ height: '100%', transformOrigin: 'top center' }}
             >
               <SearchView query={query} chats={chats} onSelect={onSelect} />

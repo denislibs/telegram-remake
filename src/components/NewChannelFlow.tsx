@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, IconButton, TextField, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
+import { slideInRight } from '../motion'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
 import AddAPhotoRounded from '@mui/icons-material/AddAPhotoRounded'
@@ -34,10 +35,10 @@ export default function NewChannelFlow({ onClose, onCreate }: Props) {
 
   return (
     <motion.div
-      initial={{ x: '100%' }}
-      animate={{ x: '0%' }}
-      exit={{ x: '100%' }}
-      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      variants={slideInRight}
+      initial="initial"
+      animate="animate"
+      exit="exit"
       style={{
         position: 'absolute',
         inset: 0,

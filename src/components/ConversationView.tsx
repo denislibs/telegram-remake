@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
+import { EASE, DUR } from '../motion'
 import CallOutlined from '@mui/icons-material/CallOutlined'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
@@ -50,10 +51,10 @@ function peerColor(name: string) {
   return PEER_COLORS[h % PEER_COLORS.length]
 }
 
-// Material standard easing/durations, matching tweb's --transition-standard-*
-const EASE_STD: [number, number, number, number] = [0.4, 0, 0.2, 1]
-const DUR_IN = 0.3
-const DUR_OUT = 0.25
+// Standard easing/durations come from the central motion module
+const EASE_STD = EASE
+const DUR_IN = DUR.in
+const DUR_OUT = DUR.out
 
 function Ticks({ status, color }: { status?: MsgStatus; color: string }) {
   if (!status) return null

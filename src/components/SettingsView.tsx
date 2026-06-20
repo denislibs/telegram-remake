@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Box, IconButton, Switch, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
+import { slideInRight } from '../motion'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined'
 import QrCode2Rounded from '@mui/icons-material/QrCode2Rounded'
@@ -49,10 +50,10 @@ export default function SettingsView({
 
   return (
     <motion.div
-      initial={{ x: '100%' }}
-      animate={{ x: '0%' }}
-      exit={{ x: '100%' }}
-      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      variants={slideInRight}
+      initial="initial"
+      animate="animate"
+      exit="exit"
       style={{
         position: 'absolute',
         inset: 0,
