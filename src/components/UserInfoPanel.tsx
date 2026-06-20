@@ -79,6 +79,10 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
         />
       )}
       <Box
+        component={motion.div}
+        {...(narrow
+          ? { initial: { x: '100%' }, animate: { x: '0%' }, transition: { duration: DUR.in, ease: EASE } }
+          : {})}
         sx={
           narrow
             ? {
