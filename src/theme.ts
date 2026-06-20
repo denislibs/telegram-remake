@@ -1,4 +1,5 @@
 import { createTheme, type Theme } from '@mui/material/styles'
+import patternUrl from './assets/pattern.svg'
 
 export type Mode = 'light' | 'dark'
 
@@ -37,25 +38,9 @@ declare module '@mui/material/styles' {
   }
 }
 
-// Subtle Telegram-style doodle pattern, encoded as an SVG data-uri.
-const doodle = (stroke: string) =>
-  `url("data:image/svg+xml,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'>
-      <g fill='none' stroke='${stroke}' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' opacity='0.9'>
-        <circle cx='24' cy='26' r='9'/>
-        <path d='M18 26 l5 4 l8 -9'/>
-        <path d='M70 18 l4 9 l9 1 l-7 6 l2 9 l-8 -5 l-8 5 l2 -9 l-7 -6 l9 -1 z'/>
-        <path d='M112 24 c0 -6 8 -6 8 0 c0 -6 8 -6 8 0 c0 5 -8 10 -8 10 c0 0 -8 -5 -8 -10 z'/>
-        <rect x='14' y='70' width='18' height='18' rx='4'/>
-        <path d='M60 64 q12 4 0 24 q-12 -4 0 -24'/>
-        <circle cx='118' cy='78' r='10'/>
-        <path d='M113 78 h10 M118 73 v10'/>
-        <path d='M20 112 c8 -10 18 -10 26 0'/>
-        <path d='M74 108 l8 8 m0 -8 l-8 8'/>
-        <path d='M108 112 q6 -12 14 0 q-6 12 -14 0'/>
-      </g>
-    </svg>`
-  )}")`
+// The real Telegram doodle pattern (bundled SVG); used both as the light overlay
+// and as the dark-theme mask so the gradient shows through the doodle shapes.
+const pattern = `url("${patternUrl}")`
 
 // Values sampled from Telegram Web-K "Night" theme (.night palette)
 const darkTokens: TgTokens = {
@@ -75,8 +60,8 @@ const darkTokens: TgTokens = {
   searchBg: '#2b2b2b',
   bannerBg: 'rgba(255,255,255,0.04)',
   badge: '#8774e1',
-  pattern: doodle('rgba(140,120,225,0.06)'),
-  patternMask: doodle('#ffffff'),
+  pattern,
+  patternMask: pattern,
   composeShadow: '0 6px 22px rgba(135,116,225,0.5)',
   menuBg: 'rgba(30,30,30,0.8)',
   menuShadow: '0 12px 44px rgba(0,0,0,0.55)',
@@ -100,8 +85,8 @@ const lightTokens: TgTokens = {
   searchBg: 'rgba(0,0,0,0.045)',
   bannerBg: 'rgba(125,99,232,0.06)',
   badge: '#7d63e8',
-  pattern: doodle('rgba(120,90,200,0.10)'),
-  patternMask: doodle('#ffffff'),
+  pattern,
+  patternMask: pattern,
   composeShadow: '0 6px 22px rgba(120,90,240,0.4)',
   menuBg: 'rgba(255,255,255,0.82)',
   menuShadow: '0 12px 44px rgba(80,60,160,0.20)',

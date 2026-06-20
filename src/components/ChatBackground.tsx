@@ -139,8 +139,8 @@ export default function ChatBackground() {
             ? {
                 WebkitMaskImage: tg.patternMask,
                 maskImage: tg.patternMask,
-                WebkitMaskSize: '420px',
-                maskSize: '420px',
+                WebkitMaskSize: '620px',
+                maskSize: '620px',
                 WebkitMaskRepeat: 'repeat',
                 maskRepeat: 'repeat',
               }
@@ -155,9 +155,9 @@ export default function ChatBackground() {
             position: 'absolute',
             inset: 0,
             backgroundImage: tg.pattern,
-            backgroundSize: '420px',
+            backgroundSize: '620px',
             mixBlendMode: 'soft-light',
-            opacity: 0.85,
+            opacity: 0.5,
           }}
         />
       )}
