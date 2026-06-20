@@ -10,7 +10,7 @@ export interface ConvMsg {
   emoji?: string
   time?: string
   status?: MsgStatus
-  reply?: { name: string; text: string }
+  reply?: { name: string; text: string; color?: string }
 }
 
 export interface Chat {

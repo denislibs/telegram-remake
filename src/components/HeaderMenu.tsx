@@ -110,7 +110,7 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
             component={motion.div}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.12 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             sx={{
               position: 'absolute',
               top: 0,
@@ -119,8 +119,8 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
               py: 0.75,
               borderRadius: '12px',
               background: tg.menuBg,
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)',
               boxShadow: tg.menuShadow,
               transformOrigin: 'top right',
             }}
@@ -139,14 +139,14 @@ export default function HeaderMenu({ chat, anchor, onClose }: Props) {
           component={motion.div}
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.13, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
           sx={{
             width: 244,
             py: 0.75,
             borderRadius: '12px',
             background: tg.menuBg,
-            backdropFilter: 'blur(22px)',
-            WebkitBackdropFilter: 'blur(22px)',
+            backdropFilter: 'blur(30px)',
+            WebkitBackdropFilter: 'blur(30px)',
             boxShadow: tg.menuShadow,
             transformOrigin: 'top right',
           }}

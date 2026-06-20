@@ -53,8 +53,8 @@ export default function ComposeMenu({ open, onClose, onNewGroup, onNewPrivate, o
           zIndex: 2001,
           width: 240,
               background: tg.menuBg,
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)',
               borderRadius: '14px',
               boxShadow: tg.menuShadow,
               py: 0.75,
@@ -65,7 +65,7 @@ export default function ComposeMenu({ open, onClose, onNewGroup, onNewPrivate, o
               component={motion.div}
               initial={{ opacity: 0, scale: 0.88, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               sx={{ transformOrigin: 'bottom right' }}
             >
               <Row

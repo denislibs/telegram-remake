@@ -153,7 +153,7 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
           )}
           <Typography
             sx={{
-              fontSize: 13,
+              fontSize: 14,
               ml: 0.5,
               flexShrink: 0,
               color: onAccent ? 'rgba(255,255,255,0.85)' : tg.textFaint,
@@ -225,8 +225,8 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
               py: 0.75,
               borderRadius: '12px',
               background: tg.menuBg,
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)',
               boxShadow: tg.menuShadow,
               transformOrigin: 'top left',
             }}
@@ -235,7 +235,7 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
              component={motion.div}
              initial={{ opacity: 0, scale: 0.92 }}
              animate={{ opacity: 1, scale: 1 }}
-             transition={{ duration: 0.13, ease: [0.16, 1, 0.3, 1] }}
+             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
              sx={{ transformOrigin: 'top left' }}
            >
             {menuItems.map((it) => (

@@ -71,8 +71,8 @@ export default function MainMenu({ open, onClose, onOpenSettings }: Props) {
           zIndex: 2001,
           width: 300,
               background: tg.menuBg,
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
+              backdropFilter: 'blur(30px)',
+              WebkitBackdropFilter: 'blur(30px)',
               borderRadius: '14px',
               boxShadow: tg.menuShadow,
               py: 0.75,
@@ -83,7 +83,7 @@ export default function MainMenu({ open, onClose, onOpenSettings }: Props) {
               component={motion.div}
               initial={{ opacity: 0, scale: 0.95, y: -8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               sx={{ transformOrigin: 'top left' }}
             >
               {/* Account */}

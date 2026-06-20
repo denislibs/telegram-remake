@@ -42,6 +42,19 @@ function nowTime() {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
+// Telegram's per-peer color palette (used to tint reply previews by their author)
+const PEER_COLORS = ['#e17076', '#7bc862', '#65aadd', '#a695e7', '#ee7aae', '#6ec9cb', '#faa774']
+function peerColor(name: string) {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0
+  return PEER_COLORS[h % PEER_COLORS.length]
+}
+
+// Material standard easing/durations, matching tweb's --transition-standard-*
+const EASE_STD: [number, number, number, number] = [0.4, 0, 0.2, 1]
+const DUR_IN = 0.3
+const DUR_OUT = 0.25
+
 function Ticks({ status, color }: { status?: MsgStatus; color: string }) {
   if (!status) return null
   const Icon = status === 'read' ? DoneAllRounded : DoneRounded
@@ -66,7 +79,7 @@ export default function ConversationView({ chat }: Props) {
   const [typing, setTyping] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
   const [msgMenu, setMsgMenu] = useState<{ x: number; y: number; idx: number } | null>(null)
-  const [reply, setReply] = useState<{ name: string; text: string } | null>(null)
+  const [reply, setReply] = useState<{ name: string; text: string; color: string } | null>(null)
   const [chatSearch, setChatSearch] = useState(false)
   const [chatSearchQuery, setChatSearchQuery] = useState('')
   const [headerMenu, setHeaderMenu] = useState<{ top: number; right: number } | null>(null)
@@ -85,7 +98,8 @@ export default function ConversationView({ chat }: Props) {
     const m = msgMenu && msgs[msgMenu.idx]
     if (m && m.type !== 'date') {
       const name = m.out ? 'Дн' : m.sender ?? chat.name
-      setReply({ name, text: m.text ?? m.emoji ?? '' })
+      const color = m.out ? tg.accent : m.senderColor ?? peerColor(name)
+      setReply({ name, text: m.text ?? m.emoji ?? '', color })
       inputRef.current?.focus()
     }
     setMsgMenu(null)
@@ -195,7 +209,7 @@ export default function ConversationView({ chat }: Props) {
                 initial={{ opacity: 0, x: 26 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 26 }}
-                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: DUR_IN, ease: EASE_STD }}
                 sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}
               >
                 <Avatar background={chat.avatar} text={chat.avatarText} emoji={chat.avatarEmoji} size={32} />
@@ -246,7 +260,7 @@ export default function ConversationView({ chat }: Props) {
                 initial={{ opacity: 0, x: -26 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -26 }}
-                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: DUR_IN, ease: EASE_STD }}
                 sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}
               >
                 <Box
@@ -292,7 +306,7 @@ export default function ConversationView({ chat }: Props) {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: DUR_IN, ease: EASE_STD }}
               style={{ overflow: 'hidden', position: 'sticky', top: 72, zIndex: 5, width: '100%', maxWidth: 688, margin: '0 auto' }}
             >
               <Box
@@ -337,7 +351,6 @@ export default function ConversationView({ chat }: Props) {
               py: 1.5,
               display: 'flex',
               flexDirection: 'column',
-              gap: '6px',
             }}
           >
             {msgs.map((m, i) => {
@@ -364,15 +377,28 @@ export default function ConversationView({ chat }: Props) {
               const out = !!m.out
               const tickColor = 'rgba(255,255,255,0.85)'
 
+              // Group consecutive messages from the same author (tweb: 2px within group, 6px between)
+              const prev = msgs[i - 1]
+              const next = msgs[i + 1]
+              const authorKey = m.out ? '__out__' : m.sender ?? '__in__'
+              const prevKey = prev && prev.type !== 'date' ? (prev.out ? '__out__' : prev.sender ?? '__in__') : null
+              const nextKey = next && next.type !== 'date' ? (next.out ? '__out__' : next.sender ?? '__in__') : null
+              const firstInGroup = prevKey !== authorKey
+              const lastInGroup = nextKey !== authorKey
+
               return (
                 <Box
                   key={i}
                   onContextMenu={(e) => openMsgMenu(e, i)}
-                  sx={{ display: 'flex', justifyContent: out ? 'flex-end' : 'flex-start' }}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: out ? 'flex-end' : 'flex-start',
+                    mb: lastInGroup ? '6px' : '2px',
+                  }}
                 >
                   {m.type === 'sticker' ? (
                     <Box sx={{ position: 'relative', display: 'inline-block', px: 0.5 }}>
-                      <Box sx={{ fontSize: 96, lineHeight: 1, userSelect: 'none' }}>{m.emoji}</Box>
+                      <Box sx={{ fontSize: 64, lineHeight: 1, userSelect: 'none' }}>{m.emoji}</Box>
                       <Box
                         sx={{
                           position: 'absolute',
@@ -394,18 +420,20 @@ export default function ConversationView({ chat }: Props) {
                   ) : (
                     <Box
                       sx={{
-                        maxWidth: '78%',
+                        maxWidth: 'min(420px, 80%)',
                         display: 'flex',
                         flexDirection: 'column',
                         px: 1.25,
                         py: 0.65,
                         background: out ? tg.accent : incomingBg,
                         color: out ? '#fff' : tg.textPrimary,
-                        borderRadius: out ? '15px 15px 0 15px' : '15px 15px 15px 0',
+                        borderRadius: out
+                          ? `15px ${firstInGroup ? 15 : 5}px ${lastInGroup ? 0 : 5}px 15px`
+                          : `${firstInGroup ? 15 : 5}px 15px 15px ${lastInGroup ? 0 : 5}px`,
                       }}
                     >
-                      {!out && m.sender && (
-                        <Typography sx={{ fontSize: 14, fontWeight: 600, color: m.senderColor ?? tg.accent }}>
+                      {!out && m.sender && firstInGroup && (
+                        <Typography sx={{ fontSize: 14, fontWeight: 600, color: m.senderColor ?? peerColor(m.sender) }}>
                           {m.sender}
                         </Typography>
                       )}
@@ -416,11 +444,11 @@ export default function ConversationView({ chat }: Props) {
                             px: 1,
                             py: 0.5,
                             borderRadius: '6px',
-                            borderLeft: `3px solid ${out ? '#fff' : tg.accent}`,
-                            background: out ? 'rgba(255,255,255,0.15)' : 'rgba(135,116,225,0.12)',
+                            borderLeft: `3px solid ${out ? '#fff' : m.reply.color ?? tg.accent}`,
+                            background: out ? 'rgba(255,255,255,0.15)' : `${m.reply.color ?? tg.accent}1f`,
                           }}
                         >
-                          <Typography noWrap sx={{ fontSize: 13.5, fontWeight: 600, color: out ? '#fff' : tg.accent }}>
+                          <Typography noWrap sx={{ fontSize: 13.5, fontWeight: 600, color: out ? '#fff' : m.reply.color ?? tg.accent }}>
                             {m.reply.name}
                           </Typography>
                           <Typography noWrap sx={{ fontSize: 13.5, color: out ? 'rgba(255,255,255,0.85)' : tg.textSecondary, maxWidth: 240 }}>
@@ -527,7 +555,7 @@ export default function ConversationView({ chat }: Props) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: DUR_OUT, ease: EASE_STD }}
                     style={{ overflow: 'hidden' }}
                   >
                     <Box
@@ -537,13 +565,12 @@ export default function ConversationView({ chat }: Props) {
                         gap: 1.5,
                         px: 1.5,
                         py: 1,
-                        background:
-                          mode === 'dark' ? 'rgba(135,116,225,0.13)' : 'rgba(125,99,232,0.10)',
+                        background: `${reply.color}1f`,
                       }}
                     >
-                      <ReplyRounded sx={{ color: tg.accent, fontSize: 22 }} />
-                      <Box sx={{ flex: 1, minWidth: 0, borderLeft: `2px solid ${tg.accent}`, pl: 1.25 }}>
-                        <Typography sx={{ fontSize: 14, fontWeight: 600, color: tg.accent }}>
+                      <ReplyRounded sx={{ color: reply.color, fontSize: 22 }} />
+                      <Box sx={{ flex: 1, minWidth: 0, borderLeft: `2px solid ${reply.color}`, pl: 1.25 }}>
+                        <Typography sx={{ fontSize: 14, fontWeight: 600, color: reply.color }}>
                           Reply to {reply.name}
                         </Typography>
                         <Typography noWrap sx={{ fontSize: 14, color: tg.textSecondary }}>
@@ -606,10 +633,10 @@ export default function ConversationView({ chat }: Props) {
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
                       key={hasText ? 'send' : 'mic'}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ duration: 0.13 }}
+                      initial={{ scale: 0.5, opacity: 0.8 }}
+                      animate={{ scale: [0.5, 1.1, 1], opacity: 1 }}
+                      exit={{ scale: 0.5, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: 'easeInOut' }}
                       style={{ display: 'inline-flex' }}
                     >
                       {hasText ? <SendRounded /> : <KeyboardVoiceRounded />}
@@ -700,7 +727,7 @@ export default function ConversationView({ chat }: Props) {
                 component={motion.div}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.13, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.2, ease: EASE_STD }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -710,8 +737,8 @@ export default function ConversationView({ chat }: Props) {
                   py: 0.5,
                   borderRadius: '24px',
                   background: tg.menuBg,
-                  backdropFilter: 'blur(22px)',
-                  WebkitBackdropFilter: 'blur(22px)',
+                  backdropFilter: 'blur(30px)',
+                  WebkitBackdropFilter: 'blur(30px)',
                   boxShadow: tg.menuShadow,
                 }}
               >
@@ -735,14 +762,14 @@ export default function ConversationView({ chat }: Props) {
                 component={motion.div}
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.13, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.2, ease: EASE_STD }}
                 sx={{
                   minWidth: 220,
                   py: 0.75,
                   borderRadius: '12px',
                   background: tg.menuBg,
-                  backdropFilter: 'blur(22px)',
-                  WebkitBackdropFilter: 'blur(22px)',
+                  backdropFilter: 'blur(30px)',
+                  WebkitBackdropFilter: 'blur(30px)',
                   boxShadow: tg.menuShadow,
                   transformOrigin: 'top left',
                 }}
