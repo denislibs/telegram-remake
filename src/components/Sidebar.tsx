@@ -189,33 +189,24 @@ export default function Sidebar({
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
           <StoriesRow onOpen={(i) => setStoryIndex(i)} />
-          <AnimatePresence mode="wait" custom={dirRef.current} initial={false}>
-            <Box
-              component={motion.div}
-              key={folder}
-              custom={dirRef.current}
-              variants={{
-                enter: (d: number) => ({ x: d > 0 ? 28 : -28, opacity: 0 }),
-                center: { x: 0, opacity: 1 },
-                exit: (d: number) => ({ x: d > 0 ? -28 : 28, opacity: 0 }),
-              }}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.18, ease: EASE }}
-              sx={{ pt: 0.5, pb: 2 }}
-            >
-              {filtered.map((chat, i) => (
-                <ChatListItem
-                  key={chat.id}
-                  chat={chat}
-                  index={i}
-                  selected={chat.id === selectedId}
-                  onClick={() => onSelect(chat.id)}
-                />
-              ))}
-            </Box>
-          </AnimatePresence>
+          <Box
+            component={motion.div}
+            key={folder}
+            initial={{ x: dirRef.current > 0 ? '100%' : '-100%' }}
+            animate={{ x: '0%' }}
+            transition={{ duration: 0.22, ease: EASE }}
+            sx={{ pt: 0.5, pb: 2 }}
+          >
+            {filtered.map((chat, i) => (
+              <ChatListItem
+                key={chat.id}
+                chat={chat}
+                index={i}
+                selected={chat.id === selectedId}
+                onClick={() => onSelect(chat.id)}
+              />
+            ))}
+          </Box>
         </Box>
 
         {/* Search view overlay — conditional (unmounts instantly, no stuck exit) */}
