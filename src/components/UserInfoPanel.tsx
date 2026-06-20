@@ -79,19 +79,16 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
         />
       )}
       <Box
-        component={motion.div}
-        {...(narrow
-          ? { initial: { x: '100%' }, animate: { x: '0%' }, transition: { duration: DUR.in, ease: EASE } }
-          : {})}
         sx={
           narrow
             ? {
                 position: 'absolute',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                width: 'min(404px, 100vw)',
+                top: '16px',
+                right: '16px',
+                bottom: '16px',
+                width: 'min(380px, calc(100vw - 32px))',
                 background: tg.sidebarBg,
+                borderRadius: '18px',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
