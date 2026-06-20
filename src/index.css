@@ -19,3 +19,17 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Theme toggle circular reveal: disable the default cross-fade so only our
+   clip-path animation on ::view-transition-new(root) is visible. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 1;
+}
+::view-transition-old(root) {
+  z-index: 0;
+}

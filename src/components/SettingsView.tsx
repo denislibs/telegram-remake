@@ -40,7 +40,7 @@ export default function SettingsView({
   onToggleMode,
 }: {
   onBack: () => void
-  onToggleMode: () => void
+  onToggleMode: (coords?: { x: number; y: number }) => void
 }) {
   const theme = useTheme()
   const tg = theme.tg
@@ -111,7 +111,7 @@ export default function SettingsView({
         {/* Appearance — theme toggle */}
         <Box sx={{ mx: 1.25, mb: 1.5, borderRadius: '16px', background: cardBg, py: 0.5 }}>
           <Box
-            onClick={onToggleMode}
+            onClick={(e) => onToggleMode({ x: e.clientX, y: e.clientY })}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -128,7 +128,10 @@ export default function SettingsView({
             <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Night Mode</Typography>
             <Switch
               checked={isDark}
-              onChange={onToggleMode}
+              onChange={(e) => {
+                const ne = e.nativeEvent as MouseEvent
+                onToggleMode(ne.clientX ? { x: ne.clientX, y: ne.clientY } : undefined)
+              }}
               onClick={(e) => e.stopPropagation()}
               sx={{
                 '& .MuiSwitch-switchBase.Mui-checked': { color: '#fff' },

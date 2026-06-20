@@ -160,6 +160,7 @@ export default function ConversationView({ chat }: Props) {
     setInput('')
     setReply(null)
     setTyping(true)
+    window.dispatchEvent(new Event('tg-send')) // shift the wallpaper gradient
     window.setTimeout(() => {
       const r = replies[Math.floor(Math.random() * replies.length)]
       const botReply: ConvMsg = { type: 'text', out: false, text: r, time: nowTime() }

@@ -25,7 +25,7 @@ interface Props {
   onSelect: (id: string) => void
   onCreateGroup: (name: string) => void
   onCreateChannel: (name: string, description: string) => void
-  onToggleMode: () => void
+  onToggleMode: (coords?: { x: number; y: number }) => void
 }
 
 export default function Sidebar({

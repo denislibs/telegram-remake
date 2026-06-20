@@ -24,6 +24,7 @@ interface TgTokens {
   composeShadow: string
   menuBg: string
   menuShadow: string
+  bgGradient: string[] // 4-point animated wallpaper gradient (tweb default)
 }
 
 declare module '@mui/material/styles' {
@@ -77,6 +78,7 @@ const darkTokens: TgTokens = {
   composeShadow: '0 6px 22px rgba(135,116,225,0.5)',
   menuBg: 'rgba(30,30,30,0.8)',
   menuShadow: '0 12px 44px rgba(0,0,0,0.55)',
+  bgGradient: ['#fec496', '#dd6cb9', '#962fbf', '#4f5bd5'], // tweb night wallpaper
 }
 
 const lightTokens: TgTokens = {
@@ -100,6 +102,7 @@ const lightTokens: TgTokens = {
   composeShadow: '0 6px 22px rgba(120,90,240,0.4)',
   menuBg: 'rgba(255,255,255,0.82)',
   menuShadow: '0 12px 44px rgba(80,60,160,0.20)',
+  bgGradient: ['#dbddbb', '#6ba587', '#d5d88d', '#88b884'], // tweb day wallpaper
 }
 
 export function buildTheme(mode: Mode): Theme {

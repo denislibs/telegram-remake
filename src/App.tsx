@@ -1,10 +1,14 @@
 import { useMemo, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { Box, CssBaseline, ThemeProvider, useTheme } from '@mui/material'
 import { buildTheme, type Mode } from './theme'
 import Sidebar from './components/Sidebar'
 import ChatView from './components/ChatView'
 import ConversationView from './components/ConversationView'
+import ChatBackground from './components/ChatBackground'
 import { chats as initialChats, type Chat } from './data'
+
+export type ToggleMode = (coords?: { x: number; y: number }) => void
 
 const groupGradients = [
   'linear-gradient(135deg,#42e695,#3bb2b8)',
@@ -13,7 +17,7 @@ const groupGradients = [
   'linear-gradient(135deg,#ff5f6d,#ffc371)',
 ]
 
-function Shell({ onToggleMode }: { onToggleMode: () => void }) {
+function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
   const tg = useTheme().tg
   const [chatList, setChatList] = useState<Chat[]>(initialChats)
   const [selectedId, setSelectedId] = useState('dollhouse-work')
@@ -68,17 +72,8 @@ function Shell({ onToggleMode }: { onToggleMode: () => void }) {
         background: tg.appBg,
       }}
     >
-      {/* Global doodle background — fixed so it stays during body scroll */}
-      <Box
-        sx={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 0,
-          backgroundImage: tg.pattern,
-          backgroundSize: '420px',
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Animated 4-point gradient wallpaper + doodle pattern (tweb-style) */}
+      <ChatBackground />
       <Sidebar
         chats={chatList}
         selectedId={selectedId}
@@ -105,12 +100,39 @@ function getInitialMode(): Mode {
 export default function App() {
   const [mode, setMode] = useState<Mode>(getInitialMode)
   const theme = useMemo(() => buildTheme(mode), [mode])
-  const toggleMode = () =>
-    setMode((m) => {
-      const next = m === 'dark' ? 'light' : 'dark'
-      localStorage.setItem('tg-theme', next)
-      return next
+
+  const apply = (next: Mode) => {
+    localStorage.setItem('tg-theme', next)
+    setMode(next)
+  }
+
+  // Circular reveal from the toggle click (View Transitions API), like tweb;
+  // falls back to an instant swap when unsupported / reduced-motion / no coords.
+  const toggleMode: ToggleMode = (coords) => {
+    const next: Mode = mode === 'dark' ? 'light' : 'dark'
+    const start = (document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } })
+      .startViewTransition
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (!start || !coords || reduce) {
+      apply(next)
+      return
+    }
+    const { x, y } = coords
+    const transition = start.call(document, () => flushSync(() => apply(next)))
+    transition.ready.then(() => {
+      const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))
+      document.documentElement.animate(
+        {
+          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`],
+        },
+        {
+          duration: 450,
+          easing: 'cubic-bezier(.4, 0, .2, 1)',
+          pseudoElement: '::view-transition-new(root)',
+        },
+      )
     })
+  }
 
   return (
     <ThemeProvider theme={theme}>
