@@ -134,13 +134,15 @@ export default function ChatBackground() {
           width: '100%',
           height: '100%',
           display: 'block',
-          // tweb night: the doodle pattern masks the gradient -> coloured line-art on dark
+          // tweb night: the doodle pattern masks the gradient -> faint coloured line-art on dark.
+          // Keep it dim (low opacity) so it reads as subtle dark doodles, not a bright rainbow.
           ...(isDark
             ? {
+                opacity: 0.3,
                 WebkitMaskImage: tg.patternMask,
                 maskImage: tg.patternMask,
-                WebkitMaskSize: '620px',
-                maskSize: '620px',
+                WebkitMaskSize: '400px',
+                maskSize: '400px',
                 WebkitMaskRepeat: 'repeat',
                 maskRepeat: 'repeat',
               }
@@ -155,7 +157,7 @@ export default function ChatBackground() {
             position: 'absolute',
             inset: 0,
             backgroundImage: tg.pattern,
-            backgroundSize: '620px',
+            backgroundSize: '400px',
             mixBlendMode: 'soft-light',
             opacity: 0.5,
           }}
