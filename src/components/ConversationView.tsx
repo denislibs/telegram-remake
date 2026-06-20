@@ -5,6 +5,7 @@ import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EASE, DUR } from '../motion'
 import CallOutlined from '@mui/icons-material/CallOutlined'
+import VideocamOutlined from '@mui/icons-material/VideocamOutlined'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
@@ -32,6 +33,7 @@ import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
 import EmojiPicker from './EmojiPicker'
 import AttachMenu from './AttachMenu'
+import CallScreen from './CallScreen'
 import RichText, { emojiOnlyCount } from './RichText'
 import type { Chat, ConvMsg, MsgStatus } from '../data'
 import { useT } from '../i18n'
@@ -97,6 +99,7 @@ export default function ConversationView({ chat, onBack }: Props) {
   const [attachAnchor, setAttachAnchor] = useState<{ left: number; bottom: number } | null>(null)
   const [recording, setRecording] = useState(false)
   const [recSecs, setRecSecs] = useState(0)
+  const [call, setCall] = useState<{ video: boolean } | null>(null)
   const recTimer = useRef<number | undefined>(undefined)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -390,9 +393,14 @@ export default function ConversationView({ chat, onBack }: Props) {
                   </Box>
                 </Box>
                 {chat.type === 'private' && (
-                  <IconButton sx={{ color: tg.textSecondary }}>
-                    <CallOutlined />
-                  </IconButton>
+                  <>
+                    <IconButton onClick={() => setCall({ video: false })} sx={{ color: tg.textSecondary }}>
+                      <CallOutlined />
+                    </IconButton>
+                    <IconButton onClick={() => setCall({ video: true })} sx={{ color: tg.textSecondary }}>
+                      <VideocamOutlined />
+                    </IconButton>
+                  </>
                 )}
                 <IconButton onClick={() => setChatSearch(true)} sx={{ color: tg.textSecondary }}>
                   <SearchRoundedIcon />
@@ -947,6 +955,11 @@ export default function ConversationView({ chat, onBack }: Props) {
 
       {/* Attach menu */}
       {attachAnchor && <AttachMenu anchor={attachAnchor} onClose={() => setAttachAnchor(null)} />}
+
+      {/* Call screen */}
+      <AnimatePresence>
+        {call && <CallScreen chat={chat} video={call.video} onClose={() => setCall(null)} />}
+      </AnimatePresence>
 
       {/* Message context menu — reactions strip + actions */}
       {msgMenu &&
