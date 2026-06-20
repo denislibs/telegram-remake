@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Box, IconButton, InputBase, useTheme } from '@mui/material'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
@@ -17,7 +17,7 @@ import NewGroupFlow from './NewGroupFlow'
 import NewChannelFlow from './NewChannelFlow'
 import NewPrivateChat from './NewPrivateChat'
 import SearchView from './SearchView'
-import StoriesRow from './StoriesRow'
+import StoriesRow, { StoriesStack } from './StoriesRow'
 import StoryViewer from './StoryViewer'
 import FolderTabs, { type FolderKey } from './FolderTabs'
 import { useT } from '../i18n'
@@ -59,6 +59,23 @@ export default function Sidebar({
   const [folder, setFolder] = useState<FolderKey>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const listScrollRef = useRef<HTMLDivElement>(null)
+  const [foldP, setFoldP] = useState(0) // 0 = stories expanded, 1 = folded into the search bar
+
+  useEffect(() => {
+    const el = listScrollRef.current
+    if (!el) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => setFoldP(Math.min(1, Math.max(0, el.scrollTop / 80))))
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
 
   const filtered = chats.filter((c) =>
     folder === 'all'
@@ -179,13 +196,14 @@ export default function Sidebar({
               '& input::placeholder': { color: tg.textFaint, opacity: 1 },
             }}
           />
+          {!searching && <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={foldP} />}
         </Box>
       </Box>
 
       {/* Stories + folder tabs (hidden while searching) */}
       {!searching && (
         <>
-          <StoriesRow onOpen={(i) => setStoryIndex(i)} scrollRef={listScrollRef} />
+          <StoriesRow onOpen={(i) => setStoryIndex(i)} progress={foldP} />
           <FolderTabs value={folder} onChange={changeFolder} />
         </>
       )}

@@ -1,4 +1,3 @@
-import { useEffect, useState, type RefObject } from 'react'
 import { Box, Typography, useTheme } from '@mui/material'
 import Avatar from './Avatar'
 
@@ -22,50 +21,36 @@ export const STORIES: Story[] = [
 ]
 
 const FULL_H = 92
-const FOLDED_H = 44
 const ITEM_W = 74
-const STACK = 3 // how many avatars stay in the folded cluster
-const FOLD_DISTANCE = 80 // px of list scroll to fully fold
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
+/**
+ * The full stories row. `progress` (0..1) collapses it as the chat list scrolls;
+ * at 1 it's fully folded away (height 0) — the compact stack lives in the search
+ * bar (see StoriesStack), matching tweb's foldInto: the search input.
+ */
 export default function StoriesRow({
   onOpen,
-  scrollRef,
+  progress = 0,
 }: {
   onOpen: (index: number) => void
-  scrollRef?: RefObject<HTMLDivElement | null>
+  progress?: number
 }) {
   const tg = useTheme().tg
-  // p: 0 = fully expanded row, 1 = folded stack — driven by the chat-list scroll
-  const [p, setP] = useState(0)
-
-  useEffect(() => {
-    const el = scrollRef?.current
-    if (!el) return
-    let raf = 0
-    const onScroll = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() =>
-        setP(Math.min(1, Math.max(0, el.scrollTop / FOLD_DISTANCE))),
-      )
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => {
-      el.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(raf)
-    }
-  }, [scrollRef])
+  const p = progress
+  const contentOpacity = Math.max(0, 1 - p * 1.4)
 
   return (
     <Box
       sx={{
         display: 'flex',
         alignItems: 'flex-start',
-        height: lerp(FULL_H, FOLDED_H, p),
-        padding: '6px 8px 0',
-        overflowX: p > 0.02 ? 'hidden' : 'auto',
+        height: lerp(FULL_H, 0, p),
+        padding: p < 0.02 ? '6px 8px 0' : '0 8px',
+        overflowX: p < 0.02 ? 'auto' : 'hidden',
         overflowY: 'hidden',
+        opacity: contentOpacity,
+        transform: `translateY(${-p * 12}px)`,
         '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
       }}
@@ -74,32 +59,19 @@ export default function StoriesRow({
         const ringBg = story.seen
           ? tg.textFaint
           : 'linear-gradient(215deg, #34c76f -1.61%, #3da1fd 97.44%)'
-        const stacked = index < STACK
-        // folded target: pull each item left so the first few overlap into a stack
-        const tx = p * -index * 56
-        const sc = lerp(1, 0.42, p)
-        const itemOpacity = stacked ? 1 : Math.max(0, 1 - p * 2.2)
-        const nameOpacity = Math.max(0, 1 - p * 1.6)
         return (
           <Box
             key={story.id}
             onClick={() => onOpen(index)}
             sx={{
-              position: 'relative',
               flexShrink: 0,
               width: ITEM_W,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               cursor: 'pointer',
-              transform: `translateX(${tx}px) scale(${sc})`,
-              transformOrigin: 'top left',
-              opacity: itemOpacity,
-              zIndex: stacked ? STACK - index : 0,
-              pointerEvents: p > 0.6 && !stacked ? 'none' : 'auto',
             }}
           >
-            {/* Gradient ring wrapper */}
             <Box
               sx={{
                 width: 62,
@@ -141,11 +113,74 @@ export default function StoriesRow({
                 lineHeight: '15px',
                 color: tg.textSecondary,
                 textAlign: 'center',
-                opacity: nameOpacity,
               }}
             >
               {story.name}
             </Typography>
+          </Box>
+        )
+      })}
+    </Box>
+  )
+}
+
+/**
+ * Compact stacked avatars shown inside the search bar once the stories row is
+ * folded (tweb folds the row into the search input). `progress` fades/scales it in.
+ */
+export function StoriesStack({
+  onOpen,
+  progress,
+}: {
+  onOpen: (index: number) => void
+  progress: number
+}) {
+  const theme = useTheme()
+  const tg = theme.tg
+  const searchBg = theme.palette.mode === 'dark' ? '#181818' : '#f0f0f2'
+  const p = Math.min(1, Math.max(0, (progress - 0.4) / 0.6)) // appear in the second half of the fold
+  if (p <= 0) return null
+  const items = STORIES.slice(0, 3)
+  return (
+    <Box
+      onClick={(e) => {
+        e.stopPropagation()
+        onOpen(0)
+      }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexShrink: 0,
+        cursor: 'pointer',
+        opacity: p,
+        width: p * 52,
+        transform: `scale(${0.85 + p * 0.15})`,
+        transformOrigin: 'right center',
+        overflow: 'hidden',
+      }}
+    >
+      {items.map((story, i) => {
+        const ringBg = story.seen
+          ? tg.textFaint
+          : 'linear-gradient(215deg, #34c76f -1.61%, #3da1fd 97.44%)'
+        return (
+          <Box
+            key={story.id}
+            sx={{
+              width: 24,
+              height: 24,
+              borderRadius: '50%',
+              background: ringBg,
+              padding: '2px',
+              boxSizing: 'border-box',
+              flexShrink: 0,
+              ml: i === 0 ? 0 : '-10px',
+              zIndex: 3 - i,
+              // clean separator ring in the search-bar colour so overlaps cut cleanly
+              boxShadow: `0 0 0 2px ${searchBg}`,
+            }}
+          >
+            <Avatar background={story.bg} emoji={story.emoji} size={20} />
           </Box>
         )
       })}
