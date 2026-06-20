@@ -14,6 +14,7 @@ import PersonAddRounded from '@mui/icons-material/PersonAddRounded'
 import Avatar from './Avatar'
 import EditView from './EditView'
 import type { Chat } from '../data'
+import { useT } from '../i18n'
 
 const tileGradients = [
   'linear-gradient(135deg,#3a2b5e,#120d20)',
@@ -27,6 +28,7 @@ const tileGradients = [
 export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: () => void }) {
   const theme = useTheme()
   const tg = theme.tg
+  const t = useT()
   const mode = theme.palette.mode
   const cardBg = mode === 'dark' ? '#2b2b2b' : '#ffffff'
   const [tab, setTab] = useState('Media')
@@ -85,7 +87,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
             <CloseRounded />
           </IconButton>
           <Typography sx={{ flex: 1, fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-            {title}
+            {t(title)}
           </Typography>
           {(isGroup || isChannel) && (
             <IconButton onClick={() => setEditing(true)} sx={{ color: tg.textSecondary }}>
@@ -111,7 +113,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
                 <InfoOutlined sx={{ color: tg.textSecondary, fontSize: 24, mt: 0.5 }} />
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography sx={{ fontSize: 15.5, color: tg.textPrimary, mb: linkText ? 1.5 : 0 }}>
-                    {chat.description ?? 'Channel description.'}
+                    {chat.description ?? t('Channel description.')}
                   </Typography>
                   {linkText?.map((l) => (
                     <Box key={l.label} sx={{ mb: 1.25 }}>
@@ -121,7 +123,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
                       </Typography>
                     </Box>
                   ))}
-                  <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>Info</Typography>
+                  <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>{t('Info')}</Typography>
                 </Box>
               </Box>
             ) : isGroup ? (
@@ -131,7 +133,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
                   <Typography sx={{ fontSize: 16, color: tg.textPrimary, wordBreak: 'break-all' }}>
                     t.me/+{chat.id}9yJiODEy
                   </Typography>
-                  <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>Link</Typography>
+                  <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>{t('Link')}</Typography>
                 </Box>
                 <QrCode2Rounded sx={{ color: tg.textSecondary, fontSize: 22 }} />
               </Box>
@@ -142,7 +144,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
                   <Typography sx={{ fontSize: 16, color: tg.textPrimary }}>
                     {chat.username ?? chat.name.toLowerCase()}
                   </Typography>
-                  <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>Username</Typography>
+                  <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>{t('Username')}</Typography>
                 </Box>
                 <QrCode2Rounded sx={{ color: tg.textSecondary, fontSize: 22 }} />
               </Box>
@@ -150,7 +152,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 0.5, mx: 0.5, borderRadius: '12px' }}>
               <NotificationsNoneRounded sx={{ color: tg.textSecondary, fontSize: 24 }} />
-              <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Notifications</Typography>
+              <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>{t('Notifications')}</Typography>
               <TgSwitch checked={notif} onClick={() => setNotif((v) => !v)} />
             </Box>
           </Box>
@@ -159,15 +161,15 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
           {isChannel && (
             <>
               <Box sx={{ mx: 1.5, mt: 0.5, p: 0.5, borderRadius: '14px', background: cardBg, display: 'flex', gap: 0.5, overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
-                {['Media', 'Gifts', 'Saved', 'Links'].map((t) => {
-                  const active = t === tab
+                {['Media', 'Gifts', 'Saved', 'Links'].map((tabName) => {
+                  const active = tabName === tab
                   return (
-                    <Box key={t} onClick={() => setTab(t)} sx={{ position: 'relative', flexShrink: 0, px: 2, py: 0.75, borderRadius: '12px', cursor: 'pointer' }}>
+                    <Box key={tabName} onClick={() => setTab(tabName)} sx={{ position: 'relative', flexShrink: 0, px: 2, py: 0.75, borderRadius: '12px', cursor: 'pointer' }}>
                       {active && (
                         <motion.div layoutId="infoTab" transition={{ type: 'spring', stiffness: 500, damping: 35 }} style={{ position: 'absolute', inset: 0, borderRadius: 12, background: 'rgba(135,116,225,0.22)' }} />
                       )}
                       <Typography sx={{ position: 'relative', zIndex: 1, fontSize: 15, fontWeight: 600, whiteSpace: 'nowrap', color: active ? tg.accent : tg.textSecondary }}>
-                        {t}
+                        {t(tabName)}
                       </Typography>
                     </Box>
                   )
@@ -190,10 +192,10 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography noWrap sx={{ fontSize: 16, color: tg.textPrimary }}>{mem.name}</Typography>
                     <Typography sx={{ fontSize: 13.5, color: mem.status === 'online' ? tg.accent : tg.textSecondary }}>
-                      {mem.status}
+                      {t(mem.status)}
                     </Typography>
                   </Box>
-                  {mem.role && <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>{mem.role}</Typography>}
+                  {mem.role && <Typography sx={{ fontSize: 13.5, color: tg.textSecondary }}>{t(mem.role)}</Typography>}
                 </Box>
               ))}
             </Box>

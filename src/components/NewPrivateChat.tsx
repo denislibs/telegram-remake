@@ -6,6 +6,7 @@ import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import SearchRounded from '@mui/icons-material/SearchRounded'
 import Avatar from './Avatar'
 import type { Chat } from '../data'
+import { useT } from '../i18n'
 
 interface Props {
   chats: Chat[]
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function NewPrivateChat({ chats, onClose, onSelect }: Props) {
+  const t = useT()
   const theme = useTheme()
   const tg = theme.tg
   const cardBg = theme.palette.mode === 'dark' ? '#2b2b2b' : '#ffffff'
@@ -54,7 +56,7 @@ export default function NewPrivateChat({ chats, onClose, onSelect }: Props) {
           <ArrowBackRounded />
         </IconButton>
         <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-          New Message
+          {t('New Message')}
         </Typography>
       </Box>
 
@@ -77,7 +79,7 @@ export default function NewPrivateChat({ chats, onClose, onSelect }: Props) {
           inputRef={inputRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search"
+          placeholder={t('Search')}
           sx={{
             flex: 1,
             fontSize: 16,
@@ -102,9 +104,9 @@ export default function NewPrivateChat({ chats, onClose, onSelect }: Props) {
           >
             <Box sx={{ fontSize: 80, lineHeight: 1 }}>🐤</Box>
             <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-              No Results
+              {t('No Results')}
             </Typography>
-            <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>Try searching.</Typography>
+            <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>{t('Try searching.')}</Typography>
           </Box>
         ) : (
           people.map((c) => (

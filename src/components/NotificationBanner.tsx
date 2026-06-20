@@ -1,6 +1,7 @@
 import { Box, IconButton, Typography, useTheme } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { motion } from 'framer-motion'
+import { useT } from '../i18n'
 
 interface Props {
   onClose: () => void
@@ -8,6 +9,7 @@ interface Props {
 
 export default function NotificationBanner({ onClose }: Props) {
   const tg = useTheme().tg
+  const t = useT()
   return (
     <motion.div
       initial={{ opacity: 0, height: 0, marginBottom: 0 }}
@@ -31,10 +33,10 @@ export default function NotificationBanner({ onClose }: Props) {
       >
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography sx={{ fontWeight: 600, fontSize: 15, color: tg.textPrimary }}>
-            Never miss a message! 🔔
+            {t('Never miss a message! 🔔')}
           </Typography>
           <Typography sx={{ fontSize: 14, color: tg.textSecondary, mt: 0.25 }}>
-            Enable notifications to stay updated.
+            {t('Enable notifications to stay updated.')}
           </Typography>
         </Box>
         <IconButton size="small" onClick={onClose} sx={{ color: tg.textFaint, mt: -0.5, mr: -0.5 }}>

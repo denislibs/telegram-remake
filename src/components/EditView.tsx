@@ -14,10 +14,12 @@ import ReceiptLongOutlined from '@mui/icons-material/ReceiptLongOutlined'
 import ShieldOutlined from '@mui/icons-material/ShieldOutlined'
 import GroupOutlined from '@mui/icons-material/GroupOutlined'
 import type { Chat } from '../data'
+import { useT } from '../i18n'
 
 export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => void }) {
   const theme = useTheme()
   const tg = theme.tg
+  const t = useT()
   const cardBg = theme.palette.mode === 'dark' ? '#2b2b2b' : '#ffffff'
   const isChannel = chat.type === 'channel'
   const [name, setName] = useState(chat.name)
@@ -38,16 +40,16 @@ export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => v
   }
 
   const rows: { icon: ReactNode; label: string; value: string }[] = [
-    { icon: <LockOutlined />, label: isChannel ? 'Channel Type' : 'Group Type', value: 'Private' },
-    { icon: <LinkRounded />, label: 'Invite Links', value: '1' },
-    { icon: <FavoriteBorderRounded />, label: 'Reactions', value: 'All' },
-    { icon: <ChatBubbleOutlineRounded />, label: 'Direct Messages', value: 'Off' },
-    { icon: <ForumOutlined />, label: 'Discussion', value: 'Add' },
-    { icon: <ReceiptLongOutlined />, label: 'Recent Actions', value: '' },
+    { icon: <LockOutlined />, label: t(isChannel ? 'Channel Type' : 'Group Type'), value: t('Private') },
+    { icon: <LinkRounded />, label: t('Invite Links'), value: '1' },
+    { icon: <FavoriteBorderRounded />, label: t('Reactions'), value: t('All') },
+    { icon: <ChatBubbleOutlineRounded />, label: t('Direct Messages'), value: t('Off') },
+    { icon: <ForumOutlined />, label: t('Discussion'), value: t('Add') },
+    { icon: <ReceiptLongOutlined />, label: t('Recent Actions'), value: '' },
   ]
   const bottom: { icon: ReactNode; label: string; value: string }[] = [
-    { icon: <ShieldOutlined />, label: 'Administrators', value: '1' },
-    { icon: <GroupOutlined />, label: isChannel ? 'Subscribers' : 'Members', value: '1' },
+    { icon: <ShieldOutlined />, label: t('Administrators'), value: '1' },
+    { icon: <GroupOutlined />, label: t(isChannel ? 'Subscribers' : 'Members'), value: '1' },
   ]
 
   return (
@@ -71,7 +73,7 @@ export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => v
         <IconButton onClick={onBack} sx={{ color: tg.textSecondary }}>
           <ArrowBackRounded />
         </IconButton>
-        <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>Edit</Typography>
+        <Typography sx={{ fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>{t('Edit')}</Typography>
       </Box>
 
       <Box sx={{ flex: 1, overflowY: 'auto', pb: 3 }}>
@@ -98,7 +100,7 @@ export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => v
           </Box>
           <TextField
             fullWidth
-            label={isChannel ? 'Channel name' : 'Group name'}
+            label={t(isChannel ? 'Channel name' : 'Group name')}
             variant="outlined"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -106,7 +108,7 @@ export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => v
           />
           <TextField
             fullWidth
-            label="Description"
+            label={t('Description')}
             variant="outlined"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
@@ -114,7 +116,7 @@ export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => v
           />
         </Box>
         <Typography sx={{ fontSize: 14, color: tg.textSecondary, px: 2.5, mb: 1 }}>
-          You can provide an optional description for your {isChannel ? 'channel' : 'group'}.
+          {t('You can provide an optional description for your')} {t(isChannel ? 'channel' : 'group')}.
         </Typography>
 
         {/* Settings list */}
@@ -125,7 +127,7 @@ export default function EditView({ chat, onBack }: { chat: Chat; onBack: () => v
         </Box>
 
         <Typography sx={{ fontSize: 14, color: tg.textSecondary, px: 2.5, mb: 1 }}>
-          Add a group chat for comments
+          {t('Add a group chat for comments')}
         </Typography>
 
         <Box sx={{ mx: 1.25, borderRadius: '16px', background: cardBg, py: 0.5 }}>

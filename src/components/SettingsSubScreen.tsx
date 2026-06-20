@@ -5,6 +5,7 @@ import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import DoneRounded from '@mui/icons-material/DoneRounded'
 import { slideInRight } from '../motion'
 import TgSwitch from './TgSwitch'
+import { useT, useLang, LANGS } from '../i18n'
 
 type Ctrl = 'toggle' | 'value' | 'link' | 'button' | 'radio'
 interface SRow {
@@ -207,7 +208,20 @@ export function hasSubScreen(title: string) {
   return title in SCREENS
 }
 
+// Strings that are not English UI text and must not be translated.
+const NATIVE_LANGUAGE_NAMES = new Set([
+  'English',
+  'Русский',
+  'Українська',
+  'Español',
+  'Deutsch',
+  'Français',
+])
+const KEYBOARD_SHORTCUTS = new Set(['⌘ K', '⌘ ⇧ G', '⌘ ↓', '⌘ ↑', '⌘ ,'])
+
 export default function SettingsSubScreen({ title, onBack }: { title: string; onBack: () => void }) {
+  const t = useT()
+  const [lang, setLang] = useLang()
   const theme = useTheme()
   const tg = theme.tg
   const isDark = theme.palette.mode === 'dark'
@@ -254,7 +268,7 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
           <ArrowBackRounded />
         </IconButton>
         <Typography sx={{ flex: 1, fontSize: 19, fontWeight: 600, color: tg.textPrimary }}>
-          {title}
+          {t(title)}
         </Typography>
       </Box>
 
@@ -265,17 +279,25 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
               <Typography
                 sx={{ px: 3, pb: 0.5, fontSize: 14, fontWeight: 600, color: tg.accent }}
               >
-                {section.caption}
+                {section.caption && t(section.caption)}
               </Typography>
             )}
             <Box sx={{ mx: 1.25, borderRadius: '16px', background: cardBg, py: 0.5 }}>
               {section.rows.map((r) => {
                 const key = `${si}:${r.label}`
+                // The Language screen's radios actually switch the app language
+                const langEntry =
+                  title === 'Language' && r.type === 'radio'
+                    ? LANGS.find((l) => l.name === r.label)
+                    : undefined
                 const onRow = () => {
-                  if (r.type === 'toggle') setToggles((t) => ({ ...t, [key]: !t[key] }))
+                  if (r.type === 'toggle') setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
+                  else if (langEntry) setLang(langEntry.code)
                   else if (r.type === 'radio') setRadios((rd) => ({ ...rd, [si]: r.label }))
                 }
-                const selected = r.type === 'radio' && radios[si] === r.label
+                const selected = langEntry
+                  ? langEntry.code === lang
+                  : r.type === 'radio' && radios[si] === r.label
                 return (
                   <Box
                     key={r.label}
@@ -299,11 +321,13 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
                         color: r.danger ? '#ff595a' : r.type === 'button' ? tg.accent : tg.textPrimary,
                       }}
                     >
-                      {r.label}
+                      {NATIVE_LANGUAGE_NAMES.has(r.label) ? r.label : t(r.label)}
                     </Typography>
                     {r.type === 'toggle' && <TgSwitch checked={!!toggles[key]} />}
                     {r.type === 'value' && (
-                      <Typography sx={{ fontSize: 15, color: tg.textFaint }}>{r.value}</Typography>
+                      <Typography sx={{ fontSize: 15, color: tg.textFaint }}>
+                        {r.value && (KEYBOARD_SHORTCUTS.has(r.value) ? r.value : t(r.value))}
+                      </Typography>
                     )}
                     {selected && <DoneRounded sx={{ fontSize: 22, color: tg.accent }} />}
                   </Box>
@@ -312,7 +336,7 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
             </Box>
             {section.footer && (
               <Typography sx={{ px: 3, pt: 0.75, fontSize: 13.5, color: tg.textSecondary }}>
-                {section.footer}
+                {section.footer && t(section.footer)}
               </Typography>
             )}
           </Box>

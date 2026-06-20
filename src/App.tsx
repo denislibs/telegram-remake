@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 import ChatView from './components/ChatView'
 import ConversationView from './components/ConversationView'
 import ChatBackground from './components/ChatBackground'
+import { I18nProvider } from './i18n'
 import { chats as initialChats, type Chat } from './data'
 
 export type ToggleMode = (coords?: { x: number; y: number }) => void
@@ -135,9 +136,11 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Shell onToggleMode={toggleMode} />
-    </ThemeProvider>
+    <I18nProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Shell onToggleMode={toggleMode} />
+      </ThemeProvider>
+    </I18nProvider>
   )
 }

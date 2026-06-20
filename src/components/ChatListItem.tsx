@@ -15,6 +15,7 @@ import { motion } from 'framer-motion'
 import Avatar from './Avatar'
 import VerifiedBadge from './VerifiedBadge'
 import type { Chat } from '../data'
+import { useT } from '../i18n'
 
 const MotionBox = motion(Box)
 
@@ -28,6 +29,7 @@ interface Props {
 export default function ChatListItem({ chat, selected, onClick, index = 0 }: Props) {
   const theme = useTheme()
   const tg = theme.tg
+  const t = useT()
   const mode = theme.palette.mode
   const hoverBg = mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'
   const rippleColor = selected
@@ -271,7 +273,7 @@ export default function ChatListItem({ chat, selected, onClick, index = 0 }: Pro
                   {it.icon}
                 </Box>
                 <Typography sx={{ fontSize: 14.5, color: it.danger ? '#ff595a' : tg.textPrimary }}>
-                  {it.label}
+                  {t(it.label)}
                 </Typography>
               </Box>
             ))}
