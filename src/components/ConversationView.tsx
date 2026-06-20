@@ -233,10 +233,6 @@ export default function ConversationView({ chat }: Props) {
       }}
     >
       <Box sx={{ flex: 1, minWidth: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Top fade — messages dissolve into the background under the floating header */}
-        <Box sx={{ position: 'sticky', top: 0, height: 0, zIndex: 5, width: '100%', maxWidth: 688, mx: 'auto', pointerEvents: 'none' }}>
-          <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 90, background: `linear-gradient(${tg.appBg} 30%, transparent)` }} />
-        </Box>
         {/* Header */}
         <Box
           sx={{
@@ -403,7 +399,8 @@ export default function ConversationView({ chat }: Props) {
           )}
         </AnimatePresence>
 
-        {/* Conversation — flows in the document (body scrolls) */}
+        {/* Conversation — flows in the document (body scrolls); masked so messages
+            dissolve into the wallpaper at the top/bottom instead of a solid overlay */}
         <Box
           ref={scrollRef}
           sx={{
@@ -414,6 +411,10 @@ export default function ConversationView({ chat }: Props) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-end',
+            maskImage:
+              'linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 88px), transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 88px), transparent 100%)',
           }}
         >
           <Box
@@ -600,11 +601,6 @@ export default function ConversationView({ chat }: Props) {
               </Box>
             )}
           </Box>
-        </Box>
-
-        {/* Bottom fade — messages dissolve into the background above the composer */}
-        <Box sx={{ position: 'sticky', bottom: 0, height: 0, zIndex: 5, width: '100%', maxWidth: 688, mx: 'auto', pointerEvents: 'none' }}>
-          <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 100, background: `linear-gradient(transparent, ${tg.appBg} 70%)` }} />
         </Box>
 
         {/* Footer */}

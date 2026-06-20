@@ -44,10 +44,6 @@ export default function ChatView() {
       }}
     >
       <Box sx={{ flex: 1, minWidth: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top fade — messages dissolve into the background under the floating header */}
-      <Box sx={{ position: 'sticky', top: 0, height: 0, zIndex: 5, width: '100%', maxWidth: 688, mx: 'auto', pointerEvents: 'none' }}>
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 90, background: `linear-gradient(${tg.appBg} 30%, transparent)` }} />
-      </Box>
       {/* Header — floating rounded pill over the global pattern */}
       <Box
         sx={{
@@ -225,7 +221,8 @@ export default function ChatView() {
         )}
       </AnimatePresence>
 
-      {/* Messages — flow in the document (body scrolls) */}
+      {/* Messages — flow in the document (body scrolls); masked so they dissolve
+          into the wallpaper at the top/bottom instead of a solid overlay */}
       <Box
         sx={{
           flex: 1,
@@ -235,6 +232,10 @@ export default function ChatView() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-end',
+          maskImage:
+            'linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 88px), transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 88px), transparent 100%)',
         }}
       >
         <Box
@@ -277,11 +278,6 @@ export default function ChatView() {
             ))}
           </Box>
         </Box>
-      </Box>
-
-      {/* Bottom fade — messages dissolve into the background above the footer */}
-      <Box sx={{ position: 'sticky', bottom: 0, height: 0, zIndex: 5, width: '100%', maxWidth: 688, mx: 'auto', pointerEvents: 'none' }}>
-        <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 100, background: `linear-gradient(transparent, ${tg.appBg} 70%)` }} />
       </Box>
 
       {/* Footer / Mute bar — sticky to viewport bottom */}
