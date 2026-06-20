@@ -13,7 +13,7 @@ export interface Story {
 export const STORIES: Story[] = [
   { id: 's1', name: 'My Story', bg: 'linear-gradient(215deg, #34c76f -1.61%, #3da1fd 97.44%)', emoji: '➕' },
   { id: 's2', name: 'Alice', bg: 'linear-gradient(135deg, #ff6a88 0%, #ff99ac 100%)', emoji: '🌸' },
-  { id: 's3', name: 'Bob', bg: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)', emoji: 'B' },
+  { id: 's3', name: 'Bob Anderson', bg: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)', emoji: 'B' },
   { id: 's4', name: 'Catherine', bg: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)', emoji: '🌊' },
   { id: 's5', name: 'Daniel', bg: 'linear-gradient(135deg, #654ea3 0%, #eaafc8 100%)', emoji: 'D', seen: true },
   { id: 's6', name: 'Emma', bg: 'linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)', emoji: '🎨' },

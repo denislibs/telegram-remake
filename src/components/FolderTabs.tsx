@@ -25,10 +25,8 @@ export default function FolderTabs({
     <Box
       sx={{
         display: 'flex',
-        gap: '2px',
+        gap: '4px',
         px: 1,
-        py: 0.75,
-        flexShrink: 0,
         overflowX: 'auto',
         '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
@@ -43,8 +41,10 @@ export default function FolderTabs({
             sx={{
               position: 'relative',
               flexShrink: 0,
-              padding: '5px 13px',
-              borderRadius: '16px',
+              padding: '6px 16px',
+              fontSize: 15,
+              fontWeight: 600,
+              borderRadius: '20px',
               cursor: 'pointer',
               color: active ? tg.accent : tg.textSecondary,
               transition: 'color 0.2s',
@@ -57,7 +57,7 @@ export default function FolderTabs({
                 sx={{
                   position: 'absolute',
                   inset: 0,
-                  borderRadius: '16px',
+                  borderRadius: '20px',
                   background: 'rgba(135,116,225,0.18)',
                 }}
               />
@@ -66,7 +66,7 @@ export default function FolderTabs({
               component="span"
               sx={{
                 position: 'relative',
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: 600,
                 whiteSpace: 'nowrap',
               }}
