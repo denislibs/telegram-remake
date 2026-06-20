@@ -3,6 +3,8 @@
 Пиксель-в-пиксель ремейк интерфейса [Telegram Web (K)](https://web.telegram.org/k/) на React.
 Стили и размеры элементов сняты с живой сессии Telegram Web, поддерживаются тёмная и светлая темы.
 
+**🔗 Live demo: https://denislibs.github.io/telegram-remake/**
+
 ## Стек
 
 - **Vite 6** + **React 18** + **TypeScript** (strict)
