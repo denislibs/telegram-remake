@@ -62,7 +62,7 @@ export default function Avatar({
             borderRadius: '50%',
             background: '#4dcd5e',
             border: `${ring}px solid ${ringColor ?? tg.sidebarBg}`,
-            boxSizing: 'content-box',
+            boxSizing: 'border-box',
           }}
         />
       )}
