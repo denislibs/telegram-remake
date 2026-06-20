@@ -248,7 +248,7 @@ export const chats: Chat[] = [
   },
   {
     id: 'sexpedition',
-    name: 'Секспедиция',
+    name: 'Геймпедиция',
     avatar: 'linear-gradient(135deg,#202020,#000)',
     avatarEmoji: '🎮',
     date: 'May 7',
@@ -439,7 +439,10 @@ export const chats: Chat[] = [
       { type: 'text', out: false, text: 'привет, ты занят?', time: '15:00' },
       { type: 'text', out: true, text: 'не, чё хотел', time: '15:05', status: 'read' },
       { type: 'text', out: false, text: 'скинул проект, глянь на досуге', time: '15:06' },
+      { type: 'text', out: false, text: 'вот ссылка https://kyzdar.ai и пиши @kyzdar_manager #срочно', time: '15:07' },
       { type: 'text', out: true, text: 'ок, вечером посмотрю', time: '15:10', status: 'read' },
+      { type: 'text', out: true, text: '🔥', time: '15:10', status: 'read' },
+      { type: 'text', out: false, text: '👍😎🎮', time: '15:11' },
     ],
   },
   {
