@@ -69,6 +69,14 @@ export default function Sidebar({
           : c.type === 'channel',
   )
 
+  // direction for the folder-switch slide (right tab -> slide from right, etc.)
+  const FOLDER_ORDER: FolderKey[] = ['all', 'private', 'groups', 'channels']
+  const dirRef = useRef(0)
+  const changeFolder = (k: FolderKey) => {
+    dirRef.current = FOLDER_ORDER.indexOf(k) > FOLDER_ORDER.indexOf(folder) ? 1 : -1
+    setFolder(k)
+  }
+
   const closeSearch = () => {
     setSearching(false)
     setQuery('')
@@ -171,27 +179,43 @@ export default function Sidebar({
       </Box>
 
       {/* Folder filter tabs */}
-      <FolderTabs value={folder} onChange={setFolder} />
+      <FolderTabs value={folder} onChange={changeFolder} />
 
       {/* Body — chat list always mounted; search view overlays it */}
       <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
         {/* Chat list (always present) */}
-        <Box sx={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
+        <Box sx={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
           <StoriesRow onOpen={(i) => setStoryIndex(i)} />
-          <Box sx={{ pt: 0.5, pb: 2 }}>
-            {filtered.map((chat, i) => (
-              <ChatListItem
-                key={chat.id}
-                chat={chat}
-                index={i}
-                selected={chat.id === selectedId}
-                onClick={() => onSelect(chat.id)}
-              />
-            ))}
-          </Box>
+          <AnimatePresence mode="wait" custom={dirRef.current} initial={false}>
+            <Box
+              component={motion.div}
+              key={folder}
+              custom={dirRef.current}
+              variants={{
+                enter: (d: number) => ({ x: d > 0 ? 28 : -28, opacity: 0 }),
+                center: { x: 0, opacity: 1 },
+                exit: (d: number) => ({ x: d > 0 ? -28 : 28, opacity: 0 }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.18, ease: EASE }}
+              sx={{ pt: 0.5, pb: 2 }}
+            >
+              {filtered.map((chat, i) => (
+                <ChatListItem
+                  key={chat.id}
+                  chat={chat}
+                  index={i}
+                  selected={chat.id === selectedId}
+                  onClick={() => onSelect(chat.id)}
+                />
+              ))}
+            </Box>
+          </AnimatePresence>
         </Box>
 
         {/* Search view overlay — conditional (unmounts instantly, no stuck exit) */}

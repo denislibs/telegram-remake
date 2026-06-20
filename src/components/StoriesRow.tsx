@@ -30,10 +30,8 @@ export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'flex-start',
-        height: 82,
-        padding: '5px 10px',
+        padding: '6px 8px 8px',
         overflowX: 'auto',
-        overflowY: 'hidden',
         '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
       }}
@@ -92,11 +90,13 @@ export default function StoriesRow({ onOpen }: { onOpen: (index: number) => void
             <Typography
               noWrap
               sx={{
-                mt: 0.5,
+                mt: 0.625,
+                width: '100%',
+                px: '2px',
                 fontSize: 12,
+                lineHeight: '15px',
                 color: tg.textSecondary,
                 textAlign: 'center',
-                maxWidth: 64,
               }}
             >
               {story.name}
