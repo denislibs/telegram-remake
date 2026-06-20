@@ -201,7 +201,7 @@ export default function Sidebar({
             component={motion.div}
             key={folder}
             initial={
-              didChangeFolderRef.current ? { x: dirRef.current > 0 ? '100%' : '-100%' } : false
+              didChangeFolderRef.current ? { x: dirRef.current > 0 ? '-100%' : '100%' } : false
             }
             animate={{ x: '0%' }}
             transition={{ duration: DUR.in, ease: EASE }}
