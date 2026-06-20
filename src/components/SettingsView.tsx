@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Box, IconButton, Switch, Typography, useTheme } from '@mui/material'
-import { motion } from 'framer-motion'
+import { Box, IconButton, Typography, useTheme } from '@mui/material'
+import { AnimatePresence, motion } from 'framer-motion'
 import { slideInRight } from '../motion'
+import TgSwitch from './TgSwitch'
+import SettingsSubScreen, { hasSubScreen } from './SettingsSubScreen'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined'
+import StarRounded from '@mui/icons-material/StarRounded'
+import CardGiftcardRounded from '@mui/icons-material/CardGiftcardRounded'
 import QrCode2Rounded from '@mui/icons-material/QrCode2Rounded'
 import EditRounded from '@mui/icons-material/EditRounded'
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded'
@@ -47,6 +51,7 @@ export default function SettingsView({
   const isDark = theme.palette.mode === 'dark'
   const cardBg = isDark ? '#2b2b2b' : '#ffffff'
   const [active, setActive] = useState('Notifications and Sounds')
+  const [sub, setSub] = useState<string | null>(null)
 
   return (
     <motion.div
@@ -126,21 +131,7 @@ export default function SettingsView({
           >
             <DarkModeOutlined sx={{ color: tg.textSecondary, fontSize: 24 }} />
             <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Night Mode</Typography>
-            <Switch
-              checked={isDark}
-              onChange={(e) => {
-                const ne = e.nativeEvent as MouseEvent
-                onToggleMode(ne.clientX ? { x: ne.clientX, y: ne.clientY } : undefined)
-              }}
-              onClick={(e) => e.stopPropagation()}
-              sx={{
-                '& .MuiSwitch-switchBase.Mui-checked': { color: '#fff' },
-                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                  backgroundColor: tg.accent,
-                  opacity: 1,
-                },
-              }}
-            />
+            <TgSwitch checked={isDark} />
           </Box>
         </Box>
 
@@ -151,7 +142,10 @@ export default function SettingsView({
             return (
               <Box
                 key={it.label}
-                onClick={() => setActive(it.label)}
+                onClick={() => {
+                  setActive(it.label)
+                  if (hasSubScreen(it.label)) setSub(it.label)
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -178,7 +172,50 @@ export default function SettingsView({
             )
           })}
         </Box>
+
+        {/* Premium / Gift */}
+        <Box sx={{ mx: 1.25, mt: 1.5, borderRadius: '16px', background: cardBg, py: 0.75 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              px: 2,
+              py: 1.25,
+              mx: 0.75,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              '&:hover': { background: tg.hover },
+            }}
+          >
+            <StarRounded sx={{ color: tg.accent, fontSize: 24 }} />
+            <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>
+              Telegram Premium
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              px: 2,
+              py: 1.25,
+              mx: 0.75,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              '&:hover': { background: tg.hover },
+            }}
+          >
+            <CardGiftcardRounded sx={{ color: tg.textSecondary, fontSize: 24 }} />
+            <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Send a Gift</Typography>
+          </Box>
+        </Box>
       </Box>
+
+      {/* Sub-screen overlay */}
+      <AnimatePresence>
+        {sub && <SettingsSubScreen title={sub} onBack={() => setSub(null)} />}
+      </AnimatePresence>
     </motion.div>
   )
 }

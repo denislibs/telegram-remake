@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Box, IconButton, Switch, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Typography, useTheme } from '@mui/material'
+import TgSwitch from './TgSwitch'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EASE, DUR } from '../motion'
 import CloseRounded from '@mui/icons-material/CloseRounded'
@@ -30,6 +31,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
   const cardBg = mode === 'dark' ? '#2b2b2b' : '#ffffff'
   const [tab, setTab] = useState('Media')
   const [editing, setEditing] = useState(false)
+  const [notif, setNotif] = useState(true)
 
   const isChannel = chat.type === 'channel'
   const isGroup = chat.type === 'group'
@@ -45,10 +47,6 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
     }
   })
 
-  const switchSx = {
-    '& .MuiSwitch-switchBase.Mui-checked': { color: '#fff' },
-    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: tg.accent, opacity: 1 },
-  }
   const linkText = chat.links?.length ? chat.links : null
 
   return (
@@ -153,7 +151,7 @@ export default function UserInfoPanel({ chat, onClose }: { chat: Chat; onClose: 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 0.5, mx: 0.5, borderRadius: '12px' }}>
               <NotificationsNoneRounded sx={{ color: tg.textSecondary, fontSize: 24 }} />
               <Typography sx={{ flex: 1, fontSize: 16, color: tg.textPrimary }}>Notifications</Typography>
-              <Switch defaultChecked sx={switchSx} />
+              <TgSwitch checked={notif} onClick={() => setNotif((v) => !v)} />
             </Box>
           </Box>
 
