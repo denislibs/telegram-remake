@@ -6,7 +6,13 @@ import Reaction from './Reaction'
 
 const MotionBox = motion(Box)
 
-export default function ChannelPost({ post }: { post: Post }) {
+export default function ChannelPost({
+  post,
+  onOpenMedia,
+}: {
+  post: Post
+  onOpenMedia?: (m: { gradient: string; emoji?: string; time?: string }) => void
+}) {
   const theme = useTheme()
   const tg = theme.tg
   const linkSx = { color: tg.link, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }
@@ -33,12 +39,20 @@ export default function ChannelPost({ post }: { post: Post }) {
         {/* Photo placeholder */}
         {post.photo && (
           <Box
+            onClick={() =>
+              onOpenMedia?.({
+                gradient: post.photo!.gradient,
+                emoji: post.photo!.emoji,
+                time: post.time,
+              })
+            }
             sx={{
               height: post.photo.height ?? 280,
               background: post.photo.gradient,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              cursor: 'pointer',
               position: 'relative',
               '&::after': {
                 content: '""',

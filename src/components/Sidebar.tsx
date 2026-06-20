@@ -6,7 +6,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { AnimatePresence, motion } from 'framer-motion'
-import { EASE } from '../motion'
+import { EASE, DUR } from '../motion'
 import type { Chat } from '../data'
 import ChatListItem from './ChatListItem'
 import NotificationBanner from './NotificationBanner'
@@ -17,6 +17,9 @@ import NewGroupFlow from './NewGroupFlow'
 import NewChannelFlow from './NewChannelFlow'
 import NewPrivateChat from './NewPrivateChat'
 import SearchView from './SearchView'
+import StoriesRow from './StoriesRow'
+import StoryViewer from './StoryViewer'
+import FolderTabs, { type FolderKey } from './FolderTabs'
 import { useT } from '../i18n'
 
 const MotionFab = motion(IconButton)
@@ -52,7 +55,28 @@ export default function Sidebar({
   const [newGroupOpen, setNewGroupOpen] = useState(false)
   const [newChannelOpen, setNewChannelOpen] = useState(false)
   const [newPrivateOpen, setNewPrivateOpen] = useState(false)
+  const [storyIndex, setStoryIndex] = useState<number | null>(null)
+  const [folder, setFolder] = useState<FolderKey>('all')
   const inputRef = useRef<HTMLInputElement>(null)
+  const listScrollRef = useRef<HTMLDivElement>(null)
+
+  const filtered = chats.filter((c) =>
+    folder === 'all'
+      ? true
+      : folder === 'private'
+        ? c.type === 'private'
+        : folder === 'groups'
+          ? c.type === 'group'
+          : c.type === 'channel',
+  )
+
+  // direction for the folder-switch slide (right tab -> slide from right, etc.)
+  const FOLDER_ORDER: FolderKey[] = ['all', 'private', 'groups', 'channels']
+  const dirRef = useRef(0)
+  const changeFolder = (k: FolderKey) => {
+    dirRef.current = FOLDER_ORDER.indexOf(k) > FOLDER_ORDER.indexOf(folder) ? 1 : -1
+    setFolder(k)
+  }
 
   const closeSearch = () => {
     setSearching(false)
@@ -155,15 +179,30 @@ export default function Sidebar({
         </Box>
       </Box>
 
+      {/* Stories + folder tabs (hidden while searching) */}
+      {!searching && (
+        <>
+          <StoriesRow onOpen={(i) => setStoryIndex(i)} scrollRef={listScrollRef} />
+          <FolderTabs value={folder} onChange={changeFolder} />
+        </>
+      )}
+
       {/* Body — chat list always mounted; search view overlays it */}
       <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
         {/* Chat list (always present) */}
-        <Box sx={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
+        <Box ref={listScrollRef} sx={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
-          <Box sx={{ pt: 0.5, pb: 2 }}>
-            {chats.map((chat, i) => (
+          <Box
+            component={motion.div}
+            key={folder}
+            initial={{ x: dirRef.current > 0 ? '100%' : '-100%' }}
+            animate={{ x: '0%' }}
+            transition={{ duration: DUR.in, ease: EASE }}
+            sx={{ pt: 0.5, pb: 2 }}
+          >
+            {filtered.map((chat, i) => (
               <ChatListItem
                 key={chat.id}
                 chat={chat}
@@ -283,6 +322,11 @@ export default function Sidebar({
             onClose={() => setNewPrivateOpen(false)}
             onSelect={onSelect}
           />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {storyIndex !== null && (
+          <StoryViewer index={storyIndex} onClose={() => setStoryIndex(null)} />
         )}
       </AnimatePresence>
     </Box>
