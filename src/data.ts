@@ -1,18 +1,43 @@
 export type ChatType = 'private' | 'group' | 'channel' | 'bot' | 'saved'
 export type MsgStatus = 'sent' | 'read'
 
+export interface MediaItem {
+  gradient: string
+  emoji?: string
+}
+
 export interface ConvMsg {
-  type: 'date' | 'text' | 'sticker' | 'voice'
+  type:
+    | 'date'
+    | 'text'
+    | 'sticker'
+    | 'voice'
+    | 'photo'
+    | 'video'
+    | 'album'
+    | 'document'
+    | 'audio'
+    | 'roundVideo'
   out?: boolean
   sender?: string
   senderColor?: string
-  text?: string
+  text?: string // also used as media caption
   emoji?: string
   time?: string
   status?: MsgStatus
   reply?: { name: string; text: string; color?: string }
   duration?: string // voice message length, e.g. "0:14"
   waveform?: number[] // voice waveform bar heights (0..1)
+  // media
+  media?: MediaItem // single photo/video placeholder
+  album?: MediaItem[] // album grid (2–10)
+  videoDuration?: string // overlay on video / round video
+  // document
+  document?: { name: string; size: string; ext: string; color: string }
+  // audio / music
+  audio?: { title: string; artist: string; duration: string }
+  // link preview attached to a text message
+  webPage?: { siteName: string; title: string; description?: string; gradient?: string; emoji?: string }
 }
 
 export interface Chat {
@@ -135,6 +160,72 @@ export const chats: Chat[] = [
       },
       { type: 'text', out: false, text: 'огонь, возьми мне воды по пути', time: '18:11' },
       { type: 'text', out: true, text: 'ок 👍', time: '18:12', status: 'read' },
+      {
+        type: 'photo',
+        out: false,
+        media: { gradient: 'linear-gradient(135deg,#f7971e,#ffd200)', emoji: '🏋️' },
+        time: '18:31',
+      },
+      {
+        type: 'text',
+        out: true,
+        text: 'красава! трек зацени {e:🔥}{e:🎧}',
+        time: '18:32',
+        status: 'read',
+      },
+      {
+        type: 'audio',
+        out: true,
+        audio: { title: 'Midnight City', artist: 'M83', duration: '4:03' },
+        time: '18:32',
+        status: 'read',
+      },
+      {
+        type: 'document',
+        out: false,
+        document: { name: 'Программа тренировок.pdf', size: '2.4 MB', ext: 'PDF', color: '#e8564f' },
+        time: '18:33',
+      },
+      {
+        type: 'album',
+        out: false,
+        album: [
+          { gradient: 'linear-gradient(135deg,#43cea2,#185a9d)', emoji: '🥗' },
+          { gradient: 'linear-gradient(135deg,#ff6a88,#ff99ac)', emoji: '🍓' },
+          { gradient: 'linear-gradient(135deg,#654ea3,#eaafc8)', emoji: '🥑' },
+          { gradient: 'linear-gradient(135deg,#f7971e,#ffd200)', emoji: '🍳' },
+        ],
+        text: 'мой рацион на неделю',
+        time: '18:34',
+      },
+      {
+        type: 'roundVideo',
+        out: true,
+        media: { gradient: 'linear-gradient(135deg,#42e695,#3bb2b8)', emoji: '🏃' },
+        videoDuration: '0:08',
+        time: '18:35',
+        status: 'read',
+      },
+      {
+        type: 'video',
+        out: false,
+        media: { gradient: 'linear-gradient(135deg,#2980b9,#6dd5fa)', emoji: '🎬' },
+        videoDuration: '0:42',
+        time: '18:36',
+      },
+      {
+        type: 'text',
+        out: false,
+        text: 'смотри какую статью нашёл https://telegram.org',
+        time: '18:40',
+        webPage: {
+          siteName: 'Telegram',
+          title: 'Telegram – a new era of messaging',
+          description: 'Fast. Secure. Powerful. The messaging app focused on speed and security.',
+          gradient: 'linear-gradient(135deg,#8a5bff,#5b8dff)',
+          emoji: '✈️',
+        },
+      },
       { type: 'text', out: false, text: 'скинь как доедешь', time: '18:30' },
     ],
   },
