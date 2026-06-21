@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Box, IconButton, InputBase, useTheme } from '@mui/material'
+import { Box, IconButton, InputBase, useMediaQuery, useTheme } from '@mui/material'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
@@ -63,13 +63,24 @@ export default function Sidebar({
   const [folder, setFolder] = useState<FolderKey>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const listScrollRef = useRef<HTMLDivElement>(null)
+  const narrow = useMediaQuery('(max-width:900px)')
   const [foldP, setFoldP] = useState(0) // 0 = stories expanded, 1 = folded into the search bar
   const foldPRef = useRef(0)
+  // Desktop: stories are hidden and revealed by over-scrolling up at the top
+  // of the list (tweb behaviour); they slide out with an animation.
+  const [revealed, setRevealed] = useState(false)
+  const revealedRef = useRef(false)
+  const setReveal = (v: boolean) => {
+    revealedRef.current = v
+    setRevealed(v)
+  }
 
   // Fold distance: stories are fully folded once the list is scrolled this far.
   const FOLD_DIST = 80
 
+  // MOBILE: fold the stories row into the search bar as the list scrolls.
   useEffect(() => {
+    if (!narrow) return
     const el = listScrollRef.current
     if (!el) return
     let raf = 0
@@ -79,17 +90,8 @@ export default function Sidebar({
       setFoldP(next)
     }
     const recompute = () => {
-      // The scroll container's clientHeight shrinks/grows by exactly the stories
-      // height as foldP changes, so `clientHeight + storiesHeight` is a constant
-      // (= viewport height with stories fully folded), independent of foldP.
-      // `room` — how far the list can scroll once stories are fully folded —
-      // is therefore stable for a given list and won't feed back into itself.
       const storiesH = FULL_H * (1 - foldPRef.current)
       const room = el.scrollHeight - (el.clientHeight + storiesH)
-      // Only fold if the list still overflows past the fold distance when fully
-      // folded; otherwise folding would shrink the scrollable area below the
-      // current scrollTop, the browser clamps it, foldP drops, the area grows
-      // again — an every-frame oscillation that reads as flicker.
       if (room < FOLD_DIST) {
         apply(0)
         return
@@ -108,7 +110,35 @@ export default function Sidebar({
       window.removeEventListener('resize', onScroll)
       cancelAnimationFrame(raf)
     }
-  }, [])
+  }, [narrow])
+
+  // DESKTOP: reveal the (otherwise hidden) stories by over-scrolling up at the
+  // very top of the list; scrolling back down hides them again.
+  useEffect(() => {
+    if (narrow) return
+    const el = listScrollRef.current
+    if (!el) return
+    let acc = 0
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < 0 && el.scrollTop <= 0) {
+        acc += -e.deltaY
+        if (acc > 24 && !revealedRef.current) setReveal(true)
+      } else if (e.deltaY > 0) {
+        if (revealedRef.current && el.scrollTop <= 0) {
+          e.preventDefault()
+          setReveal(false)
+        }
+        acc = 0
+      } else {
+        acc = 0
+      }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [narrow])
+
+  // stories collapse progress: 0 = fully shown, 1 = hidden/folded
+  const storiesProgress = narrow ? foldP : revealed ? 0 : 1
 
   const filtered = chats.filter((c) =>
     folder === 'all'
@@ -237,14 +267,14 @@ export default function Sidebar({
               '& input::placeholder': { color: tg.textFaint, opacity: 1 },
             }}
           />
-          {!searching && <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={foldP} />}
+          {!searching && <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={storiesProgress} />}
         </Box>
       </Box>
 
       {/* Stories + folder tabs (hidden while searching) */}
       {!searching && (
         <>
-          <StoriesRow onOpen={(i) => setStoryIndex(i)} progress={foldP} />
+          <StoriesRow onOpen={(i) => setStoryIndex(i)} progress={storiesProgress} animated={!narrow} />
           <FolderTabs value={folder} onChange={changeFolder} />
         </>
       )}
@@ -256,26 +286,33 @@ export default function Sidebar({
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
-          <Box
-            component={motion.div}
-            key={folder}
-            initial={
-              didChangeFolderRef.current ? { x: dirRef.current > 0 ? '100%' : '-100%' } : false
-            }
-            animate={{ x: '0%' }}
-            transition={{ duration: DUR.in, ease: EASE }}
-            sx={{ pt: 0.5, pb: 2 }}
-          >
-            {filtered.map((chat, i) => (
-              <ChatListItem
-                key={chat.id}
-                chat={chat}
-                index={i}
-                selected={chat.id === selectedId}
-                onClick={() => onSelect(chat.id)}
-              />
-            ))}
-          </Box>
+          <AnimatePresence mode="popLayout" custom={dirRef.current} initial={false}>
+            <Box
+              component={motion.div}
+              key={folder}
+              custom={dirRef.current}
+              variants={{
+                enter: (d: number) => ({ x: d > 0 ? '100%' : '-100%' }),
+                center: { x: '0%' },
+                exit: (d: number) => ({ x: d > 0 ? '-100%' : '100%' }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: DUR.in, ease: EASE }}
+              sx={{ pt: 0.5, pb: 2, width: '100%' }}
+            >
+              {filtered.map((chat, i) => (
+                <ChatListItem
+                  key={chat.id}
+                  chat={chat}
+                  index={i}
+                  selected={chat.id === selectedId}
+                  onClick={() => onSelect(chat.id)}
+                />
+              ))}
+            </Box>
+          </AnimatePresence>
         </Box>
 
         {/* Search view overlay — conditional (unmounts instantly, no stuck exit) */}
