@@ -15,6 +15,7 @@ import AutoDownload from './settings/AutoDownload'
 import QuickReaction from './settings/QuickReaction'
 import PowerSaving from './settings/PowerSaving'
 import Passkeys from './settings/Passkeys'
+import LanguageSettings from './settings/LanguageSettings'
 
 // Rows that open a dedicated sub-screen instead of being a plain value.
 const PRIVACY_RULES = new Set([
@@ -294,6 +295,9 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
     return o
   })
   const [dedicated, setDedicated] = useState<string | null>(null)
+
+  // Language has a dedicated tweb-style screen (radio-left list + native names)
+  if (title === 'Language') return <LanguageSettings onBack={onBack} />
 
   return (
     <motion.div
