@@ -96,6 +96,13 @@ export default function Sidebar({
     dirRef.current = FOLDER_ORDER.indexOf(k) > FOLDER_ORDER.indexOf(folder) ? 1 : -1
     didChangeFolderRef.current = true
     setFolder(k)
+    // tweb parity: switching a folder scrolls the list to top and unfolds the
+    // stories. Without this the scroll container keeps its old scrollTop while
+    // foldP stays stale (the browser doesn't always fire `scroll` on content
+    // swap), leaving a dead gap between the search bar and the folder tabs.
+    const el = listScrollRef.current
+    if (el) el.scrollTop = 0
+    setFoldP(0)
   }
 
   const closeSearch = () => {
