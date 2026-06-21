@@ -267,7 +267,7 @@ export default function Sidebar({
               '& input::placeholder': { color: tg.textFaint, opacity: 1 },
             }}
           />
-          {narrow && !searching && <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={foldP} />}
+          {!searching && <StoriesStack onOpen={(i) => setStoryIndex(i)} progress={storiesProgress} />}
         </Box>
       </Box>
 
