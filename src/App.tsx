@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar'
 import ChatView from './components/ChatView'
 import ConversationView from './components/ConversationView'
 import ChatBackground from './components/ChatBackground'
+import AuthFlow from './components/auth/AuthFlow'
 import { I18nProvider } from './i18n'
 import { chats as initialChats, type Chat } from './data'
 
@@ -19,7 +20,7 @@ const groupGradients = [
   'linear-gradient(135deg,#ff5f6d,#ffc371)',
 ]
 
-function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
+function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout: () => void }) {
   const tg = useTheme().tg
   const [chatList, setChatList] = useState<Chat[]>(initialChats)
   const [selectedId, setSelectedId] = useState('dollhouse-work')
@@ -89,6 +90,7 @@ function Shell({ onToggleMode }: { onToggleMode: ToggleMode }) {
         setDrawerOpen(false)
       }}
       onToggleMode={onToggleMode}
+      onLogout={onLogout}
     />
   )
 
@@ -154,6 +156,16 @@ function getInitialMode(): Mode {
 export default function App() {
   const [mode, setMode] = useState<Mode>(getInitialMode)
   const theme = useMemo(() => buildTheme(mode), [mode])
+  const [authed, setAuthed] = useState(() => localStorage.getItem('tg-authed') === '1')
+
+  const login = () => {
+    localStorage.setItem('tg-authed', '1')
+    setAuthed(true)
+  }
+  const logout = () => {
+    localStorage.removeItem('tg-authed')
+    setAuthed(false)
+  }
 
   const apply = (next: Mode) => {
     localStorage.setItem('tg-theme', next)
@@ -192,7 +204,7 @@ export default function App() {
     <I18nProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Shell onToggleMode={toggleMode} />
+        {authed ? <Shell onToggleMode={toggleMode} onLogout={logout} /> : <AuthFlow onComplete={login} />}
       </ThemeProvider>
     </I18nProvider>
   )
