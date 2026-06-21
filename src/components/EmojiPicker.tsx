@@ -17,6 +17,7 @@ import GifBoxOutlined from '@mui/icons-material/GifBoxOutlined'
 import { EASE } from '../motion'
 import { useT } from '../i18n'
 import { CATEGORIES, SKIN, TONES, NAMES, DEFAULT_FREQUENT, QUICK_CHIPS } from './emoji/emojiData'
+import Emoji from './emoji/Emoji'
 
 type Tab = 'emoji' | 'stickers' | 'gifs'
 
@@ -141,7 +142,6 @@ export default function EmojiPicker({
   const cellSx = {
     width: '100%',
     height: 42,
-    fontSize: 30,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -158,7 +158,7 @@ export default function EmojiPicker({
     const e = toneable ? applyTone(raw) : raw
     return (
       <Box key={key} onClick={() => pickEmoji(e)} sx={cellSx}>
-        {e}
+        <Emoji e={e} size={30} />
       </Box>
     )
   }
@@ -284,9 +284,9 @@ export default function EmojiPicker({
                   <Box
                     key={c.e}
                     onClick={() => setQuery(c.q)}
-                    sx={{ width: 30, height: 30, flexShrink: 0, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', cursor: 'pointer', opacity: 0.85, '&:hover': { background: tg.hover, opacity: 1 } }}
+                    sx={{ width: 30, height: 30, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', cursor: 'pointer', opacity: 0.85, '&:hover': { background: tg.hover, opacity: 1 } }}
                   >
-                    {c.e}
+                    <Emoji e={c.e} size={22} />
                   </Box>
                 ))}
               </Box>
@@ -330,9 +330,9 @@ export default function EmojiPicker({
                       onSticker?.(e)
                       onClose()
                     }}
-                    sx={{ height: 64, fontSize: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', cursor: 'pointer', '&:hover': { background: tg.hover } }}
+                    sx={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', cursor: 'pointer', '&:hover': { background: tg.hover } }}
                   >
-                    {e}
+                    <Emoji e={e} size={48} />
                   </Box>
                 ))}
               </Box>

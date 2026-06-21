@@ -35,6 +35,7 @@ import EmojiPicker from './EmojiPicker'
 import AttachMenu from './AttachMenu'
 import CallScreen from './CallScreen'
 import RichText, { emojiOnlyCount } from './RichText'
+import Emoji from './emoji/Emoji'
 import MediaViewer from './MediaViewer'
 import {
   MediaBubble,
@@ -576,7 +577,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           py: bigEmoji ? 0.25 : 0,
                         }}
                       >
-                        {m.type === 'sticker' ? m.emoji : m.text}
+                        {m.type === 'sticker' ? <Emoji e={m.emoji ?? ''} size={104} /> : m.text}
                       </Box>
                       <Box
                         sx={{
