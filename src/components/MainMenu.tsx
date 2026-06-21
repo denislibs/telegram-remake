@@ -10,6 +10,7 @@ import AccountBalanceWalletOutlined from '@mui/icons-material/AccountBalanceWall
 import SettingsOutlined from '@mui/icons-material/SettingsOutlined'
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
+import LogoutRounded from '@mui/icons-material/LogoutRounded'
 import Avatar from './Avatar'
 import { useT } from '../i18n'
 
@@ -17,20 +18,24 @@ interface Props {
   open: boolean
   onClose: () => void
   onOpenSettings: () => void
+  onLogout?: () => void
 }
 
 function Row({
   icon,
   label,
   chevron,
+  danger,
   onClick,
 }: {
   icon: ReactNode
   label: string
   chevron?: boolean
+  danger?: boolean
   onClick?: () => void
 }) {
   const tg = useTheme().tg
+  const color = danger ? '#ff595a' : undefined
   return (
     <Box
       onClick={onClick}
@@ -46,14 +51,14 @@ function Row({
         '&:hover': { background: tg.hover },
       }}
     >
-      <Box sx={{ color: tg.textSecondary, display: 'flex', '& svg': { fontSize: 20 } }}>{icon}</Box>
-      <Typography sx={{ flex: 1, fontSize: 14.5, color: tg.textPrimary }}>{label}</Typography>
+      <Box sx={{ color: color ?? tg.textSecondary, display: 'flex', '& svg': { fontSize: 20 } }}>{icon}</Box>
+      <Typography sx={{ flex: 1, fontSize: 14.5, color: color ?? tg.textPrimary }}>{label}</Typography>
       {chevron && <ChevronRightRounded sx={{ color: tg.textFaint, fontSize: 20 }} />}
     </Box>
   )
 }
 
-export default function MainMenu({ open, onClose, onOpenSettings }: Props) {
+export default function MainMenu({ open, onClose, onOpenSettings, onLogout }: Props) {
   const tg = useTheme().tg
   const t = useT()
   const divider = (
@@ -114,6 +119,12 @@ export default function MainMenu({ open, onClose, onOpenSettings }: Props) {
               {divider}
               <Row icon={<SettingsOutlined />} label={t('Settings')} onClick={onOpenSettings} />
               <Row icon={<MoreVertRounded />} label={t('More')} chevron onClick={onClose} />
+              {onLogout && (
+                <>
+                  {divider}
+                  <Row icon={<LogoutRounded />} label={t('Log Out')} danger onClick={onLogout} />
+                </>
+              )}
             </Box>
           </Box>
         </>,

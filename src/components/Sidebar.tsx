@@ -30,6 +30,7 @@ interface Props {
   onCreateGroup: (name: string) => void
   onCreateChannel: (name: string, description: string) => void
   onToggleMode: (coords?: { x: number; y: number }) => void
+  onLogout?: () => void
   fullWidth?: boolean
 }
 
@@ -40,6 +41,7 @@ export default function Sidebar({
   onCreateGroup,
   onCreateChannel,
   onToggleMode,
+  onLogout,
   fullWidth = false,
 }: Props) {
   const theme = useTheme()
@@ -340,6 +342,14 @@ export default function Sidebar({
           setMenuOpen(false)
           setShowSettings(true)
         }}
+        onLogout={
+          onLogout
+            ? () => {
+                setMenuOpen(false)
+                onLogout()
+              }
+            : undefined
+        }
       />
       <ComposeMenu
         open={composeOpen}
