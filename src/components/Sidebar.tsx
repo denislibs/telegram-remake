@@ -13,6 +13,7 @@ import NotificationBanner from './NotificationBanner'
 import MainMenu from './MainMenu'
 import ComposeMenu from './ComposeMenu'
 import SettingsView from './SettingsView'
+import ContactsView from './ContactsView'
 import NewGroupFlow from './NewGroupFlow'
 import NewChannelFlow from './NewChannelFlow'
 import NewPrivateChat from './NewPrivateChat'
@@ -54,6 +55,7 @@ export default function Sidebar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [composeOpen, setComposeOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showContacts, setShowContacts] = useState(false)
   const [newGroupOpen, setNewGroupOpen] = useState(false)
   const [newChannelOpen, setNewChannelOpen] = useState(false)
   const [newPrivateOpen, setNewPrivateOpen] = useState(false)
@@ -342,6 +344,14 @@ export default function Sidebar({
           setMenuOpen(false)
           setShowSettings(true)
         }}
+        onOpenContacts={() => {
+          setMenuOpen(false)
+          setShowContacts(true)
+        }}
+        onOpenSaved={() => {
+          setMenuOpen(false)
+          onSelect('saved')
+        }}
         onLogout={
           onLogout
             ? () => {
@@ -361,6 +371,18 @@ export default function Sidebar({
       <AnimatePresence>
         {showSettings && (
           <SettingsView onBack={() => setShowSettings(false)} onToggleMode={onToggleMode} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showContacts && (
+          <ContactsView
+            chats={chats}
+            onSelect={(id) => {
+              setShowContacts(false)
+              onSelect(id)
+            }}
+            onBack={() => setShowContacts(false)}
+          />
         )}
       </AnimatePresence>
       <AnimatePresence>

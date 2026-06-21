@@ -275,6 +275,7 @@ const ru: Dict = {
   "Choose who can add you to groups and channels.": "Выберите, кто может добавлять вас в группы и каналы.",
   "These users will always see this, regardless of the setting above.": "Эти пользователи всегда будут это видеть, независимо от настройки выше.",
   "These users will never see this, regardless of the setting above.": "Эти пользователи никогда не будут это видеть, независимо от настройки выше.",
+  "No contacts found.": "Контакты не найдены.",
 }
 
 const uk: Dict = {
@@ -547,6 +548,7 @@ const uk: Dict = {
   "Choose who can add you to groups and channels.": "Оберіть, хто може додавати вас до груп і каналів.",
   "These users will always see this, regardless of the setting above.": "Ці користувачі завжди це бачитимуть, незалежно від налаштування вище.",
   "These users will never see this, regardless of the setting above.": "Ці користувачі ніколи це не бачитимуть, незалежно від налаштування вище.",
+  "No contacts found.": "Контакти не знайдено.",
 }
 
 const es: Dict = {
@@ -819,6 +821,7 @@ const es: Dict = {
   "Choose who can add you to groups and channels.": "Elige quién puede añadirte a grupos y canales.",
   "These users will always see this, regardless of the setting above.": "Estos usuarios siempre verán esto, sin importar el ajuste anterior.",
   "These users will never see this, regardless of the setting above.": "Estos usuarios nunca verán esto, sin importar el ajuste anterior.",
+  "No contacts found.": "No se encontraron contactos.",
 }
 
 const de: Dict = {
@@ -1093,6 +1096,7 @@ const de: Dict = {
   "Choose who can add you to groups and channels.": "Wähle, wer dich zu Gruppen und Kanälen hinzufügen kann.",
   "These users will always see this, regardless of the setting above.": "Diese Nutzer sehen dies immer, unabhängig von der Einstellung oben.",
   "These users will never see this, regardless of the setting above.": "Diese Nutzer sehen dies nie, unabhängig von der Einstellung oben.",
+  "No contacts found.": "Keine Kontakte gefunden.",
 }
 
 const fr: Dict = {
@@ -1367,6 +1371,7 @@ const fr: Dict = {
   "Choose who can add you to groups and channels.": "Choisissez qui peut vous ajouter à des groupes et des canaux.",
   "These users will always see this, regardless of the setting above.": "Ces utilisateurs verront toujours ceci, quel que soit le réglage ci-dessus.",
   "These users will never see this, regardless of the setting above.": "Ces utilisateurs ne verront jamais ceci, quel que soit le réglage ci-dessus.",
+  "No contacts found.": "Aucun contact trouvé.",
 }
 
 export const dicts: Record<Lang, Dict> = { en: {}, ru, uk, es, de, fr }

@@ -35,7 +35,15 @@ import EmojiPicker from './EmojiPicker'
 import AttachMenu from './AttachMenu'
 import CallScreen from './CallScreen'
 import RichText, { emojiOnlyCount } from './RichText'
-import type { Chat, ConvMsg, MsgStatus } from '../data'
+import MediaViewer from './MediaViewer'
+import {
+  MediaBubble,
+  DocumentBubble,
+  AudioBubble,
+  RoundVideoBubble,
+  WebPagePreview,
+} from './messages/MessageBubbles'
+import type { Chat, ConvMsg, MsgStatus, MediaItem } from '../data'
 import { useT } from '../i18n'
 
 const REACTIONS = ['❤️', '👍', '👎', '🔥', '🥰', '👏', '😁']
@@ -96,6 +104,7 @@ export default function ConversationView({ chat, onBack }: Props) {
   const [reply, setReply] = useState<{ name: string; text: string; color: string } | null>(null)
   const [chatSearch, setChatSearch] = useState(false)
   const [chatSearchQuery, setChatSearchQuery] = useState('')
+  const [viewerMedia, setViewerMedia] = useState<MediaItem | null>(null)
   const [headerMenu, setHeaderMenu] = useState<{ top: number; right: number } | null>(null)
   const [showScrollDown, setShowScrollDown] = useState(false)
   const [emojiOpen, setEmojiOpen] = useState(false)
@@ -632,6 +641,20 @@ export default function ConversationView({ chat, onBack }: Props) {
                         </Box>
                       </Box>
                     </Box>
+                  ) : m.type === 'photo' || m.type === 'video' || m.type === 'album' ? (
+                    <MediaBubble
+                      m={m}
+                      out={out}
+                      firstInGroup={firstInGroup}
+                      lastInGroup={lastInGroup}
+                      onOpen={(it) => setViewerMedia(it)}
+                    />
+                  ) : m.type === 'document' ? (
+                    <DocumentBubble m={m} out={out} firstInGroup={firstInGroup} lastInGroup={lastInGroup} />
+                  ) : m.type === 'audio' ? (
+                    <AudioBubble m={m} out={out} firstInGroup={firstInGroup} lastInGroup={lastInGroup} />
+                  ) : m.type === 'roundVideo' ? (
+                    <RoundVideoBubble m={m} out={out} firstInGroup={firstInGroup} lastInGroup={lastInGroup} />
                   ) : (
                     <Box
                       sx={{
@@ -697,6 +720,9 @@ export default function ConversationView({ chat, onBack }: Props) {
                           <Ticks status={m.status} color={tickColor} />
                         </Box>
                       </Box>
+                      {m.webPage && (
+                        <WebPagePreview wp={m.webPage} out={out} linkColor={out ? '#fff' : tg.link} />
+                      )}
                     </Box>
                   )}
                 </Box>
@@ -967,6 +993,14 @@ export default function ConversationView({ chat, onBack }: Props) {
 
       {/* Attach menu */}
       {attachAnchor && <AttachMenu anchor={attachAnchor} onClose={() => setAttachAnchor(null)} />}
+
+      {/* Media viewer (photos / videos / albums) */}
+      {viewerMedia && (
+        <MediaViewer
+          media={{ gradient: viewerMedia.gradient, emoji: viewerMedia.emoji, title: chat.name }}
+          onClose={() => setViewerMedia(null)}
+        />
+      )}
 
       {/* Call screen */}
       <AnimatePresence>

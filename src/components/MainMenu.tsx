@@ -18,6 +18,8 @@ interface Props {
   open: boolean
   onClose: () => void
   onOpenSettings: () => void
+  onOpenContacts?: () => void
+  onOpenSaved?: () => void
   onLogout?: () => void
 }
 
@@ -58,7 +60,14 @@ function Row({
   )
 }
 
-export default function MainMenu({ open, onClose, onOpenSettings, onLogout }: Props) {
+export default function MainMenu({
+  open,
+  onClose,
+  onOpenSettings,
+  onOpenContacts,
+  onOpenSaved,
+  onLogout,
+}: Props) {
   const tg = useTheme().tg
   const t = useT()
   const divider = (
@@ -111,9 +120,17 @@ export default function MainMenu({ open, onClose, onOpenSettings, onLogout }: Pr
               </Box>
               <Row icon={<AddRounded />} label={t('Add Account')} onClick={onClose} />
               {divider}
-              <Row icon={<BookmarkBorderRounded />} label={t('Saved Messages')} onClick={onClose} />
+              <Row
+                icon={<BookmarkBorderRounded />}
+                label={t('Saved Messages')}
+                onClick={onOpenSaved ?? onClose}
+              />
               <Row icon={<RadioButtonUncheckedRounded />} label={t('My Stories')} onClick={onClose} />
-              <Row icon={<PersonOutlineRounded />} label={t('Contacts')} onClick={onClose} />
+              <Row
+                icon={<PersonOutlineRounded />}
+                label={t('Contacts')}
+                onClick={onOpenContacts ?? onClose}
+              />
               {divider}
               <Row icon={<AccountBalanceWalletOutlined />} label={t('Wallet')} onClick={onClose} />
               {divider}
