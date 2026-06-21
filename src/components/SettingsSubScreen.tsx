@@ -1,11 +1,60 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Box, IconButton, Typography, useTheme } from '@mui/material'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
+import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import DoneRounded from '@mui/icons-material/DoneRounded'
 import { slideInRight } from '../motion'
 import TgSwitch from './TgSwitch'
 import { useT, useLang, LANGS } from '../i18n'
+import ActiveSessions from './settings/ActiveSessions'
+import BlockedUsers from './settings/BlockedUsers'
+import TwoStepVerification from './settings/TwoStepVerification'
+import PrivacyRule from './settings/PrivacyRule'
+import AutoDownload from './settings/AutoDownload'
+import QuickReaction from './settings/QuickReaction'
+import PowerSaving from './settings/PowerSaving'
+import Passkeys from './settings/Passkeys'
+
+// Rows that open a dedicated sub-screen instead of being a plain value.
+const PRIVACY_RULES = new Set([
+  'Phone Number',
+  'Last Seen & Online',
+  'Profile Photo',
+  'Calls',
+  'Forwarded Messages',
+  'Groups & Channels',
+])
+const NAV = new Set<string>([
+  ...PRIVACY_RULES,
+  'Active Sessions',
+  'Blocked Users',
+  'Two-Step Verification',
+  'Passkeys',
+  'Power Saving',
+  'Quick Reaction',
+  'Auto-Download Media',
+])
+function renderDedicated(label: string, onBack: () => void): ReactNode {
+  if (PRIVACY_RULES.has(label)) return <PrivacyRule title={label} onBack={onBack} />
+  switch (label) {
+    case 'Active Sessions':
+      return <ActiveSessions onBack={onBack} />
+    case 'Blocked Users':
+      return <BlockedUsers onBack={onBack} />
+    case 'Two-Step Verification':
+      return <TwoStepVerification onBack={onBack} />
+    case 'Passkeys':
+      return <Passkeys onBack={onBack} />
+    case 'Power Saving':
+      return <PowerSaving onBack={onBack} />
+    case 'Quick Reaction':
+      return <QuickReaction onBack={onBack} />
+    case 'Auto-Download Media':
+      return <AutoDownload onBack={onBack} />
+  }
+  return null
+}
 
 type Ctrl = 'toggle' | 'value' | 'link' | 'button' | 'radio'
 interface SRow {
@@ -68,11 +117,7 @@ const SCREENS: Record<string, SSection[]> = {
   'Data and Storage': [
     {
       caption: 'Automatic media download',
-      rows: [
-        { label: 'Photos', type: 'value', value: 'All chats' },
-        { label: 'Videos', type: 'value', value: 'Private chats' },
-        { label: 'Files', type: 'value', value: 'Never' },
-      ],
+      rows: [{ label: 'Auto-Download Media', type: 'value', value: 'On' }],
     },
     {
       caption: 'Storage',
@@ -93,6 +138,7 @@ const SCREENS: Record<string, SSection[]> = {
         { label: 'Auto-Delete Messages', type: 'value', value: 'Off' },
         { label: 'Passcode Lock', type: 'value', value: 'Off' },
         { label: 'Two-Step Verification', type: 'value', value: 'Off' },
+        { label: 'Passkeys', type: 'value', value: '2' },
       ],
     },
     {
@@ -113,6 +159,7 @@ const SCREENS: Record<string, SSection[]> = {
       rows: [
         { label: 'Text Size', type: 'value', value: '16' },
         { label: 'Chat Background', type: 'link' },
+        { label: 'Quick Reaction', type: 'value', value: '👍' },
         { label: 'Power Saving', type: 'value', value: 'Disabled' },
       ],
     },
@@ -246,6 +293,7 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
     })
     return o
   })
+  const [dedicated, setDedicated] = useState<string | null>(null)
 
   return (
     <motion.div
@@ -290,8 +338,10 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
                   title === 'Language' && r.type === 'radio'
                     ? LANGS.find((l) => l.name === r.label)
                     : undefined
+                const isNav = NAV.has(r.label)
                 const onRow = () => {
-                  if (r.type === 'toggle') setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
+                  if (isNav) setDedicated(r.label)
+                  else if (r.type === 'toggle') setToggles((prev) => ({ ...prev, [key]: !prev[key] }))
                   else if (langEntry) setLang(langEntry.code)
                   else if (r.type === 'radio') setRadios((rd) => ({ ...rd, [si]: r.label }))
                 }
@@ -329,6 +379,7 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
                         {r.value && (KEYBOARD_SHORTCUTS.has(r.value) ? r.value : t(r.value))}
                       </Typography>
                     )}
+                    {isNav && <ChevronRightRounded sx={{ fontSize: 22, color: tg.textFaint }} />}
                     {selected && <DoneRounded sx={{ fontSize: 22, color: tg.accent }} />}
                   </Box>
                 )
@@ -342,6 +393,11 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
           </Box>
         ))}
       </Box>
+
+      {/* dedicated sub-sub-screen overlay */}
+      <AnimatePresence>
+        {dedicated && renderDedicated(dedicated, () => setDedicated(null))}
+      </AnimatePresence>
     </motion.div>
   )
 }

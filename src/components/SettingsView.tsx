@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { slideInRight } from '../motion'
 import TgSwitch from './TgSwitch'
 import SettingsSubScreen, { hasSubScreen } from './SettingsSubScreen'
+import EditProfile from './settings/EditProfile'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined'
 import StarRounded from '@mui/icons-material/StarRounded'
@@ -56,6 +57,7 @@ export default function SettingsView({
   const cardBg = isDark ? '#2b2b2b' : '#ffffff'
   const [active, setActive] = useState('Notifications and Sounds')
   const [sub, setSub] = useState<string | null>(null)
+  const [editProfile, setEditProfile] = useState(false)
 
   return (
     <motion.div
@@ -83,7 +85,7 @@ export default function SettingsView({
         <IconButton sx={{ color: tg.textSecondary }}>
           <QrCode2Rounded />
         </IconButton>
-        <IconButton sx={{ color: tg.textSecondary }}>
+        <IconButton onClick={() => setEditProfile(true)} sx={{ color: tg.textSecondary }}>
           <EditRounded />
         </IconButton>
         <IconButton sx={{ color: tg.textSecondary }}>
@@ -112,7 +114,10 @@ export default function SettingsView({
         </Box>
 
         {/* Contact card */}
-        <Box sx={{ mx: 1.25, mb: 1.5, borderRadius: '16px', background: cardBg, py: 0.5 }}>
+        <Box
+          onClick={() => setEditProfile(true)}
+          sx={{ mx: 1.25, mb: 1.5, borderRadius: '16px', background: cardBg, py: 0.5, cursor: 'pointer' }}
+        >
           <InfoRow icon={<CallOutlined />} title="+7 925 481 7290" subtitle={t('Phone')} />
           <InfoRow icon={<AlternateEmailRounded />} title="denis_m" subtitle={t('Username')} />
         </Box>
@@ -221,6 +226,11 @@ export default function SettingsView({
       {/* Sub-screen overlay */}
       <AnimatePresence>
         {sub && <SettingsSubScreen title={sub} onBack={() => setSub(null)} />}
+      </AnimatePresence>
+
+      {/* Edit profile overlay */}
+      <AnimatePresence>
+        {editProfile && <EditProfile onBack={() => setEditProfile(false)} />}
       </AnimatePresence>
     </motion.div>
   )
