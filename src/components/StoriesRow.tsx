@@ -1,4 +1,5 @@
 import { Box, Typography, useTheme } from '@mui/material'
+import { AnimatePresence, motion } from 'framer-motion'
 import Avatar from './Avatar'
 
 export interface Story {
@@ -145,52 +146,63 @@ export function StoriesStack({
   const theme = useTheme()
   const tg = theme.tg
   const searchBg = theme.palette.mode === 'dark' ? '#181818' : '#f0f0f2'
-  const p = Math.min(1, Math.max(0, (progress - 0.4) / 0.6)) // appear in the second half of the fold
-  if (p <= 0) return null
+  const show = progress > 0.45 // collapsed enough → show the cluster
   const items = STORIES.slice(0, 3)
+
+  // each avatar grows and flies up into place from below, staggered
+  const container = {
+    hidden: { transition: { staggerChildren: 0.05, staggerDirection: -1 } },
+    show: { transition: { staggerChildren: 0.07, delayChildren: 0.02 } },
+  }
+  const item = {
+    hidden: { opacity: 0, y: 16, scale: 0.2 },
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 520, damping: 24 } },
+  }
+
   return (
-    <Box
-      onClick={(e) => {
-        e.stopPropagation()
-        onOpen(0)
-      }}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        flexShrink: 0,
-        cursor: 'pointer',
-        opacity: p,
-        width: p * 52,
-        transform: `scale(${0.85 + p * 0.15})`,
-        transformOrigin: 'right center',
-        overflow: 'hidden',
-      }}
-    >
-      {items.map((story, i) => {
-        const ringBg = story.seen
-          ? tg.textFaint
-          : 'linear-gradient(215deg, #34c76f -1.61%, #3da1fd 97.44%)'
-        return (
-          <Box
-            key={story.id}
-            sx={{
-              width: 24,
-              height: 24,
-              borderRadius: '50%',
-              background: ringBg,
-              padding: '2px',
-              boxSizing: 'border-box',
-              flexShrink: 0,
-              ml: i === 0 ? 0 : '-10px',
-              zIndex: 3 - i,
-              // clean separator ring in the search-bar colour so overlaps cut cleanly
-              boxShadow: `0 0 0 2px ${searchBg}`,
-            }}
-          >
-            <Avatar background={story.bg} emoji={story.emoji} size={20} />
-          </Box>
-        )
-      })}
-    </Box>
+    <AnimatePresence>
+      {show && (
+        <Box
+          key="stories-stack"
+          component={motion.div}
+          variants={container}
+          initial="hidden"
+          animate="show"
+          exit="hidden"
+          onClick={(e) => {
+            e.stopPropagation()
+            onOpen(0)
+          }}
+          sx={{ display: 'flex', alignItems: 'center', flexShrink: 0, cursor: 'pointer', ml: 0.5 }}
+        >
+          {items.map((story, i) => {
+            const ringBg = story.seen
+              ? tg.textFaint
+              : 'linear-gradient(215deg, #34c76f -1.61%, #3da1fd 97.44%)'
+            return (
+              <Box
+                key={story.id}
+                component={motion.div}
+                variants={item}
+                sx={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: ringBg,
+                  padding: '2px',
+                  boxSizing: 'border-box',
+                  flexShrink: 0,
+                  ml: i === 0 ? 0 : '-10px',
+                  zIndex: 3 - i,
+                  boxShadow: `0 0 0 2px ${searchBg}`,
+                }}
+              >
+                <Avatar background={story.bg} emoji={story.emoji} size={20} />
+              </Box>
+            )
+          })}
+        </Box>
+      )}
+    </AnimatePresence>
   )
 }
