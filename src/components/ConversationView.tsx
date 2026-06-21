@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, InputBase, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EASE, DUR } from '../motion'
 import CallOutlined from '@mui/icons-material/CallOutlined'
@@ -80,6 +80,9 @@ export default function ConversationView({ chat, onBack }: Props) {
   const theme = useTheme()
   const tg = theme.tg
   const mode = theme.palette.mode
+  // On narrow screens the chat is full-width; give the header/feed/composer a
+  // side gutter so the floating pills don't sit flush against the screen edges.
+  const narrow = useMediaQuery('(max-width:900px)')
   const incomingBg = tg.bubble
   const isChannel = chat.type === 'channel'
   const isGroup = chat.type === 'group'
@@ -273,7 +276,16 @@ export default function ConversationView({ chat, onBack }: Props) {
         background: 'transparent',
       }}
     >
-      <Box sx={{ flex: 1, minWidth: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          px: narrow ? 1 : 0,
+        }}
+      >
         {/* Header */}
         <Box
           sx={{
