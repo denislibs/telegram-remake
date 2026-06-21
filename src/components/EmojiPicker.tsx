@@ -16,7 +16,7 @@ import AutoAwesomeOutlined from '@mui/icons-material/AutoAwesomeOutlined'
 import GifBoxOutlined from '@mui/icons-material/GifBoxOutlined'
 import { EASE } from '../motion'
 import { useT } from '../i18n'
-import { CATEGORIES, SKIN, TONES, NAMES } from './emoji/emojiData'
+import { CATEGORIES, SKIN, TONES, NAMES, DEFAULT_FREQUENT, QUICK_CHIPS } from './emoji/emojiData'
 
 type Tab = 'emoji' | 'stickers' | 'gifs'
 
@@ -41,7 +41,6 @@ function loadRecent(): string[] {
   }
 }
 
-// mock sticker packs (emoji placeholders) + mock GIF gradients
 const STICKER_PACKS = [
   { name: 'Cats', emojis: ['😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '🐱', '🐈', '🐈‍⬛'] },
   { name: 'Hands', emojis: ['👍', '👎', '👏', '🙌', '🤝', '✌️', '🤟', '🤙', '👊', '✊', '🤛', '🤜'] },
@@ -72,15 +71,15 @@ export default function EmojiPicker({
   onGif?: (gradient: string) => void
   onClose: () => void
 }) {
-  const tg = useTheme().tg
+  const theme = useTheme()
+  const tg = theme.tg
   const t = useT()
   const [tab, setTab] = useState<Tab>('emoji')
-  const [search, setSearch] = useState(false)
   const [query, setQuery] = useState('')
   const [tone, setTone] = useState(0)
   const [toneOpen, setToneOpen] = useState(false)
   const [recent, setRecent] = useState<string[]>(loadRecent)
-  const [activeCat, setActiveCat] = useState('smileys')
+  const [activeCat, setActiveCat] = useState('recent')
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -94,22 +93,21 @@ export default function EmojiPicker({
   const applyTone = (e: string) => (tone > 0 && SKIN.has(e) ? e + TONES[tone] : e)
 
   const pickEmoji = (e: string) => {
-    const base = e // store the toned version in recent as-is
-    onPick(base)
+    onPick(e)
     setRecent((prev) => {
-      const next = [base, ...prev.filter((x) => x !== base)].slice(0, 32)
+      const next = [e, ...prev.filter((x) => x !== e)].slice(0, 32)
       localStorage.setItem(RECENT_KEY, JSON.stringify(next))
       return next
     })
   }
 
-  // categories incl. Recent when present
+  // "Frequently used" seed when there's no history yet (Telegram pre-fills it).
+  const frequent = recent.length ? recent : DEFAULT_FREQUENT
   const cats = useMemo(
-    () => (recent.length ? [{ key: 'recent', label: 'Recently Used', emojis: recent }, ...CATEGORIES] : CATEGORIES),
-    [recent],
+    () => [{ key: 'recent', label: 'Frequently Used', emojis: frequent }, ...CATEGORIES],
+    [frequent],
   )
 
-  // search results
   const results = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return []
@@ -122,7 +120,6 @@ export default function EmojiPicker({
     return out
   }, [query])
 
-  // scroll-spy for the category nav
   const onScroll = () => {
     const sc = scrollRef.current
     if (!sc) return
@@ -142,9 +139,9 @@ export default function EmojiPicker({
   }
 
   const cellSx = {
-    width: 42,
+    width: '100%',
     height: 42,
-    fontSize: 28,
+    fontSize: 30,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -155,37 +152,13 @@ export default function EmojiPicker({
     '&:hover': { background: tg.hover },
     '&:active': { background: tg.divider },
   }
+  const gridSx = { display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)' }
 
-  const tabBtn = (key: Tab | 'search' | 'delete', icon: React.ReactNode) => {
-    const active = (key === 'search' && search) || key === tab
+  const emojiCell = (raw: string, key: string, toneable = true) => {
+    const e = toneable ? applyTone(raw) : raw
     return (
-      <Box
-        key={key}
-        onClick={() => {
-          if (key === 'search') {
-            setSearch((s) => !s)
-            setTab('emoji')
-          } else if (key === 'delete') {
-            onPick('\b') // signals a backspace to the composer
-          } else {
-            setSearch(false)
-            setTab(key)
-          }
-        }}
-        sx={{
-          width: 40,
-          height: 36,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          color: active ? tg.accent : tg.textSecondary,
-          background: active ? `${tg.accent}1f` : 'transparent',
-          '&:hover': { background: active ? `${tg.accent}1f` : tg.hover },
-        }}
-      >
-        {icon}
+      <Box key={key} onClick={() => pickEmoji(e)} sx={cellSx}>
+        {e}
       </Box>
     )
   }
@@ -203,11 +176,10 @@ export default function EmojiPicker({
         right: 0,
         width: 'min(382px, calc(100vw - 24px))',
         height: 420,
-        background: tg.menuBg,
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)',
+        background: tg.sidebarBg,
         borderRadius: '20px',
         boxShadow: '0 5px 10px 5px rgba(16,35,47,0.14)',
+        border: `1px solid ${tg.divider}`,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -215,73 +187,10 @@ export default function EmojiPicker({
         zIndex: 30,
       }}
     >
-      {/* Top: search field+chips OR category nav (emoji tab only) */}
-      {search ? (
-        <Box sx={{ p: 1, borderBottom: `1px solid ${tg.divider}` }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              height: 38,
-              px: 1.5,
-              borderRadius: '8px',
-              background: tg.bubble,
-            }}
-          >
-            <SearchRounded sx={{ fontSize: 20, color: tg.textFaint }} />
-            <InputBase
-              autoFocus
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('Search Emoji')}
-              sx={{ flex: 1, fontSize: 15, color: tg.textPrimary, '& input::placeholder': { color: tg.textFaint, opacity: 1 } }}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', gap: '7px', mt: 1, overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
-            {CATEGORIES.map((c) => {
-              const Icon = CAT_ICON[c.key]
-              return (
-                <Box
-                  key={c.key}
-                  onClick={() => {
-                    setSearch(false)
-                    setQuery('')
-                    scrollToCat(c.key)
-                  }}
-                  sx={{
-                    width: 28,
-                    height: 28,
-                    flexShrink: 0,
-                    borderRadius: '50%',
-                    background: tg.bubble,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: tg.textSecondary,
-                    cursor: 'pointer',
-                    '&:hover': { background: tg.hover },
-                  }}
-                >
-                  <Icon sx={{ fontSize: 18 }} />
-                </Box>
-              )
-            })}
-          </Box>
-        </Box>
-      ) : (
-        tab === 'emoji' && (
-          <Box
-            sx={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.25,
-              px: 0.5,
-              height: 40,
-              borderBottom: `1px solid ${tg.divider}`,
-            }}
-          >
+      {tab === 'emoji' && (
+        <>
+          {/* category nav */}
+          <Box sx={{ display: 'flex', alignItems: 'center', px: 0.5, pt: 0.5 }}>
             <Box sx={{ display: 'flex', flex: 1, overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
               {cats.map((c) => {
                 const Icon = CAT_ICON[c.key]
@@ -291,8 +200,8 @@ export default function EmojiPicker({
                     key={c.key}
                     onClick={() => scrollToCat(c.key)}
                     sx={{
-                      width: 32,
-                      height: 32,
+                      width: 34,
+                      height: 34,
                       flexShrink: 0,
                       display: 'flex',
                       alignItems: 'center',
@@ -300,7 +209,8 @@ export default function EmojiPicker({
                       borderRadius: '8px',
                       cursor: 'pointer',
                       color: on ? tg.accent : tg.textFaint,
-                      '&:hover': { color: tg.textSecondary },
+                      background: on ? `${tg.accent}1f` : 'transparent',
+                      '&:hover': { background: on ? `${tg.accent}1f` : tg.hover },
                     }}
                   >
                     <Icon sx={{ fontSize: 20 }} />
@@ -308,11 +218,11 @@ export default function EmojiPicker({
                 )
               })}
             </Box>
-            {/* skin-tone selector */}
+            {/* skin tone */}
             <Box sx={{ position: 'relative', flexShrink: 0 }}>
               <Box
                 onClick={() => setToneOpen((o) => !o)}
-                sx={{ width: 32, height: 32, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', cursor: 'pointer', '&:hover': { background: tg.hover } }}
+                sx={{ width: 34, height: 34, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', cursor: 'pointer', '&:hover': { background: tg.hover } }}
               >
                 {'✋' + TONES[tone]}
               </Box>
@@ -324,19 +234,7 @@ export default function EmojiPicker({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.15, ease: EASE }}
-                    sx={{
-                      position: 'absolute',
-                      top: '100%',
-                      right: 0,
-                      mt: 0.5,
-                      display: 'flex',
-                      gap: 0.25,
-                      p: 0.5,
-                      borderRadius: '8px',
-                      background: tg.menuBg,
-                      boxShadow: tg.menuShadow,
-                      zIndex: 5,
-                    }}
+                    sx={{ position: 'absolute', top: '100%', right: 0, mt: 0.5, display: 'flex', gap: 0.25, p: 0.5, borderRadius: '8px', background: tg.menuBg, boxShadow: tg.menuShadow, zIndex: 5 }}
                   >
                     {TONES.map((tn, i) => (
                       <Box
@@ -355,51 +253,76 @@ export default function EmojiPicker({
               </AnimatePresence>
             </Box>
           </Box>
-        )
+
+          {/* search + quick chips (always visible) */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1, py: 0.75 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                height: 36,
+                px: 1.25,
+                borderRadius: '18px',
+                background: tg.bubble,
+                flexShrink: 1,
+                minWidth: 0,
+                flex: query ? 1 : '0 1 auto',
+              }}
+            >
+              <SearchRounded sx={{ fontSize: 20, color: tg.textFaint }} />
+              <InputBase
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t('Search Emoji')}
+                sx={{ flex: 1, fontSize: 15, color: tg.textPrimary, '& input::placeholder': { color: tg.textFaint, opacity: 1 } }}
+              />
+            </Box>
+            {!query && (
+              <Box sx={{ display: 'flex', gap: 0.5, overflowX: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
+                {QUICK_CHIPS.map((c) => (
+                  <Box
+                    key={c.e}
+                    onClick={() => setQuery(c.q)}
+                    sx={{ width: 30, height: 30, flexShrink: 0, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', cursor: 'pointer', opacity: 0.85, '&:hover': { background: tg.hover, opacity: 1 } }}
+                  >
+                    {c.e}
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
+        </>
       )}
 
       {/* Content */}
-      <Box ref={scrollRef} onScroll={onScroll} sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', px: 0.5, py: 0.5 }}>
-        {/* SEARCH RESULTS */}
-        {search && query.trim() ? (
-          results.length ? (
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 42px)', justifyContent: 'space-between' }}>
-              {results.map((e, i) => (
-                <Box key={`${e}-${i}`} onClick={() => pickEmoji(e)} sx={cellSx}>
-                  {e}
-                </Box>
-              ))}
-            </Box>
-          ) : (
-            <Typography sx={{ textAlign: 'center', color: tg.textSecondary, fontSize: 14, mt: 4 }}>
-              {t('No emoji found.')}
-            </Typography>
-          )
-        ) : tab === 'emoji' ? (
-          cats.map((c) => (
-            <Box key={c.key} ref={(el: HTMLDivElement | null) => (sectionRefs.current[c.key] = el)} sx={{ mb: 0.5 }}>
-              <Typography sx={{ fontSize: 13, fontWeight: 500, color: tg.textFaint, px: '6px', py: '6px' }}>
-                {t(c.label)}
+      <Box ref={scrollRef} onScroll={onScroll} sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', px: 0.5, pb: 0.5 }}>
+        {tab === 'emoji' ? (
+          query.trim() ? (
+            results.length ? (
+              <Box sx={gridSx}>{results.map((e, i) => emojiCell(e, `r-${e}-${i}`, false))}</Box>
+            ) : (
+              <Typography sx={{ textAlign: 'center', color: tg.textSecondary, fontSize: 14, mt: 4 }}>
+                {t('No emoji found.')}
               </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 42px)', justifyContent: 'space-between' }}>
-                {c.emojis.map((e, i) => {
-                  const toned = c.key === 'recent' ? e : applyTone(e)
-                  return (
-                    <Box key={`${c.key}-${i}`} onClick={() => pickEmoji(toned)} sx={cellSx}>
-                      {toned}
-                    </Box>
-                  )
-                })}
+            )
+          ) : (
+            cats.map((c) => (
+              <Box key={c.key} ref={(el: HTMLDivElement | null) => (sectionRefs.current[c.key] = el)} sx={{ mb: 0.5 }}>
+                <Typography sx={{ fontSize: 14, fontWeight: 500, color: tg.textFaint, px: '6px', py: '8px' }}>
+                  {t(c.label)}
+                </Typography>
+                <Box sx={gridSx}>{c.emojis.map((e, i) => emojiCell(e, `${c.key}-${i}`, c.key !== 'recent'))}</Box>
               </Box>
-            </Box>
-          ))
+            ))
+          )
         ) : tab === 'stickers' ? (
           STICKER_PACKS.map((p) => (
             <Box key={p.name} sx={{ mb: 0.5 }}>
-              <Typography sx={{ fontSize: 13, fontWeight: 500, color: tg.textFaint, px: '6px', py: '6px' }}>
+              <Typography sx={{ fontSize: 14, fontWeight: 500, color: tg.textFaint, px: '6px', py: '8px' }}>
                 {p.name}
               </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, 64px)', justifyContent: 'space-between', gap: '4px' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
                 {p.emojis.map((e, i) => (
                   <Box
                     key={`${p.name}-${i}`}
@@ -407,7 +330,7 @@ export default function EmojiPicker({
                       onSticker?.(e)
                       onClose()
                     }}
-                    sx={{ width: 64, height: 64, fontSize: 46, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', cursor: 'pointer', '&:hover': { background: tg.hover } }}
+                    sx={{ height: 64, fontSize: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', cursor: 'pointer', '&:hover': { background: tg.hover } }}
                   >
                     {e}
                   </Box>
@@ -416,8 +339,7 @@ export default function EmojiPicker({
             </Box>
           ))
         ) : (
-          // GIFs — masonry via CSS columns
-          <Box sx={{ columnCount: 2, columnGap: '2px', px: '2px' }}>
+          <Box sx={{ columnCount: 2, columnGap: '4px', px: '2px', pt: '4px' }}>
             {GIF_TILES.map((tile, i) => (
               <Box
                 key={i}
@@ -425,21 +347,7 @@ export default function EmojiPicker({
                   onGif?.(tile.g)
                   onClose()
                 }}
-                sx={{
-                  breakInside: 'avoid',
-                  mb: '2px',
-                  height: tile.h,
-                  borderRadius: '8px',
-                  background: tile.g,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 40,
-                  cursor: 'pointer',
-                  position: 'relative',
-                  '&::after': { content: '""', position: 'absolute', inset: 0, borderRadius: '8px', background: 'rgba(0,0,0,0.06)', opacity: 0, transition: 'opacity .15s' },
-                  '&:hover::after': { opacity: 1 },
-                }}
+                sx={{ breakInside: 'avoid', mb: '4px', height: tile.h, borderRadius: '8px', background: tile.g, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, cursor: 'pointer' }}
               >
                 {tile.e}
               </Box>
@@ -448,7 +356,7 @@ export default function EmojiPicker({
         )}
       </Box>
 
-      {/* Bottom tab bar */}
+      {/* Bottom tab bar: emoji / stickers / gifs centered, backspace right */}
       <Box
         sx={{
           height: 49,
@@ -456,16 +364,47 @@ export default function EmojiPicker({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 0.5,
+          gap: 1,
           position: 'relative',
           borderTop: `1px solid ${tg.divider}`,
         }}
       >
-        <Box sx={{ position: 'absolute', left: 8 }}>{tabBtn('search', <SearchRounded sx={{ fontSize: 24 }} />)}</Box>
-        {tabBtn('emoji', <SentimentSatisfiedAltRounded sx={{ fontSize: 24 }} />)}
-        {tabBtn('stickers', <AutoAwesomeOutlined sx={{ fontSize: 24 }} />)}
-        {tabBtn('gifs', <GifBoxOutlined sx={{ fontSize: 24 }} />)}
-        <Box sx={{ position: 'absolute', right: 8 }}>{tabBtn('delete', <BackspaceOutlined sx={{ fontSize: 24 }} />)}</Box>
+        {([
+          ['emoji', <SentimentSatisfiedAltRounded sx={{ fontSize: 24 }} />],
+          ['stickers', <AutoAwesomeOutlined sx={{ fontSize: 24 }} />],
+          ['gifs', <GifBoxOutlined sx={{ fontSize: 24 }} />],
+        ] as [Tab, React.ReactNode][]).map(([key, icon]) => {
+          const active = key === tab
+          return (
+            <Box
+              key={key}
+              onClick={() => {
+                setTab(key)
+                setQuery('')
+              }}
+              sx={{
+                width: 40,
+                height: 36,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                color: active ? tg.accent : tg.textSecondary,
+                background: active ? `${tg.accent}1f` : 'transparent',
+                '&:hover': { background: active ? `${tg.accent}1f` : tg.hover },
+              }}
+            >
+              {icon}
+            </Box>
+          )
+        })}
+        <Box
+          onClick={() => onPick('\b')}
+          sx={{ position: 'absolute', right: 8, width: 40, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', cursor: 'pointer', color: tg.textSecondary, '&:hover': { background: tg.hover } }}
+        >
+          <BackspaceOutlined sx={{ fontSize: 24 }} />
+        </Box>
       </Box>
     </Box>
   )

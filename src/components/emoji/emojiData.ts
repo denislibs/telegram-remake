@@ -75,6 +75,25 @@ export const SKIN = new Set<string>([
 
 export const TONES = ['', '🏻', '🏼', '🏽', '🏾', '🏿']
 
+// Seed for the "Frequently Used" section shown before the user picks anything
+// (Telegram pre-fills it). Mirrors the common set tweb shows.
+export const DEFAULT_FREQUENT = [
+  '😂','😘','❤️','😍','😊','😁','👍','☺️','😔','😄','😭','💋','😒','😳','😜','🙈',
+  '😉','😀','😢','😝','😱','😡','😏','😞','😅','🤗','😌','😆','👌','😐','🙁','🔥',
+]
+
+// Quick search chips shown to the right of the search field (emoji → keyword).
+export const QUICK_CHIPS: { e: string; q: string }[] = [
+  { e: '❤️', q: 'love' },
+  { e: '👍', q: 'thumbs up' },
+  { e: '👎', q: 'thumbs down' },
+  { e: '🎉', q: 'party' },
+  { e: '😀', q: 'smile' },
+  { e: '😢', q: 'cry' },
+  { e: '😡', q: 'angry' },
+  { e: '🔥', q: 'fire' },
+]
+
 // Search keywords for common emoji (type-ahead). Not exhaustive — covers the
 // frequently searched ones; emoji without an entry are matched by category.
 export const NAMES: Record<string, string> = {
