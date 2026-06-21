@@ -12,6 +12,31 @@ export function useCardBg() {
   return useTheme().palette.mode === 'dark' ? '#2b2b2b' : '#ffffff'
 }
 
+/**
+ * Telegram outlined input with a floating label — styles matched to tweb's
+ * `.input-field` (_input.scss): 16px radius, 48px height, 13px×16px padding,
+ * idle border #2f2f2f/#dfe1e5, 2px accent border + bold accent label on focus.
+ */
+export function useFieldSx() {
+  const theme = useTheme()
+  const tg = theme.tg
+  const idle = theme.palette.mode === 'dark' ? '#2f2f2f' : '#dfe1e5'
+  return {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '16px',
+      minHeight: 48,
+      color: tg.textPrimary,
+      fontSize: 16,
+      '& fieldset': { borderColor: idle, transition: 'border-color .2s' },
+      '&:hover fieldset': { borderColor: tg.accent },
+      '&.Mui-focused fieldset': { borderColor: tg.accent, borderWidth: '2px' },
+    },
+    '& .MuiOutlinedInput-input': { padding: '13px 16px' },
+    '& .MuiInputLabel-root': { color: tg.textFaint, fontSize: 16 },
+    '& .MuiInputLabel-root.Mui-focused': { color: tg.accent, fontWeight: 600 },
+  }
+}
+
 /** Full-height slide-in settings screen with a back header. */
 export function SettingsScreen({
   title,
