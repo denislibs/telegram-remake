@@ -292,6 +292,7 @@ const ru: Dict = {
   "Search Emoji": "Поиск эмодзи",
   "No emoji found.": "Эмодзи не найдены.",
   "Frequently Used": "Часто используемые",
+  "Select a chat to start messaging": "Выберите чат, чтобы начать общение",
 }
 
 const uk: Dict = {
@@ -581,6 +582,7 @@ const uk: Dict = {
   "Search Emoji": "Пошук емодзі",
   "No emoji found.": "Емодзі не знайдено.",
   "Frequently Used": "Часто використовувані",
+  "Select a chat to start messaging": "Оберіть чат, щоб почати спілкування",
 }
 
 const es: Dict = {
@@ -870,6 +872,7 @@ const es: Dict = {
   "Search Emoji": "Buscar emoji",
   "No emoji found.": "No se encontraron emojis.",
   "Frequently Used": "Usados frecuentemente",
+  "Select a chat to start messaging": "Selecciona un chat para empezar a chatear",
 }
 
 const de: Dict = {
@@ -1161,6 +1164,7 @@ const de: Dict = {
   "Search Emoji": "Emoji suchen",
   "No emoji found.": "Keine Emojis gefunden.",
   "Frequently Used": "Häufig verwendet",
+  "Select a chat to start messaging": "Wähle einen Chat, um zu schreiben",
 }
 
 const fr: Dict = {
@@ -1452,6 +1456,7 @@ const fr: Dict = {
   "Search Emoji": "Rechercher un emoji",
   "No emoji found.": "Aucun emoji trouvé.",
   "Frequently Used": "Fréquemment utilisés",
+  "Select a chat to start messaging": "Sélectionnez un chat pour commencer à discuter",
 }
 
 export const dicts: Record<Lang, Dict> = { en: {}, ru, uk, es, de, fr }

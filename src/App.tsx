@@ -8,7 +8,7 @@ import ChatView from './components/ChatView'
 import ConversationView from './components/ConversationView'
 import ChatBackground from './components/ChatBackground'
 import AuthFlow from './components/auth/AuthFlow'
-import { I18nProvider } from './i18n'
+import { I18nProvider, useT } from './i18n'
 import { chats as initialChats, type Chat } from './data'
 
 export type ToggleMode = (coords?: { x: number; y: number }) => void
@@ -22,8 +22,9 @@ const groupGradients = [
 
 function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout: () => void }) {
   const tg = useTheme().tg
+  const t = useT()
   const [chatList, setChatList] = useState<Chat[]>(initialChats)
-  const [selectedId, setSelectedId] = useState('dollhouse-work')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const createGroup = (name: string) => {
     const id = `group-${Date.now()}`
@@ -64,7 +65,7 @@ function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout:
     setSelectedId(id)
   }
 
-  const selected = chatList.find((c) => c.id === selectedId) ?? chatList[0]
+  const selected = chatList.find((c) => c.id === selectedId) ?? null
 
   // Responsive: below 900px the chat is full-width and the sidebar is hidden,
   // sliding out from the left (over the chat) when the back arrow is tapped.
@@ -76,10 +77,10 @@ function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout:
   }
   const openDrawer = narrow ? () => setDrawerOpen(true) : undefined
 
-  const sidebar = (
+  const renderSidebar = (fullWidth = false) => (
     <Sidebar
       chats={chatList}
-      selectedId={selectedId}
+      selectedId={selectedId ?? ''}
       onSelect={selectChat}
       onCreateGroup={(name) => {
         createGroup(name)
@@ -91,8 +92,34 @@ function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout:
       }}
       onToggleMode={onToggleMode}
       onLogout={onLogout}
+      fullWidth={fullWidth}
     />
   )
+
+  const chatArea =
+    selectedId === 'dollhouse-work' ? (
+      <ChatView onBack={openDrawer} />
+    ) : selected ? (
+      <ConversationView key={selectedId} chat={selected} onBack={openDrawer} />
+    ) : (
+      <Box sx={{ flex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            px: 2,
+            py: 0.85,
+            borderRadius: '16px',
+            background: 'rgba(0,0,0,0.45)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 500,
+          }}
+        >
+          {t('Select a chat to start messaging')}
+        </Box>
+      </Box>
+    )
 
   return (
     <Box
@@ -106,18 +133,20 @@ function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout:
       {/* Animated 4-point gradient wallpaper + doodle pattern (tweb-style) */}
       <ChatBackground />
 
-      {/* Wide: sidebar inline next to the chat */}
-      {!narrow && sidebar}
-
-      {/* Chat is always rendered (full-width on narrow) */}
-      {selectedId === 'dollhouse-work' ? (
-        <ChatView onBack={openDrawer} />
-      ) : (
-        <ConversationView key={selectedId} chat={selected} onBack={openDrawer} />
+      {/* Wide: sidebar inline + chat (or empty state) */}
+      {!narrow && (
+        <>
+          {renderSidebar()}
+          {chatArea}
+        </>
       )}
 
+      {/* Narrow: no chat → the list fills the screen; a chat → chat + drawer */}
+      {narrow && !selectedId && renderSidebar(true)}
+      {narrow && selectedId && chatArea}
+
       {/* Narrow: sidebar as a slide-in drawer over the chat */}
-      {narrow && (
+      {narrow && selectedId && (
         <AnimatePresence>
           {drawerOpen && (
             <Box key="drawer">
@@ -137,7 +166,7 @@ function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout:
                 transition={{ duration: 0.26, ease: [0.4, 0, 0.2, 1] }}
                 sx={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 2000 }}
               >
-                {sidebar}
+                {renderSidebar()}
               </Box>
             </Box>
           )}
