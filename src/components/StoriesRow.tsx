@@ -32,9 +32,13 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 export default function StoriesRow({
   onOpen,
   progress = 0,
+  animated = false,
 }: {
   onOpen: (index: number) => void
   progress?: number
+  // when true, height/opacity transition (desktop reveal); when false the row
+  // tracks the scroll position 1:1 (mobile fold)
+  animated?: boolean
 }) {
   const tg = useTheme().tg
   const p = progress
@@ -51,6 +55,9 @@ export default function StoriesRow({
         overflowY: 'hidden',
         opacity: contentOpacity,
         transform: `translateY(${-p * 12}px)`,
+        transition: animated
+          ? 'height .26s cubic-bezier(.4,0,.2,1), opacity .26s ease, transform .26s cubic-bezier(.4,0,.2,1)'
+          : 'none',
         '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
       }}
