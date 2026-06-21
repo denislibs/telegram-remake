@@ -35,6 +35,7 @@ import EmojiPicker from './EmojiPicker'
 import AttachMenu from './AttachMenu'
 import CallScreen from './CallScreen'
 import RichText, { emojiOnlyCount } from './RichText'
+import Emoji from './emoji/Emoji'
 import MediaViewer from './MediaViewer'
 import {
   MediaBubble,
@@ -232,6 +233,20 @@ export default function ConversationView({ chat, onBack }: Props) {
       setMsgs((prev) => [...prev, botReply])
       setTyping(false)
     }, 1100 + Math.random() * 900)
+  }
+
+  const sendSticker = (emoji: string) => {
+    if (!canType) return
+    setMsgs((prev) => [...prev, { type: 'sticker', out: true, emoji, time: nowTime(), status: 'sent' }])
+    window.dispatchEvent(new Event('tg-send'))
+  }
+  const sendGif = (gradient: string) => {
+    if (!canType) return
+    setMsgs((prev) => [
+      ...prev,
+      { type: 'video', out: true, media: { gradient, emoji: '🎬' }, videoDuration: 'GIF', time: nowTime(), status: 'sent' },
+    ])
+    window.dispatchEvent(new Event('tg-send'))
   }
 
   const hasText = input.trim().length > 0
@@ -562,7 +577,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           py: bigEmoji ? 0.25 : 0,
                         }}
                       >
-                        {m.type === 'sticker' ? m.emoji : m.text}
+                        {m.type === 'sticker' ? <Emoji e={m.emoji ?? ''} size={104} /> : m.text}
                       </Box>
                       <Box
                         sx={{
@@ -921,7 +936,9 @@ export default function ConversationView({ chat, onBack }: Props) {
             <AnimatePresence>
               {emojiOpen && (
                 <EmojiPicker
-                  onPick={(em) => setInput((v) => v + em)}
+                  onPick={(em) => setInput((v) => (em === '\b' ? v.slice(0, -1) : v + em))}
+                  onSticker={sendSticker}
+                  onGif={sendGif}
                   onClose={() => setEmojiOpen(false)}
                 />
               )}
