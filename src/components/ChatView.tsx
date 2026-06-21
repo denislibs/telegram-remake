@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, InputBase, Typography, useMediaQuery, useTheme } from '@mui/material'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded'
@@ -28,6 +28,8 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
   const theme = useTheme()
   const tg = theme.tg
   const mode = theme.palette.mode
+  // Side gutter so the floating pills don't touch the screen edges on mobile.
+  const narrow = useMediaQuery('(max-width:900px)')
   const [showPinned, setShowPinned] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
   const [chatSearch, setChatSearch] = useState(false)
@@ -48,7 +50,16 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
         background: 'transparent',
       }}
     >
-      <Box sx={{ flex: 1, minWidth: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          px: narrow ? 1 : 0,
+        }}
+      >
       {/* Header — floating rounded pill over the global pattern */}
       <Box
         sx={{
