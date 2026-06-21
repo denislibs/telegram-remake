@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Box, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
 import { useT } from '../i18n'
@@ -13,6 +14,17 @@ export default function FolderTabs({
 }) {
   const tg = useTheme().tg
   const t = useT()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const tabRefs = useRef<Partial<Record<FolderKey, HTMLDivElement | null>>>({})
+
+  // keep the active tab in view: scroll the strip so it's centered
+  useEffect(() => {
+    const c = scrollRef.current
+    const el = tabRefs.current[value]
+    if (!c || !el) return
+    const target = el.offsetLeft - (c.clientWidth - el.clientWidth) / 2
+    c.scrollTo({ left: Math.max(0, target), behavior: 'smooth' })
+  }, [value])
 
   const tabs: { key: FolderKey; label: string }[] = [
     { key: 'all', label: t('All Chats') },
@@ -23,6 +35,7 @@ export default function FolderTabs({
 
   return (
     <Box
+      ref={scrollRef}
       sx={{
         display: 'flex',
         gap: '4px',
@@ -40,6 +53,9 @@ export default function FolderTabs({
         return (
           <Box
             key={key}
+            ref={(el: HTMLDivElement | null) => {
+              tabRefs.current[key] = el
+            }}
             onClick={() => onChange(key)}
             sx={{
               position: 'relative',
