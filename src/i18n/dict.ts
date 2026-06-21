@@ -276,6 +276,10 @@ const ru: Dict = {
   "These users will always see this, regardless of the setting above.": "Эти пользователи всегда будут это видеть, независимо от настройки выше.",
   "These users will never see this, regardless of the setting above.": "Эти пользователи никогда не будут это видеть, независимо от настройки выше.",
   "No contacts found.": "Контакты не найдены.",
+  "Message Translation": "Перевод сообщений",
+  "Translate Entire Chats": "Переводить чаты целиком",
+  "Do Not Translate": "Не переводить",
+  "Watch real-time chat translations with a Telegram Premium subscription.": "Просматривайте перевод чатов в реальном времени, оформив подписку Telegram Premium.",
 }
 
 const uk: Dict = {
@@ -549,6 +553,10 @@ const uk: Dict = {
   "These users will always see this, regardless of the setting above.": "Ці користувачі завжди це бачитимуть, незалежно від налаштування вище.",
   "These users will never see this, regardless of the setting above.": "Ці користувачі ніколи це не бачитимуть, незалежно від налаштування вище.",
   "No contacts found.": "Контакти не знайдено.",
+  "Message Translation": "Переклад повідомлень",
+  "Translate Entire Chats": "Перекладати чати повністю",
+  "Do Not Translate": "Не перекладати",
+  "Watch real-time chat translations with a Telegram Premium subscription.": "Переглядайте переклад чатів у реальному часі з підпискою Telegram Premium.",
 }
 
 const es: Dict = {
@@ -822,6 +830,10 @@ const es: Dict = {
   "These users will always see this, regardless of the setting above.": "Estos usuarios siempre verán esto, sin importar el ajuste anterior.",
   "These users will never see this, regardless of the setting above.": "Estos usuarios nunca verán esto, sin importar el ajuste anterior.",
   "No contacts found.": "No se encontraron contactos.",
+  "Message Translation": "Traducción de mensajes",
+  "Translate Entire Chats": "Traducir chats completos",
+  "Do Not Translate": "No traducir",
+  "Watch real-time chat translations with a Telegram Premium subscription.": "Mira las traducciones de chats en tiempo real con una suscripción a Telegram Premium.",
 }
 
 const de: Dict = {
@@ -1097,6 +1109,10 @@ const de: Dict = {
   "These users will always see this, regardless of the setting above.": "Diese Nutzer sehen dies immer, unabhängig von der Einstellung oben.",
   "These users will never see this, regardless of the setting above.": "Diese Nutzer sehen dies nie, unabhängig von der Einstellung oben.",
   "No contacts found.": "Keine Kontakte gefunden.",
+  "Message Translation": "Nachrichtenübersetzung",
+  "Translate Entire Chats": "Ganze Chats übersetzen",
+  "Do Not Translate": "Nicht übersetzen",
+  "Watch real-time chat translations with a Telegram Premium subscription.": "Sieh dir Chat-Übersetzungen in Echtzeit mit einem Telegram-Premium-Abo an.",
 }
 
 const fr: Dict = {
@@ -1372,6 +1388,10 @@ const fr: Dict = {
   "These users will always see this, regardless of the setting above.": "Ces utilisateurs verront toujours ceci, quel que soit le réglage ci-dessus.",
   "These users will never see this, regardless of the setting above.": "Ces utilisateurs ne verront jamais ceci, quel que soit le réglage ci-dessus.",
   "No contacts found.": "Aucun contact trouvé.",
+  "Message Translation": "Traduction des messages",
+  "Translate Entire Chats": "Traduire des chats entiers",
+  "Do Not Translate": "Ne pas traduire",
+  "Watch real-time chat translations with a Telegram Premium subscription.": "Consultez les traductions de chats en temps réel avec un abonnement Telegram Premium.",
 }
 
 export const dicts: Record<Lang, Dict> = { en: {}, ru, uk, es, de, fr }
