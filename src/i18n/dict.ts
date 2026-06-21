@@ -280,6 +280,17 @@ const ru: Dict = {
   "Translate Entire Chats": "Переводить чаты целиком",
   "Do Not Translate": "Не переводить",
   "Watch real-time chat translations with a Telegram Premium subscription.": "Просматривайте перевод чатов в реальном времени, оформив подписку Telegram Premium.",
+  "Smileys & People": "Смайлы и люди",
+  "Animals & Nature": "Животные и природа",
+  "Food & Drink": "Еда и напитки",
+  "Activity": "Активность",
+  "Travel & Places": "Путешествия и места",
+  "Objects": "Объекты",
+  "Symbols": "Символы",
+  "Flags": "Флаги",
+  "Recently Used": "Недавние",
+  "Search Emoji": "Поиск эмодзи",
+  "No emoji found.": "Эмодзи не найдены.",
 }
 
 const uk: Dict = {
@@ -557,6 +568,17 @@ const uk: Dict = {
   "Translate Entire Chats": "Перекладати чати повністю",
   "Do Not Translate": "Не перекладати",
   "Watch real-time chat translations with a Telegram Premium subscription.": "Переглядайте переклад чатів у реальному часі з підпискою Telegram Premium.",
+  "Smileys & People": "Смайли та люди",
+  "Animals & Nature": "Тварини та природа",
+  "Food & Drink": "Їжа та напої",
+  "Activity": "Активність",
+  "Travel & Places": "Подорожі та місця",
+  "Objects": "Об'єкти",
+  "Symbols": "Символи",
+  "Flags": "Прапори",
+  "Recently Used": "Нещодавні",
+  "Search Emoji": "Пошук емодзі",
+  "No emoji found.": "Емодзі не знайдено.",
 }
 
 const es: Dict = {
@@ -834,6 +856,17 @@ const es: Dict = {
   "Translate Entire Chats": "Traducir chats completos",
   "Do Not Translate": "No traducir",
   "Watch real-time chat translations with a Telegram Premium subscription.": "Mira las traducciones de chats en tiempo real con una suscripción a Telegram Premium.",
+  "Smileys & People": "Emoticonos y personas",
+  "Animals & Nature": "Animales y naturaleza",
+  "Food & Drink": "Comida y bebida",
+  "Activity": "Actividad",
+  "Travel & Places": "Viajes y lugares",
+  "Objects": "Objetos",
+  "Symbols": "Símbolos",
+  "Flags": "Banderas",
+  "Recently Used": "Recientes",
+  "Search Emoji": "Buscar emoji",
+  "No emoji found.": "No se encontraron emojis.",
 }
 
 const de: Dict = {
@@ -1113,6 +1146,17 @@ const de: Dict = {
   "Translate Entire Chats": "Ganze Chats übersetzen",
   "Do Not Translate": "Nicht übersetzen",
   "Watch real-time chat translations with a Telegram Premium subscription.": "Sieh dir Chat-Übersetzungen in Echtzeit mit einem Telegram-Premium-Abo an.",
+  "Smileys & People": "Smileys & Personen",
+  "Animals & Nature": "Tiere & Natur",
+  "Food & Drink": "Essen & Trinken",
+  "Activity": "Aktivität",
+  "Travel & Places": "Reisen & Orte",
+  "Objects": "Objekte",
+  "Symbols": "Symbole",
+  "Flags": "Flaggen",
+  "Recently Used": "Kürzlich verwendet",
+  "Search Emoji": "Emoji suchen",
+  "No emoji found.": "Keine Emojis gefunden.",
 }
 
 const fr: Dict = {
@@ -1392,6 +1436,17 @@ const fr: Dict = {
   "Translate Entire Chats": "Traduire des chats entiers",
   "Do Not Translate": "Ne pas traduire",
   "Watch real-time chat translations with a Telegram Premium subscription.": "Consultez les traductions de chats en temps réel avec un abonnement Telegram Premium.",
+  "Smileys & People": "Smileys et personnes",
+  "Animals & Nature": "Animaux et nature",
+  "Food & Drink": "Nourriture et boissons",
+  "Activity": "Activité",
+  "Travel & Places": "Voyages et lieux",
+  "Objects": "Objets",
+  "Symbols": "Symboles",
+  "Flags": "Drapeaux",
+  "Recently Used": "Récents",
+  "Search Emoji": "Rechercher un emoji",
+  "No emoji found.": "Aucun emoji trouvé.",
 }
 
 export const dicts: Record<Lang, Dict> = { en: {}, ru, uk, es, de, fr }

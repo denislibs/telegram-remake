@@ -234,6 +234,20 @@ export default function ConversationView({ chat, onBack }: Props) {
     }, 1100 + Math.random() * 900)
   }
 
+  const sendSticker = (emoji: string) => {
+    if (!canType) return
+    setMsgs((prev) => [...prev, { type: 'sticker', out: true, emoji, time: nowTime(), status: 'sent' }])
+    window.dispatchEvent(new Event('tg-send'))
+  }
+  const sendGif = (gradient: string) => {
+    if (!canType) return
+    setMsgs((prev) => [
+      ...prev,
+      { type: 'video', out: true, media: { gradient, emoji: '🎬' }, videoDuration: 'GIF', time: nowTime(), status: 'sent' },
+    ])
+    window.dispatchEvent(new Event('tg-send'))
+  }
+
   const hasText = input.trim().length > 0
 
   // Floating "scroll to bottom" button (tweb .bubbles-go-down), shown above the composer
@@ -921,7 +935,9 @@ export default function ConversationView({ chat, onBack }: Props) {
             <AnimatePresence>
               {emojiOpen && (
                 <EmojiPicker
-                  onPick={(em) => setInput((v) => v + em)}
+                  onPick={(em) => setInput((v) => (em === '\b' ? v.slice(0, -1) : v + em))}
+                  onSticker={sendSticker}
+                  onGif={sendGif}
                   onClose={() => setEmojiOpen(false)}
                 />
               )}
