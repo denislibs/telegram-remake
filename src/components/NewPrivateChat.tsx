@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Box, IconButton, InputBase, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
-import { slideInRight } from '../motion'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import SearchRounded from '@mui/icons-material/SearchRounded'
 import Avatar from './Avatar'
@@ -36,10 +35,10 @@ export default function NewPrivateChat({ chats, onClose, onSelect }: Props) {
 
   return (
     <motion.div
-      variants={slideInRight}
-      initial="initial"
-      animate="animate"
-      exit="exit"
+      initial={{ x: '100%' }}
+      animate={{ x: 0 }}
+      exit={{ x: '100%' }}
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       style={{
         position: 'absolute',
         inset: 0,
