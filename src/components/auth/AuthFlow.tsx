@@ -9,8 +9,9 @@ import VisibilityOffOutlined from '@mui/icons-material/VisibilityOffOutlined'
 import CheckRounded from '@mui/icons-material/CheckRounded'
 import { EASE, DUR } from '../../motion'
 import { useT } from '../../i18n'
+import FakeQr from './FakeQr'
 
-type Step = 'phone' | 'code' | 'password'
+type Step = 'phone' | 'qr' | 'code' | 'password'
 
 interface Country {
   name: string
@@ -256,6 +257,112 @@ export default function AuthFlow({ onComplete }: { onComplete: () => void }) {
       >
         {t('Next')}
       </Box>
+
+      <Typography
+        onClick={() => go('qr', 1)}
+        sx={{
+          mt: 2.5,
+          textAlign: 'center',
+          fontSize: 14,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: 0.3,
+          color: tg.accent,
+          cursor: 'pointer',
+          '&:hover': { textDecoration: 'underline' },
+        }}
+      >
+        {t('Log in by QR Code')}
+      </Typography>
+    </>
+  )
+
+  const qrStep = (
+    <>
+      <Typography sx={{ fontSize: 24, fontWeight: 600, textAlign: 'center', color: tg.textPrimary, mb: 3 }}>
+        {t('Log in to Telegram by QR Code')}
+      </Typography>
+
+      <Box
+        onClick={onComplete}
+        title={t('Demo: click the code to simulate scanning')}
+        sx={{
+          width: 'fit-content',
+          mx: 'auto',
+          p: 2,
+          borderRadius: '18px',
+          background: '#fff',
+          cursor: 'pointer',
+          transition: 'transform .15s ease',
+          '&:hover': { transform: 'scale(1.02)' },
+        }}
+      >
+        <FakeQr
+          size={220}
+          color="#000"
+          logo={
+            <Box
+              sx={{
+                width: 52,
+                height: 52,
+                borderRadius: '50%',
+                background: tg.accentGradient,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <TgPlane size={30} />
+            </Box>
+          }
+        />
+      </Box>
+
+      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+        {[
+          t('Open Telegram on your phone'),
+          t('Go to Settings → Devices → Link Desktop Device'),
+          t('Point your phone at this screen to confirm login'),
+        ].map((line, i) => (
+          <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                flexShrink: 0,
+                borderRadius: '50%',
+                background: tg.accent,
+                color: '#fff',
+                fontSize: 13,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {i + 1}
+            </Box>
+            <Typography sx={{ fontSize: 14.5, color: tg.textSecondary }}>{line}</Typography>
+          </Box>
+        ))}
+      </Box>
+
+      <Typography
+        onClick={() => go('phone', -1)}
+        sx={{
+          mt: 3,
+          textAlign: 'center',
+          fontSize: 14,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: 0.3,
+          color: tg.accent,
+          cursor: 'pointer',
+          '&:hover': { textDecoration: 'underline' },
+        }}
+      >
+        {t('Log in by phone Number')}
+      </Typography>
     </>
   )
 
@@ -365,7 +472,14 @@ export default function AuthFlow({ onComplete }: { onComplete: () => void }) {
     </>
   )
 
-  const content = step === 'phone' ? phoneStep : step === 'code' ? codeStep : passwordStep
+  const content =
+    step === 'phone'
+      ? phoneStep
+      : step === 'qr'
+        ? qrStep
+        : step === 'code'
+          ? codeStep
+          : passwordStep
 
   return (
     <Box
