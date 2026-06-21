@@ -17,7 +17,7 @@ import NewGroupFlow from './NewGroupFlow'
 import NewChannelFlow from './NewChannelFlow'
 import NewPrivateChat from './NewPrivateChat'
 import SearchView from './SearchView'
-import StoriesRow, { StoriesStack } from './StoriesRow'
+import StoriesRow, { StoriesStack, FULL_H } from './StoriesRow'
 import StoryViewer from './StoryViewer'
 import FolderTabs, { type FolderKey } from './FolderTabs'
 import { useT } from '../i18n'
@@ -60,19 +60,48 @@ export default function Sidebar({
   const inputRef = useRef<HTMLInputElement>(null)
   const listScrollRef = useRef<HTMLDivElement>(null)
   const [foldP, setFoldP] = useState(0) // 0 = stories expanded, 1 = folded into the search bar
+  const foldPRef = useRef(0)
+
+  // Fold distance: stories are fully folded once the list is scrolled this far.
+  const FOLD_DIST = 80
 
   useEffect(() => {
     const el = listScrollRef.current
     if (!el) return
     let raf = 0
+    const apply = (next: number) => {
+      if (next === foldPRef.current) return
+      foldPRef.current = next
+      setFoldP(next)
+    }
+    const recompute = () => {
+      // The scroll container's clientHeight shrinks/grows by exactly the stories
+      // height as foldP changes, so `clientHeight + storiesHeight` is a constant
+      // (= viewport height with stories fully folded), independent of foldP.
+      // `room` — how far the list can scroll once stories are fully folded —
+      // is therefore stable for a given list and won't feed back into itself.
+      const storiesH = FULL_H * (1 - foldPRef.current)
+      const room = el.scrollHeight - (el.clientHeight + storiesH)
+      // Only fold if the list still overflows past the fold distance when fully
+      // folded; otherwise folding would shrink the scrollable area below the
+      // current scrollTop, the browser clamps it, foldP drops, the area grows
+      // again — an every-frame oscillation that reads as flicker.
+      if (room < FOLD_DIST) {
+        apply(0)
+        return
+      }
+      apply(Math.min(1, Math.max(0, el.scrollTop / FOLD_DIST)))
+    }
     const onScroll = () => {
       cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => setFoldP(Math.min(1, Math.max(0, el.scrollTop / 80))))
+      raf = requestAnimationFrame(recompute)
     }
     el.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
     onScroll()
     return () => {
       el.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
       cancelAnimationFrame(raf)
     }
   }, [])
@@ -102,6 +131,7 @@ export default function Sidebar({
     // swap), leaving a dead gap between the search bar and the folder tabs.
     const el = listScrollRef.current
     if (el) el.scrollTop = 0
+    foldPRef.current = 0
     setFoldP(0)
   }
 
