@@ -20,7 +20,7 @@ export const STORIES: Story[] = [
   { id: 's8', name: 'Grace', bg: 'linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)', emoji: '✨' },
 ]
 
-const FULL_H = 92
+export const FULL_H = 92
 const ITEM_W = 74
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
