@@ -282,7 +282,28 @@ export default function Sidebar({
       {/* Body — chat list always mounted; search view overlays it */}
       <Box sx={{ flex: 1, position: 'relative', minHeight: 0 }}>
         {/* Chat list (always present) */}
-        <Box ref={listScrollRef} sx={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+        <Box
+          ref={listScrollRef}
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            // reserve a thin gutter so the list width stays constant whether or
+            // not it scrolls — switching folders no longer shifts the content
+            // (tweb keeps the scrollbar as a thin overlay for the same reason)
+            scrollbarGutter: 'stable',
+            scrollbarWidth: 'thin',
+            scrollbarColor: `${tg.textFaint} transparent`,
+            '&::-webkit-scrollbar': { width: '6px' },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'transparent',
+              borderRadius: '3px',
+              transition: 'background .2s',
+            },
+            '&:hover::-webkit-scrollbar-thumb': { background: tg.textFaint },
+          }}
+        >
           <AnimatePresence initial={false}>
             {showBanner && <NotificationBanner onClose={() => setShowBanner(false)} />}
           </AnimatePresence>
