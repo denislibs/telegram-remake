@@ -314,6 +314,27 @@ export default function ConversationView({ chat, onBack }: Props) {
           px: narrow ? 1 : 0,
         }}
       >
+        {/* Top fade: messages frost out behind the floating header (theme-tinted) */}
+        <Box sx={{ position: 'sticky', top: 0, height: 0, zIndex: 5, width: '100%', pointerEvents: 'none' }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 80,
+              background:
+                mode === 'dark'
+                  ? 'linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0))'
+                  : 'linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0))',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              maskImage: 'linear-gradient(to bottom, #000 45%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, #000 45%, transparent 100%)',
+            }}
+          />
+        </Box>
+
         {/* Header */}
         <Box
           sx={{
@@ -1086,6 +1107,27 @@ export default function ConversationView({ chat, onBack }: Props) {
             </Box>
           </Box>
         )}
+
+        {/* Bottom fade: messages frost out behind the floating composer (theme-tinted) */}
+        <Box sx={{ position: 'sticky', bottom: 0, height: 0, zIndex: 5, width: '100%', pointerEvents: 'none' }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 84,
+              background:
+                mode === 'dark'
+                  ? 'linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0))'
+                  : 'linear-gradient(to top, rgba(255,255,255,0.6), rgba(255,255,255,0))',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              maskImage: 'linear-gradient(to top, #000 45%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to top, #000 45%, transparent 100%)',
+            }}
+          />
+        </Box>
       </Box>
 
       {/* Info panel (private / group / channel) */}
