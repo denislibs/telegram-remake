@@ -43,6 +43,7 @@ import {
   AudioBubble,
   RoundVideoBubble,
   WebPagePreview,
+  BubbleTail,
 } from './messages/MessageBubbles'
 import type { Chat, ConvMsg, MsgStatus, MediaItem } from '../data'
 import { useT } from '../i18n'
@@ -512,9 +513,49 @@ export default function ConversationView({ chat, onBack }: Props) {
               flexDirection: 'column',
             }}
           >
-            {msgs.map((m, i) => {
+            {(() => {
+              // Group consecutive incoming messages from one sender so a single
+              // sticky avatar can ride the scroll alongside the whole run (tweb).
+              const nodes: ReactNode[] = []
+              let buf: ReactNode[] = []
+              let gm: { key: number; sender: string; color: string } | null = null
+              const flushGroup = () => {
+                if (buf.length && gm) {
+                  const g = gm
+                  const rows = buf
+                  nodes.push(
+                    <Box
+                      key={`grp-${g.key}`}
+                      sx={{ position: 'relative', display: 'flex', gap: '14px', alignItems: 'stretch' }}
+                    >
+                      <Box
+                        sx={{
+                          width: 30,
+                          flexShrink: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'flex-end',
+                          // the last bubble carries a 6px group margin; match it so the
+                          // avatar aligns to the bubble's bottom, not the margin's
+                          pb: '6px',
+                        }}
+                      >
+                        {/* pin above the floating composer (≈64px tall incl. its 16px offset) */}
+                        <Box sx={{ position: 'sticky', bottom: '72px', width: 30, height: 30 }}>
+                          <Avatar background={g.color} text={g.sender[0]} size={30} />
+                        </Box>
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{rows}</Box>
+                    </Box>,
+                  )
+                }
+                buf = []
+                gm = null
+              }
+              msgs.forEach((m, i) => {
               if (m.type === 'date') {
-                return (
+                flushGroup()
+                nodes.push(
                   <Box
                     key={i}
                     sx={{
@@ -542,8 +583,9 @@ export default function ConversationView({ chat, onBack }: Props) {
                     >
                       {m.text}
                     </Box>
-                  </Box>
+                  </Box>,
                 )
+                return
               }
 
               const out = !!m.out
@@ -560,7 +602,7 @@ export default function ConversationView({ chat, onBack }: Props) {
               // 1–3 emoji-only text -> render big (like a sticker), transparent bubble
               const bigEmoji = m.type === 'text' && m.text ? emojiOnlyCount(m.text) : 0
 
-              return (
+              const row = (
                 <Box
                   key={i}
                   onContextMenu={(e) => openMsgMenu(e, i)}
@@ -603,6 +645,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                   ) : m.type === 'voice' ? (
                     <Box
                       sx={{
+                        position: 'relative',
                         maxWidth: 'min(320px, 82%)',
                         display: 'flex',
                         alignItems: 'center',
@@ -616,6 +659,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           : `15px 15px 15px ${lastInGroup ? 0 : 5}px`,
                       }}
                     >
+                      {lastInGroup && <BubbleTail out={out} color={out ? tg.accent : incomingBg} />}
                       <Box
                         sx={{
                           width: 40,
@@ -676,6 +720,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                   ) : (
                     <Box
                       sx={{
+                        position: 'relative',
                         maxWidth: 'min(420px, 80%)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -688,6 +733,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           : `${firstInGroup ? 15 : 5}px 15px 15px ${lastInGroup ? 0 : 5}px`,
                       }}
                     >
+                      {lastInGroup && <BubbleTail out={out} color={out ? tg.accent : incomingBg} />}
                       {!out && m.sender && firstInGroup && (
                         <Typography sx={{ fontSize: 14, fontWeight: 600, color: m.senderColor ?? peerColor(m.sender) }}>
                           {m.sender}
@@ -745,7 +791,22 @@ export default function ConversationView({ chat, onBack }: Props) {
                   )}
                 </Box>
               )
-            })}
+
+              // route incoming group-chat runs through the sticky-avatar wrapper
+              if (isGroup && !out && m.sender) {
+                if (!gm || gm.sender !== m.sender) {
+                  flushGroup()
+                  gm = { key: i, sender: m.sender, color: m.senderColor ?? peerColor(m.sender) }
+                }
+                buf.push(row)
+              } else {
+                flushGroup()
+                nodes.push(row)
+              }
+            })
+              flushGroup()
+              return nodes
+            })()}
 
             {typing && (
               <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>

@@ -74,6 +74,61 @@ const C = {
   orange: '#faa774',
 }
 
+// A long, lively group history (~200 messages) with long single-sender runs so
+// the sticky group avatar is clearly visible while scrolling.
+function buildKutezhMessages(): ConvMsg[] {
+  const people = [
+    { sender: 'Аня', senderColor: C.pink },
+    { sender: 'Макс', senderColor: C.blue },
+    { sender: 'Лёха', senderColor: C.green },
+    { sender: 'Костя', senderColor: C.orange },
+    { sender: 'Ира', senderColor: C.purple },
+    { sender: 'Дима', senderColor: C.cyan },
+  ]
+  const lines = [
+    'ну что, сегодня собираемся?', 'я только за', 'во сколько?', 'давайте пораньше',
+    'я могу принести колонку', 'отлично 🙌', 'кто за пиццу?', 'я закажу',
+    'мне без ананасов 😅', 'двойной сыр всем', 'еду уже', 'буду минут через 20',
+    'возьмите кто-нибудь лёд', 'есть', 'захвачу вино', 'и сок не забудьте',
+    'погнали 🚀', 'я опаздываю немного', 'ждём', 'не торопись',
+    'кто где паркуется?', 'во дворе есть места', 'ок понял', 'уже почти на месте',
+    'открывайте 😄', 'поднимаюсь', 'плейлист готов', 'врубай 🔊',
+    'это лучший вечер', 'согласен', 'ещё по одной?', 'давай',
+    'кто остаётся?', 'я до утра 🌙', 'такси вызвали?', 'да, 5 минут',
+    'спасибо за вечер ❤️', 'было супер', 'повторим на выходных', 'обязательно',
+  ]
+  const out: ConvMsg[] = [{ type: 'date', text: 'Yesterday' }]
+  let li = 0
+  let mins = 17 * 60 + 20 // start ~17:20
+  const stamp = () => {
+    mins += 1 + (li % 3)
+    const h = Math.floor(mins / 60) % 24
+    const m = mins % 60
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+  }
+  let pIdx = 0
+  while (out.length < 195) {
+    const run = 4 + (out.length % 11) // runs of 4..14 messages
+    const mine = pIdx % 4 === 3 // every 4th run is from "me"
+    const p = people[pIdx % people.length]
+    pIdx++
+    for (let k = 0; k < run && out.length < 195; k++) {
+      const text = lines[li++ % lines.length]
+      if (mine) out.push({ type: 'text', out: true, text, time: stamp(), status: 'read' })
+      else out.push({ type: 'text', sender: p.sender, senderColor: p.senderColor, text, time: stamp() })
+    }
+  }
+  // the original tail — keeps the chat preview/last message consistent
+  out.push({ type: 'date', text: 'Today' })
+  out.push({ type: 'text', sender: 'Аня', senderColor: C.pink, text: 'Ну что, сегодня собираемся?', time: '23:40' })
+  out.push({ type: 'text', sender: 'Макс', senderColor: C.blue, text: 'я за 🙌', time: '23:41' })
+  out.push({ type: 'text', out: true, text: 'давайте в 9 у меня', time: '23:42', status: 'read' })
+  out.push({ type: 'text', sender: 'Аня', senderColor: C.pink, text: 'отлично, я принесу вино', time: '23:45' })
+  out.push({ type: 'sticker', sender: 'Макс', senderColor: C.blue, emoji: '🍷', time: '23:46' })
+  out.push({ type: 'text', sender: 'Лёха', senderColor: C.green, text: 'я уже выезжаю, ждите', time: '00:14' })
+  return out
+}
+
 export const chats: Chat[] = [
   {
     id: 'dollhouse-work',
@@ -102,15 +157,7 @@ export const chats: Chat[] = [
     type: 'group',
     status: '8 members, 3 online',
     unread: 12,
-    messages: [
-      { type: 'date', text: 'Today' },
-      { type: 'text', sender: 'Аня', senderColor: C.pink, text: 'Ну что, сегодня собираемся?', time: '23:40' },
-      { type: 'text', sender: 'Макс', senderColor: C.blue, text: 'я за 🙌', time: '23:41' },
-      { type: 'text', out: true, text: 'давайте в 9 у меня', time: '23:42', status: 'read' },
-      { type: 'text', sender: 'Аня', senderColor: C.pink, text: 'отлично, я принесу вино', time: '23:45' },
-      { type: 'sticker', sender: 'Макс', senderColor: C.blue, emoji: '🍷', time: '23:46' },
-      { type: 'text', sender: 'Лёха', senderColor: C.green, text: 'я уже выезжаю, ждите', time: '00:14' },
-    ],
+    messages: buildKutezhMessages(),
   },
   {
     id: 'artem',

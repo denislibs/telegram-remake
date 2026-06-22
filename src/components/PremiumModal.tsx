@@ -156,22 +156,35 @@ export default function PremiumModal({ open, onClose }: { open: boolean; onClose
                         '&:hover': { background: active ? cardBg : tg.hover },
                       }}
                     >
-                      {/* radio */}
+                      {/* radio — empty ring with the filled check scaling in (tweb-style) */}
                       <Box
                         sx={{
+                          position: 'relative',
                           width: 26,
                           height: 26,
-                          borderRadius: '50%',
                           flexShrink: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: active ? tg.accent : 'transparent',
-                          border: active ? 'none' : `2px solid ${tg.textFaint}`,
-                          transition: 'all .15s',
+                          borderRadius: '50%',
+                          border: `2px solid ${active ? tg.accent : tg.textFaint}`,
+                          transition: 'border-color .2s',
                         }}
                       >
-                        {active && <CheckRounded sx={{ fontSize: 17, color: '#fff' }} />}
+                        <Box
+                          component={motion.div}
+                          initial={false}
+                          animate={{ scale: active ? 1 : 0, opacity: active ? 1 : 0 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                          sx={{
+                            position: 'absolute',
+                            inset: -2,
+                            borderRadius: '50%',
+                            background: tg.accent,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <CheckRounded sx={{ fontSize: 17, color: '#fff' }} />
+                        </Box>
                       </Box>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography sx={{ fontSize: 17, fontWeight: 500, color: tg.textPrimary }}>

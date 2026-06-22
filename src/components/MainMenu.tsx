@@ -8,6 +8,7 @@ import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUnchecke
 import PersonOutlineRounded from '@mui/icons-material/PersonOutlineRounded'
 import AccountBalanceWalletOutlined from '@mui/icons-material/AccountBalanceWalletOutlined'
 import SettingsOutlined from '@mui/icons-material/SettingsOutlined'
+import StarRounded from '@mui/icons-material/StarRounded'
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import LogoutRounded from '@mui/icons-material/LogoutRounded'
@@ -20,6 +21,7 @@ interface Props {
   onOpenSettings: () => void
   onOpenContacts?: () => void
   onOpenSaved?: () => void
+  onOpenPremium?: () => void
   onLogout?: () => void
 }
 
@@ -66,6 +68,7 @@ export default function MainMenu({
   onOpenSettings,
   onOpenContacts,
   onOpenSaved,
+  onOpenPremium,
   onLogout,
 }: Props) {
   const tg = useTheme().tg
@@ -133,6 +136,11 @@ export default function MainMenu({
               />
               {divider}
               <Row icon={<AccountBalanceWalletOutlined />} label={t('Wallet')} onClick={onClose} />
+              <Row
+                icon={<StarRounded sx={{ color: tg.accent }} />}
+                label={t('Telegram Premium')}
+                onClick={onOpenPremium ?? onClose}
+              />
               {divider}
               <Row icon={<SettingsOutlined />} label={t('Settings')} onClick={onOpenSettings} />
               <Row icon={<MoreVertRounded />} label={t('More')} chevron onClick={onClose} />
