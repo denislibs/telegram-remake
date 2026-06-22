@@ -25,6 +25,12 @@ import FolderTabs, { type FolderKey } from './FolderTabs'
 import { useT } from '../i18n'
 
 const MotionFab = motion(IconButton)
+
+// tweb's bubbles-scrollable fade easing, bottom-only: fully opaque until 84px from
+// the bottom, then an iOS-style eased ramp down to the 0.24 alpha floor.
+const LIST_FADE = 84
+const LIST_FADE_MASK = `linear-gradient(to bottom, #000 0, #000 calc(100% - ${LIST_FADE}px), color-mix(in srgb, #000 91.4%, rgba(255,255,255,0.24)) calc(100% - ${LIST_FADE * 0.8}px), color-mix(in srgb, #000 66.6%, rgba(255,255,255,0.24)) calc(100% - ${LIST_FADE * 0.6}px), color-mix(in srgb, #000 33.4%, rgba(255,255,255,0.24)) calc(100% - ${LIST_FADE * 0.4}px), color-mix(in srgb, #000 8.6%, rgba(255,255,255,0.24)) calc(100% - ${LIST_FADE * 0.2}px), rgba(255,255,255,0.24) 100%)`
+
 interface Props {
   chats: Chat[]
   selectedId: string
@@ -304,6 +310,10 @@ export default function Sidebar({
               transition: 'background .2s',
             },
             '&:hover::-webkit-scrollbar-thumb': { background: tg.textFaint },
+            // smooth eased bottom fade (tweb bubbles-scrollable curve) so the last
+            // chats melt away behind the floating compose button instead of a hard cut
+            maskImage: LIST_FADE_MASK,
+            WebkitMaskImage: LIST_FADE_MASK,
           }}
         >
           <AnimatePresence initial={false}>
@@ -323,7 +333,7 @@ export default function Sidebar({
               animate="center"
               exit="exit"
               transition={{ duration: DUR.in, ease: EASE }}
-              sx={{ pt: 0.5, pb: 2, width: '100%' }}
+              sx={{ pt: 0.5, pb: '84px', width: '100%' }}
             >
               {filtered.map((chat, i) => (
                 <ChatListItem

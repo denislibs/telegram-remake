@@ -51,6 +51,15 @@ import { useSettings, useTimeFormatter } from '../settings'
 
 const REACTIONS = ['❤️', '👍', '👎', '🔥', '🥰', '👏', '😁']
 
+// tweb's exact bubbles-scrollable fade: a pure alpha mask on the scroll viewport
+// (no blur, no colour) so messages simply fade out to a 0.24 floor behind the
+// floating header/composer, eased iOS-style (cubic-bezier sampled at 0/.2/.4/.6/.8/1).
+const FADE_TOP = 76 // clear the floating header
+const FADE_BOTTOM = 84 // clear the floating composer
+const FLOOR = 'rgba(255,255,255,0.24)'
+const mix = (k: number) => `color-mix(in srgb, #000 ${k}%, ${FLOOR})`
+const FEED_MASK = `linear-gradient(to bottom, ${FLOOR} 0, ${mix(8.6)} ${FADE_TOP * 0.2}px, ${mix(33.4)} ${FADE_TOP * 0.4}px, ${mix(66.6)} ${FADE_TOP * 0.6}px, ${mix(91.4)} ${FADE_TOP * 0.8}px, #000 ${FADE_TOP}px, #000 calc(100% - ${FADE_BOTTOM}px), ${mix(91.4)} calc(100% - ${FADE_BOTTOM * 0.8}px), ${mix(66.6)} calc(100% - ${FADE_BOTTOM * 0.6}px), ${mix(33.4)} calc(100% - ${FADE_BOTTOM * 0.4}px), ${mix(8.6)} calc(100% - ${FADE_BOTTOM * 0.2}px), ${FLOOR} 100%)`
+
 const replies = [
   'ахах да', 'ну ты даёшь 😄', 'согласен', 'хахаха', 'ладно', 'ок 👌', 'и не говори',
   'позже наберу', '🔥', 'да ну? серьёзно?', 'интересно', 'понятно', 'ну такое',
@@ -150,16 +159,18 @@ export default function ConversationView({ chat, onBack }: Props) {
 
   // Show the "scroll to bottom" button once the user scrolls up away from the latest messages
   useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
     const onScroll = () => {
-      const dist = document.body.scrollHeight - window.scrollY - window.innerHeight
+      const dist = el.scrollHeight - el.scrollTop - el.clientHeight
       setShowScrollDown(dist > 240)
     }
     onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
   }, [msgs])
   const scrollToBottom = () =>
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
 
   const openMsgMenu = (e: React.MouseEvent, idx: number) => {
     e.preventDefault()
@@ -207,7 +218,20 @@ export default function ConversationView({ chat, onBack }: Props) {
   }, [chat, canType])
 
   useEffect(() => {
-    window.scrollTo({ top: document.body.scrollHeight })
+    const el = scrollRef.current
+    if (!el) return
+    // scroll after layout — content height isn't final synchronously on open
+    let r2 = 0
+    const r1 = requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight
+      r2 = requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight
+      })
+    })
+    return () => {
+      cancelAnimationFrame(r1)
+      cancelAnimationFrame(r2)
+    }
   }, [msgs, typing])
 
   const send = () => {
@@ -308,17 +332,19 @@ export default function ConversationView({ chat, onBack }: Props) {
         sx={{
           flex: 1,
           minWidth: 0,
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
+          height: '100dvh',
+          position: 'relative',
+          overflow: 'hidden',
           px: narrow ? 1 : 0,
         }}
       >
         {/* Header */}
         <Box
           sx={{
-            position: 'sticky',
+            position: 'absolute',
             top: '16px',
+            left: 0,
+            right: 0,
             zIndex: 6,
             display: 'flex',
             alignItems: 'center',
@@ -326,8 +352,6 @@ export default function ConversationView({ chat, onBack }: Props) {
             width: '100%',
             maxWidth: 688,
             mx: 'auto',
-            mt: 2,
-            mb: 0.5,
             px: 1.5,
             py: 0.5,
             height: 48,
@@ -467,7 +491,7 @@ export default function ConversationView({ chat, onBack }: Props) {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: DUR_IN, ease: EASE_STD }}
-              style={{ overflow: 'hidden', position: 'sticky', top: 72, zIndex: 5, width: '100%', maxWidth: 688, margin: '0 auto' }}
+              style={{ overflow: 'hidden', position: 'absolute', top: 72, left: 0, right: 0, zIndex: 7, width: '100%', maxWidth: 688, margin: '0 auto' }}
             >
               <Box
                 sx={{
@@ -490,17 +514,20 @@ export default function ConversationView({ chat, onBack }: Props) {
           )}
         </AnimatePresence>
 
-        {/* Conversation — flows in the document (body scrolls) */}
+        {/* Conversation — own scroll container, masked like tweb's bubbles-scrollable */}
         <Box
           ref={scrollRef}
           sx={{
-            flex: 1,
-            position: 'relative',
+            position: 'absolute',
+            inset: 0,
             zIndex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'flex-end',
+            maskImage: FEED_MASK,
+            WebkitMaskImage: FEED_MASK,
           }}
         >
           <Box
@@ -508,7 +535,10 @@ export default function ConversationView({ chat, onBack }: Props) {
               width: '100%',
               maxWidth: 688,
               px: 0.5,
-              py: 1.5,
+              // push content to the bottom when short; clear the floating header/composer
+              mt: 'auto',
+              pt: `${FADE_TOP}px`,
+              pb: `${FADE_BOTTOM}px`,
               display: 'flex',
               flexDirection: 'column',
             }}
@@ -866,8 +896,10 @@ export default function ConversationView({ chat, onBack }: Props) {
         {canType ? (
           <Box
             sx={{
-              position: 'sticky',
+              position: 'absolute',
               bottom: '16px',
+              left: 0,
+              right: 0,
               zIndex: 6,
               display: 'flex',
               alignItems: 'flex-end',
@@ -875,7 +907,6 @@ export default function ConversationView({ chat, onBack }: Props) {
               width: '100%',
               maxWidth: 688,
               mx: 'auto',
-              mt: 1,
             }}
           >
             {scrollDownFab}
@@ -1037,8 +1068,10 @@ export default function ConversationView({ chat, onBack }: Props) {
         ) : (
           <Box
             sx={{
-              position: 'sticky',
+              position: 'absolute',
               bottom: '16px',
+              left: 0,
+              right: 0,
               zIndex: 6,
               display: 'flex',
               alignItems: 'center',
@@ -1046,7 +1079,6 @@ export default function ConversationView({ chat, onBack }: Props) {
               width: '100%',
               maxWidth: 688,
               mx: 'auto',
-              mt: 1,
               py: 0,
             }}
           >
