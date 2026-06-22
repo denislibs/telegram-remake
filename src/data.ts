@@ -9,6 +9,7 @@ export interface MediaItem {
 export interface ConvMsg {
   type:
     | 'date'
+    | 'service'
     | 'text'
     | 'sticker'
     | 'voice'
@@ -97,7 +98,12 @@ function buildKutezhMessages(): ConvMsg[] {
     'кто остаётся?', 'я до утра 🌙', 'такси вызвали?', 'да, 5 минут',
     'спасибо за вечер ❤️', 'было супер', 'повторим на выходных', 'обязательно',
   ]
-  const out: ConvMsg[] = [{ type: 'date', text: 'Yesterday' }]
+  const out: ConvMsg[] = [
+    { type: 'service', text: 'Вы создали группу «Кутёж»' },
+    { type: 'service', text: 'Аня, Макс и ещё 5 присоединились к группе' },
+    { type: 'date', text: 'Yesterday' },
+    { type: 'service', text: 'Вы начали видеочат' },
+  ]
   let li = 0
   let mins = 17 * 60 + 20 // start ~17:20
   const stamp = () => {
