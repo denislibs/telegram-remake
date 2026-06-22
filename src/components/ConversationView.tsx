@@ -535,6 +535,9 @@ export default function ConversationView({ chat, onBack }: Props) {
                           display: 'flex',
                           flexDirection: 'column',
                           justifyContent: 'flex-end',
+                          // the last bubble carries a 6px group margin; match it so the
+                          // avatar aligns to the bubble's bottom, not the margin's
+                          pb: '6px',
                         }}
                       >
                         {/* pin above the floating composer (≈64px tall incl. its 16px offset) */}
