@@ -19,6 +19,7 @@ import UserInfoPanel from './UserInfoPanel'
 import HeaderMenu from './HeaderMenu'
 import { chats, kyzdarPosts } from '../data'
 import { useT } from '../i18n'
+import { FEED_MASK, FADE_BOTTOM } from '../chatFade'
 
 const MotionBox = motion(Box)
 const dollhouse = chats.find((c) => c.id === 'dollhouse-work')!
@@ -54,17 +55,19 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
         sx={{
           flex: 1,
           minWidth: 0,
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
+          height: '100dvh',
+          position: 'relative',
+          overflow: 'hidden',
           px: narrow ? 1 : 0,
         }}
       >
       {/* Header — floating rounded pill over the global pattern */}
       <Box
         sx={{
-          position: 'sticky',
+          position: 'absolute',
           top: '16px',
+          left: 0,
+          right: 0,
           zIndex: 6,
           display: 'flex',
           alignItems: 'center',
@@ -72,8 +75,6 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
           width: '100%',
           maxWidth: 688,
           mx: 'auto',
-          mt: 2,
-          mb: 1,
           px: 1.5,
           py: 0.5,
           height: 48,
@@ -181,7 +182,7 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: EASE }}
-            style={{ overflow: 'hidden', position: 'sticky', top: 72, zIndex: 5, width: '100%', maxWidth: 688, margin: '0 auto' }}
+            style={{ overflow: 'hidden', position: 'absolute', top: 72, left: 0, right: 0, zIndex: 7, width: '100%', maxWidth: 688, margin: '0 auto' }}
           >
             <Box sx={{ background: tg.bubble, borderRadius: '14px', px: 2, py: 2, textAlign: 'center' }}>
               <Typography sx={{ fontSize: 15, color: tg.textSecondary }}>
@@ -204,7 +205,7 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: DUR.out, ease: EASE }}
-            style={{ overflow: 'hidden', position: 'sticky', top: '72px', zIndex: 5 }}
+            style={{ overflow: 'hidden', position: 'absolute', top: '72px', left: 0, right: 0, zIndex: 6 }}
           >
             <Box
               sx={{
@@ -242,23 +243,28 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
         )}
       </AnimatePresence>
 
-      {/* Messages — flow in the document (body scrolls) */}
+      {/* Messages — own scroll container, masked like tweb's bubbles-scrollable */}
       <Box
         sx={{
-          flex: 1,
-          position: 'relative',
+          position: 'absolute',
+          inset: 0,
           zIndex: 1,
+          overflowY: 'auto',
+          overflowX: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-end',
+          maskImage: FEED_MASK,
+          WebkitMaskImage: FEED_MASK,
         }}
       >
         <Box
           sx={{
             width: '100%',
             maxWidth: 688,
-            py: 1.5,
+            // clear the floating header (+ pinned bar) on top and the footer below
+            pt: showPinned ? '132px' : '76px',
+            pb: `${FADE_BOTTOM}px`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
@@ -294,11 +300,13 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
         </Box>
       </Box>
 
-      {/* Footer / Mute bar — sticky to viewport bottom */}
+      {/* Footer / Mute bar — floating over the feed */}
       <Box
         sx={{
-          position: 'sticky',
+          position: 'absolute',
           bottom: '16px',
+          left: 0,
+          right: 0,
           zIndex: 6,
           display: 'flex',
           alignItems: 'center',
@@ -306,7 +314,6 @@ export default function ChatView({ onBack }: { onBack?: () => void }) {
           width: '100%',
           maxWidth: 688,
           mx: 'auto',
-          mt: 1,
           px: 0,
           py: 0,
         }}
