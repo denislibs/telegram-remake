@@ -513,9 +513,45 @@ export default function ConversationView({ chat, onBack }: Props) {
               flexDirection: 'column',
             }}
           >
-            {msgs.map((m, i) => {
+            {(() => {
+              // Group consecutive incoming messages from one sender so a single
+              // sticky avatar can ride the scroll alongside the whole run (tweb).
+              const nodes: ReactNode[] = []
+              let buf: ReactNode[] = []
+              let gm: { key: number; sender: string; color: string } | null = null
+              const flushGroup = () => {
+                if (buf.length && gm) {
+                  const g = gm
+                  const rows = buf
+                  nodes.push(
+                    <Box
+                      key={`grp-${g.key}`}
+                      sx={{ position: 'relative', display: 'flex', gap: '14px', alignItems: 'stretch' }}
+                    >
+                      <Box
+                        sx={{
+                          width: 30,
+                          flexShrink: 0,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'flex-end',
+                        }}
+                      >
+                        <Box sx={{ position: 'sticky', bottom: '8px', width: 30, height: 30 }}>
+                          <Avatar background={g.color} text={g.sender[0]} size={30} />
+                        </Box>
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{rows}</Box>
+                    </Box>,
+                  )
+                }
+                buf = []
+                gm = null
+              }
+              msgs.forEach((m, i) => {
               if (m.type === 'date') {
-                return (
+                flushGroup()
+                nodes.push(
                   <Box
                     key={i}
                     sx={{
@@ -543,8 +579,9 @@ export default function ConversationView({ chat, onBack }: Props) {
                     >
                       {m.text}
                     </Box>
-                  </Box>
+                  </Box>,
                 )
+                return
               }
 
               const out = !!m.out
@@ -561,30 +598,16 @@ export default function ConversationView({ chat, onBack }: Props) {
               // 1–3 emoji-only text -> render big (like a sticker), transparent bubble
               const bigEmoji = m.type === 'text' && m.text ? emojiOnlyCount(m.text) : 0
 
-              return (
+              const row = (
                 <Box
                   key={i}
                   onContextMenu={(e) => openMsgMenu(e, i)}
                   sx={{
                     display: 'flex',
-                    alignItems: 'flex-end',
-                    gap: 0.75,
                     justifyContent: out ? 'flex-end' : 'flex-start',
                     mb: lastInGroup ? '6px' : '2px',
                   }}
                 >
-                  {/* sender avatar next to the last incoming bubble in a group */}
-                  {isGroup && !out && (
-                    <Box sx={{ width: 30, flexShrink: 0, alignSelf: 'flex-end' }}>
-                      {lastInGroup && m.sender && (
-                        <Avatar
-                          background={m.senderColor ?? peerColor(m.sender)}
-                          text={m.sender[0]}
-                          size={30}
-                        />
-                      )}
-                    </Box>
-                  )}
                   {m.type === 'sticker' || bigEmoji ? (
                     <Box sx={{ position: 'relative', display: 'inline-block', px: 0.5 }}>
                       <Box
@@ -764,7 +787,22 @@ export default function ConversationView({ chat, onBack }: Props) {
                   )}
                 </Box>
               )
-            })}
+
+              // route incoming group-chat runs through the sticky-avatar wrapper
+              if (isGroup && !out && m.sender) {
+                if (!gm || gm.sender !== m.sender) {
+                  flushGroup()
+                  gm = { key: i, sender: m.sender, color: m.senderColor ?? peerColor(m.sender) }
+                }
+                buf.push(row)
+              } else {
+                flushGroup()
+                nodes.push(row)
+              }
+            })
+              flushGroup()
+              return nodes
+            })()}
 
             {typing && (
               <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
