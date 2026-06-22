@@ -6,6 +6,7 @@ import { slideInRight } from '../motion'
 import TgSwitch from './TgSwitch'
 import SettingsSubScreen, { hasSubScreen } from './SettingsSubScreen'
 import EditProfile from './settings/EditProfile'
+import PremiumModal from './PremiumModal'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined'
 import StarRounded from '@mui/icons-material/StarRounded'
@@ -58,6 +59,7 @@ export default function SettingsView({
   const [active, setActive] = useState('Notifications and Sounds')
   const [sub, setSub] = useState<string | null>(null)
   const [editProfile, setEditProfile] = useState(false)
+  const [premiumOpen, setPremiumOpen] = useState(false)
 
   return (
     <motion.div
@@ -187,6 +189,7 @@ export default function SettingsView({
         {/* Premium / Gift */}
         <Box sx={{ mx: 1.25, mt: 1.5, borderRadius: '16px', background: cardBg, py: 0.75 }}>
           <Box
+            onClick={() => setPremiumOpen(true)}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -232,6 +235,9 @@ export default function SettingsView({
       <AnimatePresence>
         {editProfile && <EditProfile onBack={() => setEditProfile(false)} />}
       </AnimatePresence>
+
+      {/* Telegram Premium modal */}
+      <PremiumModal open={premiumOpen} onClose={() => setPremiumOpen(false)} />
     </motion.div>
   )
 }
