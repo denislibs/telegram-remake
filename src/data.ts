@@ -1,3 +1,5 @@
+import { peerAvatarGradient } from './avatarColors'
+
 export type ChatType = 'private' | 'group' | 'channel' | 'bot' | 'saved'
 export type MsgStatus = 'sent' | 'read'
 
@@ -641,6 +643,12 @@ export const chats: Chat[] = [
     ],
   },
 ]
+
+// Every chat avatar uses tweb's vertical 7-colour gradient (picked by name),
+// replacing the old curated diagonal gradients.
+chats.forEach((c) => {
+  c.avatar = peerAvatarGradient(c.name)
+})
 
 // ---- kyzdar.ai channel feed --------------------------------------------------
 // A single text segment inside a post paragraph; `link` renders it as a tg-link.
