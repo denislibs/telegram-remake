@@ -12,6 +12,7 @@ import ChatListItem from './ChatListItem'
 import NotificationBanner from './NotificationBanner'
 import MainMenu from './MainMenu'
 import ComposeMenu from './ComposeMenu'
+import PremiumModal from './PremiumModal'
 import SettingsView from './SettingsView'
 import ContactsView from './ContactsView'
 import NewGroupFlow from './NewGroupFlow'
@@ -56,6 +57,7 @@ export default function Sidebar({
   const [composeOpen, setComposeOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showContacts, setShowContacts] = useState(false)
+  const [premiumOpen, setPremiumOpen] = useState(false)
   const [newGroupOpen, setNewGroupOpen] = useState(false)
   const [newChannelOpen, setNewChannelOpen] = useState(false)
   const [newPrivateOpen, setNewPrivateOpen] = useState(false)
@@ -410,6 +412,10 @@ export default function Sidebar({
           setMenuOpen(false)
           onSelect('saved')
         }}
+        onOpenPremium={() => {
+          setMenuOpen(false)
+          setPremiumOpen(true)
+        }}
         onLogout={
           onLogout
             ? () => {
@@ -426,6 +432,7 @@ export default function Sidebar({
         onNewPrivate={() => setNewPrivateOpen(true)}
         onNewChannel={() => setNewChannelOpen(true)}
       />
+      <PremiumModal open={premiumOpen} onClose={() => setPremiumOpen(false)} />
       <AnimatePresence>
         {showSettings && (
           <SettingsView onBack={() => setShowSettings(false)} onToggleMode={onToggleMode} />

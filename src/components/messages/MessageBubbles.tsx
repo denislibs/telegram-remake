@@ -20,6 +20,43 @@ export function bubbleRadius(out: boolean, firstInGroup: boolean, lastInGroup: b
     : `${firstInGroup ? 15 : 5}px 15px 15px ${lastInGroup ? 0 : 5}px`
 }
 
+/**
+ * The little curl at the bottom corner of the last bubble in a group — the exact
+ * path from tweb's `#message-tail-filled` symbol. Same colour as the bubble, it
+ * sits at the squared bottom corner and curls outward. The host bubble must be
+ * `position: relative` and must not clip overflow.
+ */
+export function BubbleTail({ out, color }: { out: boolean; color: string }) {
+  return (
+    <Box
+      component="svg"
+      viewBox="0 0 11 20"
+      width="11"
+      height="20"
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        [out ? 'right' : 'left']: '-8.4px',
+        width: '11px',
+        height: '20px',
+        flexShrink: 0,
+        color,
+        transform: out ? 'translateY(1px) scaleX(-1)' : 'translateY(1px)',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
+    >
+      <g transform="translate(9 -14)" fillRule="evenodd">
+        <path
+          d="M-6 16h6v17c-.193-2.84-.876-5.767-2.05-8.782-.904-2.325-2.446-4.485-4.625-6.48A1 1 0 01-6 16z"
+          transform="matrix(1 0 0 -1 0 49)"
+          fill="currentColor"
+        />
+      </g>
+    </Box>
+  )
+}
+
 /** time + ticks overlaid on media (translucent dark pill) */
 function OverlayTime({ time, status }: { time?: string; status?: MsgStatus }) {
   const fmtTime = useTimeFormatter()
@@ -221,6 +258,7 @@ export function DocumentBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
   return (
     <Box
       sx={{
+        position: 'relative',
         maxWidth: 'min(340px, 82%)',
         display: 'flex',
         alignItems: 'center',
@@ -232,6 +270,7 @@ export function DocumentBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
         borderRadius: bubbleRadius(out, firstInGroup, lastInGroup),
       }}
     >
+      {lastInGroup && <BubbleTail out={out} color={out ? tg.accent : tg.bubble} />}
       <Box
         sx={{
           width: 46,
@@ -274,6 +313,7 @@ export function AudioBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
   return (
     <Box
       sx={{
+        position: 'relative',
         maxWidth: 'min(320px, 82%)',
         display: 'flex',
         alignItems: 'center',
@@ -285,6 +325,7 @@ export function AudioBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
         borderRadius: bubbleRadius(out, firstInGroup, lastInGroup),
       }}
     >
+      {lastInGroup && <BubbleTail out={out} color={out ? tg.accent : tg.bubble} />}
       <Box
         sx={{
           width: 46,

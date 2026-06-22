@@ -43,6 +43,7 @@ import {
   AudioBubble,
   RoundVideoBubble,
   WebPagePreview,
+  BubbleTail,
 } from './messages/MessageBubbles'
 import type { Chat, ConvMsg, MsgStatus, MediaItem } from '../data'
 import { useT } from '../i18n'
@@ -566,10 +567,24 @@ export default function ConversationView({ chat, onBack }: Props) {
                   onContextMenu={(e) => openMsgMenu(e, i)}
                   sx={{
                     display: 'flex',
+                    alignItems: 'flex-end',
+                    gap: 0.75,
                     justifyContent: out ? 'flex-end' : 'flex-start',
                     mb: lastInGroup ? '6px' : '2px',
                   }}
                 >
+                  {/* sender avatar next to the last incoming bubble in a group */}
+                  {isGroup && !out && (
+                    <Box sx={{ width: 30, flexShrink: 0, alignSelf: 'flex-end' }}>
+                      {lastInGroup && m.sender && (
+                        <Avatar
+                          background={m.senderColor ?? peerColor(m.sender)}
+                          text={m.sender[0]}
+                          size={30}
+                        />
+                      )}
+                    </Box>
+                  )}
                   {m.type === 'sticker' || bigEmoji ? (
                     <Box sx={{ position: 'relative', display: 'inline-block', px: 0.5 }}>
                       <Box
@@ -603,6 +618,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                   ) : m.type === 'voice' ? (
                     <Box
                       sx={{
+                        position: 'relative',
                         maxWidth: 'min(320px, 82%)',
                         display: 'flex',
                         alignItems: 'center',
@@ -616,6 +632,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           : `15px 15px 15px ${lastInGroup ? 0 : 5}px`,
                       }}
                     >
+                      {lastInGroup && <BubbleTail out={out} color={out ? tg.accent : incomingBg} />}
                       <Box
                         sx={{
                           width: 40,
@@ -676,6 +693,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                   ) : (
                     <Box
                       sx={{
+                        position: 'relative',
                         maxWidth: 'min(420px, 80%)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -688,6 +706,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           : `${firstInGroup ? 15 : 5}px 15px 15px ${lastInGroup ? 0 : 5}px`,
                       }}
                     >
+                      {lastInGroup && <BubbleTail out={out} color={out ? tg.accent : incomingBg} />}
                       {!out && m.sender && firstInGroup && (
                         <Typography sx={{ fontSize: 14, fontWeight: 600, color: m.senderColor ?? peerColor(m.sender) }}>
                           {m.sender}
