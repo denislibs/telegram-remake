@@ -16,6 +16,7 @@ import QuickReaction from './settings/QuickReaction'
 import PowerSaving from './settings/PowerSaving'
 import Passkeys from './settings/Passkeys'
 import LanguageSettings from './settings/LanguageSettings'
+import GeneralSettings from './settings/GeneralSettings'
 
 // Rows that open a dedicated sub-screen instead of being a plain value.
 const PRIVACY_RULES = new Set([
@@ -298,6 +299,8 @@ export default function SettingsSubScreen({ title, onBack }: { title: string; on
 
   // Language has a dedicated tweb-style screen (radio-left list + native names)
   if (title === 'Language') return <LanguageSettings onBack={onBack} />
+  // General Settings is a fully functional screen (text size, wallpaper, theme, time)
+  if (title === 'General Settings') return <GeneralSettings onBack={onBack} />
 
   return (
     <motion.div

@@ -46,6 +46,7 @@ import {
 } from './messages/MessageBubbles'
 import type { Chat, ConvMsg, MsgStatus, MediaItem } from '../data'
 import { useT } from '../i18n'
+import { useSettings, useTimeFormatter } from '../settings'
 
 const REACTIONS = ['❤️', '👍', '👎', '🔥', '🥰', '👏', '😁']
 
@@ -89,6 +90,8 @@ export default function ConversationView({ chat, onBack }: Props) {
   const theme = useTheme()
   const tg = theme.tg
   const mode = theme.palette.mode
+  const { textSize } = useSettings()
+  const fmtTime = useTimeFormatter()
   // On narrow screens the chat is full-width; give the header/feed/composer a
   // side gutter so the floating pills don't sit flush against the screen edges.
   const narrow = useMediaQuery('(max-width:900px)')
@@ -593,7 +596,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           background: 'rgba(0,0,0,0.45)',
                         }}
                       >
-                        <Typography sx={{ fontSize: 12.5, color: '#fff' }}>{m.time}</Typography>
+                        <Typography sx={{ fontSize: 12.5, color: '#fff' }}>{fmtTime(m.time)}</Typography>
                         <Ticks status={m.status} color={tickColor} />
                       </Box>
                     </Box>
@@ -650,7 +653,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                           </Typography>
                           <Box sx={{ flex: 1 }} />
                           <Typography sx={{ fontSize: 12, color: out ? 'rgba(255,255,255,0.8)' : tg.textFaint }}>
-                            {m.time}
+                            {fmtTime(m.time)}
                           </Typography>
                           <Ticks status={m.status} color={tickColor} />
                         </Box>
@@ -710,7 +713,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                         </Box>
                       )}
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 0.75 }}>
-                        <Typography component="span" sx={{ fontSize: 16, lineHeight: 1.35 }}>
+                        <Typography component="span" sx={{ fontSize: textSize, lineHeight: 1.35 }}>
                           <RichText text={m.text ?? ''} linkColor={out ? '#fff' : tg.link} />
                         </Typography>
                         <Box
@@ -730,7 +733,7 @@ export default function ConversationView({ chat, onBack }: Props) {
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            {m.time}
+                            {fmtTime(m.time)}
                           </Typography>
                           <Ticks status={m.status} color={tickColor} />
                         </Box>

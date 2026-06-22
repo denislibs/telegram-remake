@@ -16,6 +16,7 @@ import Avatar from './Avatar'
 import VerifiedBadge from './VerifiedBadge'
 import type { Chat } from '../data'
 import { useT } from '../i18n'
+import { useTimeFormatter } from '../settings'
 
 const MotionBox = motion(Box)
 
@@ -30,6 +31,7 @@ export default function ChatListItem({ chat, selected, onClick }: Props) {
   const theme = useTheme()
   const tg = theme.tg
   const t = useT()
+  const fmtTime = useTimeFormatter()
   const mode = theme.palette.mode
   const hoverBg = mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'
   const rippleColor = selected
@@ -165,7 +167,7 @@ export default function ChatListItem({ chat, selected, onClick }: Props) {
               color: onAccent ? 'rgba(255,255,255,0.85)' : tg.textFaint,
             }}
           >
-            {chat.date}
+            {fmtTime(chat.date)}
           </Typography>
         </Box>
 

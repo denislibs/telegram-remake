@@ -6,6 +6,7 @@ import MusicNoteRounded from '@mui/icons-material/MusicNoteRounded'
 import DoneRounded from '@mui/icons-material/DoneRounded'
 import DoneAllRounded from '@mui/icons-material/DoneAllRounded'
 import type { ConvMsg, MediaItem, MsgStatus } from '../../data'
+import { useSettings, useTimeFormatter } from '../../settings'
 
 export function Ticks({ status, color }: { status?: MsgStatus; color: string }) {
   if (!status) return null
@@ -21,6 +22,7 @@ export function bubbleRadius(out: boolean, firstInGroup: boolean, lastInGroup: b
 
 /** time + ticks overlaid on media (translucent dark pill) */
 function OverlayTime({ time, status }: { time?: string; status?: MsgStatus }) {
+  const fmtTime = useTimeFormatter()
   return (
     <Box
       sx={{
@@ -38,7 +40,7 @@ function OverlayTime({ time, status }: { time?: string; status?: MsgStatus }) {
         WebkitBackdropFilter: 'blur(6px)',
       }}
     >
-      <Typography sx={{ fontSize: 12, color: '#fff' }}>{time}</Typography>
+      <Typography sx={{ fontSize: 12, color: '#fff' }}>{time ? fmtTime(time) : time}</Typography>
       <Ticks status={status} color="rgba(255,255,255,0.9)" />
     </Box>
   )
@@ -100,6 +102,8 @@ export function MediaBubble({
   onOpen,
 }: Ctx & { onOpen: (item: MediaItem) => void }) {
   const tg = useTheme().tg
+  const { textSize } = useSettings()
+  const fmtTime = useTimeFormatter()
   const radius = bubbleRadius(out, firstInGroup, lastInGroup)
   const caption = m.text
   const isVideo = m.type === 'video'
@@ -196,10 +200,10 @@ export function MediaBubble({
 
       {caption && (
         <Box sx={{ px: 1.25, py: 0.75, color: out ? '#fff' : tg.textPrimary }}>
-          <Typography sx={{ fontSize: 16, lineHeight: 1.35 }}>{caption}</Typography>
+          <Typography sx={{ fontSize: textSize, lineHeight: 1.35 }}>{caption}</Typography>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 0.25, mt: 0.25 }}>
             <Typography sx={{ fontSize: 12, color: out ? 'rgba(255,255,255,0.8)' : tg.textFaint }}>
-              {m.time}
+              {fmtTime(m.time)}
             </Typography>
             <Ticks status={m.status} color={out ? 'rgba(255,255,255,0.85)' : tg.textFaint} />
           </Box>
@@ -212,6 +216,7 @@ export function MediaBubble({
 /** document / file */
 export function DocumentBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
   const tg = useTheme().tg
+  const fmtTime = useTimeFormatter()
   const d = m.document
   return (
     <Box
@@ -252,7 +257,7 @@ export function DocumentBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
           </Typography>
           <Box sx={{ flex: 1 }} />
           <Typography sx={{ fontSize: 12, color: out ? 'rgba(255,255,255,0.8)' : tg.textFaint }}>
-            {m.time}
+            {fmtTime(m.time)}
           </Typography>
           <Ticks status={m.status} color={out ? 'rgba(255,255,255,0.85)' : tg.textFaint} />
         </Box>
@@ -264,6 +269,7 @@ export function DocumentBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
 /** audio / music */
 export function AudioBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
   const tg = useTheme().tg
+  const fmtTime = useTimeFormatter()
   const a = m.audio
   return (
     <Box
@@ -308,7 +314,7 @@ export function AudioBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
           </Typography>
           <Box sx={{ flex: 1 }} />
           <Typography sx={{ fontSize: 12, color: out ? 'rgba(255,255,255,0.8)' : tg.textFaint }}>
-            {m.time}
+            {fmtTime(m.time)}
           </Typography>
           <Ticks status={m.status} color={out ? 'rgba(255,255,255,0.85)' : tg.textFaint} />
         </Box>
@@ -320,6 +326,7 @@ export function AudioBubble({ m, out, firstInGroup, lastInGroup }: Ctx) {
 /** round video note */
 export function RoundVideoBubble({ m, out }: Ctx) {
   const tg = useTheme().tg
+  const fmtTime = useTimeFormatter()
   const size = 200
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: out ? 'flex-end' : 'flex-start' }}>
@@ -378,7 +385,7 @@ export function RoundVideoBubble({ m, out }: Ctx) {
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25, mt: 0.5, mr: out ? 1 : 0, ml: out ? 0 : 1 }}>
-        <Typography sx={{ fontSize: 12, color: tg.textFaint }}>{m.time}</Typography>
+        <Typography sx={{ fontSize: 12, color: tg.textFaint }}>{fmtTime(m.time)}</Typography>
         <Ticks status={m.status} color={tg.textFaint} />
       </Box>
     </Box>
