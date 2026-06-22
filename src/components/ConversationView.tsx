@@ -537,7 +537,8 @@ export default function ConversationView({ chat, onBack }: Props) {
                           justifyContent: 'flex-end',
                         }}
                       >
-                        <Box sx={{ position: 'sticky', bottom: '8px', width: 30, height: 30 }}>
+                        {/* pin above the floating composer (≈64px tall incl. its 16px offset) */}
+                        <Box sx={{ position: 'sticky', bottom: '72px', width: 30, height: 30 }}>
                           <Avatar background={g.color} text={g.sender[0]} size={30} />
                         </Box>
                       </Box>
