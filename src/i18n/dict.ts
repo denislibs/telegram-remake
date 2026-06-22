@@ -6,6 +6,17 @@ type Dict = Record<string, string>
 // entries (t() falls back to the key). Other languages map English -> translation.
 
 const ru: Dict = {
+  'Message Text Size': 'Размер текста сообщений',
+  'Color Theme': 'Цветовая тема',
+  Classic: 'Классическая',
+  Night: 'Ночная',
+  Day: 'Дневная',
+  Tinted: 'Тёмная',
+  System: 'По умолчанию',
+  'Upload Image': 'Загрузить изображение',
+  'Set a Color': 'Задать цвет',
+  'Reset to Default': 'Восстановить по умолчанию',
+  'Blurred Image': 'Размытое изображение',
   'More freedom and dozens of exclusive features with a Telegram Premium subscription.':
     'Больше свободы и десятки эксклюзивных функций с подпиской Telegram Premium.',
   '24 Months': '24 Месяца',
@@ -325,6 +336,17 @@ const ru: Dict = {
 }
 
 const uk: Dict = {
+  'Message Text Size': 'Розмір тексту повідомлень',
+  'Color Theme': 'Кольорова тема',
+  Classic: 'Класична',
+  Night: 'Нічна',
+  Day: 'Денна',
+  Tinted: 'Темна',
+  System: 'За замовчуванням',
+  'Upload Image': 'Завантажити зображення',
+  'Set a Color': 'Задати колір',
+  'Reset to Default': 'Відновити за замовчуванням',
+  'Blurred Image': 'Розмите зображення',
   'More freedom and dozens of exclusive features with a Telegram Premium subscription.':
     'Більше свободи та десятки ексклюзивних функцій із підпискою Telegram Premium.',
   '24 Months': '24 місяці',
@@ -631,6 +653,17 @@ const uk: Dict = {
 }
 
 const es: Dict = {
+  'Message Text Size': 'Tamaño del texto',
+  'Color Theme': 'Tema de color',
+  Classic: 'Clásico',
+  Night: 'Noche',
+  Day: 'Día',
+  Tinted: 'Oscuro',
+  System: 'Sistema',
+  'Upload Image': 'Subir imagen',
+  'Set a Color': 'Elegir un color',
+  'Reset to Default': 'Restablecer',
+  'Blurred Image': 'Imagen difuminada',
   'More freedom and dozens of exclusive features with a Telegram Premium subscription.':
     'Más libertad y decenas de funciones exclusivas con la suscripción Telegram Premium.',
   '24 Months': '24 meses',
@@ -937,6 +970,17 @@ const es: Dict = {
 }
 
 const de: Dict = {
+  'Message Text Size': 'Nachrichtentextgröße',
+  'Color Theme': 'Farbthema',
+  Classic: 'Klassisch',
+  Night: 'Nacht',
+  Day: 'Tag',
+  Tinted: 'Getönt',
+  System: 'System',
+  'Upload Image': 'Bild hochladen',
+  'Set a Color': 'Farbe wählen',
+  'Reset to Default': 'Zurücksetzen',
+  'Blurred Image': 'Verschwommenes Bild',
   'More freedom and dozens of exclusive features with a Telegram Premium subscription.':
     'Mehr Freiheit und Dutzende exklusive Funktionen mit einem Telegram Premium-Abo.',
   '24 Months': '24 Monate',
@@ -1245,6 +1289,17 @@ const de: Dict = {
 }
 
 const fr: Dict = {
+  'Message Text Size': 'Taille du texte',
+  'Color Theme': 'Thème de couleur',
+  Classic: 'Classique',
+  Night: 'Nuit',
+  Day: 'Jour',
+  Tinted: 'Teinté',
+  System: 'Système',
+  'Upload Image': 'Importer une image',
+  'Set a Color': 'Choisir une couleur',
+  'Reset to Default': 'Réinitialiser',
+  'Blurred Image': 'Image floutée',
   'More freedom and dozens of exclusive features with a Telegram Premium subscription.':
     'Plus de liberté et des dizaines de fonctionnalités exclusives avec un abonnement Telegram Premium.',
   '24 Months': '24 mois',

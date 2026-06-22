@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Box, CssBaseline, ThemeProvider, useMediaQuery, useTheme } from '@mui/material'
-import { buildTheme, type Mode } from './theme'
+import { buildTheme, resolvePreset, PRESET_MODE, type ThemeChoice } from './theme'
+import { SettingsProvider, useSettings } from './settings'
 import Sidebar from './components/Sidebar'
 import ChatView from './components/ChatView'
 import ConversationView from './components/ConversationView'
@@ -176,15 +177,10 @@ function Shell({ onToggleMode, onLogout }: { onToggleMode: ToggleMode; onLogout:
   )
 }
 
-function getInitialMode(): Mode {
-  const saved = localStorage.getItem('tg-theme')
-  if (saved === 'light' || saved === 'dark') return saved
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-export default function App() {
-  const [mode, setMode] = useState<Mode>(getInitialMode)
-  const theme = useMemo(() => buildTheme(mode), [mode])
+function ThemedApp() {
+  const { themeChoice, update } = useSettings()
+  const preset = resolvePreset(themeChoice)
+  const theme = useMemo(() => buildTheme(preset), [preset])
   const [authed, setAuthed] = useState(() => localStorage.getItem('tg-authed') === '1')
 
   const login = () => {
@@ -196,15 +192,15 @@ export default function App() {
     setAuthed(false)
   }
 
-  const apply = (next: Mode) => {
-    localStorage.setItem('tg-theme', next)
-    setMode(next)
-  }
+  // The header toggle flips between a light and a dark theme. It picks the
+  // canonical Classic/Night presets unless the user is already on a light/dark
+  // variant, in which case it jumps to the opposite mode's canonical preset.
+  const apply = (next: ThemeChoice) => update({ themeChoice: next })
 
   // Circular reveal from the toggle click (View Transitions API), like tweb;
   // falls back to an instant swap when unsupported / reduced-motion / no coords.
   const toggleMode: ToggleMode = (coords) => {
-    const next: Mode = mode === 'dark' ? 'light' : 'dark'
+    const next: ThemeChoice = PRESET_MODE[preset] === 'dark' ? 'classic' : 'night'
     const start = (document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } })
       .startViewTransition
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -230,11 +226,19 @@ export default function App() {
   }
 
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {authed ? <Shell onToggleMode={toggleMode} onLogout={logout} /> : <AuthFlow onComplete={login} />}
+    </ThemeProvider>
+  )
+}
+
+export default function App() {
+  return (
     <I18nProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {authed ? <Shell onToggleMode={toggleMode} onLogout={logout} /> : <AuthFlow onComplete={login} />}
-      </ThemeProvider>
+      <SettingsProvider>
+        <ThemedApp />
+      </SettingsProvider>
     </I18nProvider>
   )
 }
