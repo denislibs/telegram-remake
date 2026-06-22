@@ -507,7 +507,7 @@ export default function ConversationView({ chat, onBack }: Props) {
             sx={{
               width: '100%',
               maxWidth: 688,
-              px: 1.5,
+              px: 0.5,
               py: 1.5,
               display: 'flex',
               flexDirection: 'column',
@@ -526,11 +526,11 @@ export default function ConversationView({ chat, onBack }: Props) {
                   nodes.push(
                     <Box
                       key={`grp-${g.key}`}
-                      sx={{ position: 'relative', display: 'flex', gap: '14px', alignItems: 'stretch' }}
+                      sx={{ position: 'relative', display: 'flex', gap: '10px', alignItems: 'stretch' }}
                     >
                       <Box
                         sx={{
-                          width: 30,
+                          width: 40,
                           flexShrink: 0,
                           display: 'flex',
                           flexDirection: 'column',
@@ -541,8 +541,8 @@ export default function ConversationView({ chat, onBack }: Props) {
                         }}
                       >
                         {/* pin above the floating composer (≈64px tall incl. its 16px offset) */}
-                        <Box sx={{ position: 'sticky', bottom: '72px', width: 30, height: 30 }}>
-                          <Avatar background={g.color} text={g.sender[0]} size={30} />
+                        <Box sx={{ position: 'sticky', bottom: '72px', width: 40, height: 40 }}>
+                          <Avatar background={g.color} text={g.sender[0]} size={40} />
                         </Box>
                       </Box>
                       <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>{rows}</Box>
@@ -579,6 +579,32 @@ export default function ConversationView({ chat, onBack }: Props) {
                         color: '#fff',
                         fontSize: 15,
                         fontWeight: 500,
+                      }}
+                    >
+                      {m.text}
+                    </Box>
+                  </Box>,
+                )
+                return
+              }
+
+              if (m.type === 'service') {
+                flushGroup()
+                nodes.push(
+                  <Box key={i} sx={{ display: 'flex', justifyContent: 'center', my: 0.5 }}>
+                    <Box
+                      sx={{
+                        maxWidth: '80%',
+                        px: 1.25,
+                        py: 0.4,
+                        borderRadius: '14px',
+                        background: 'rgba(0,0,0,0.45)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        color: '#fff',
+                        fontSize: 14.5,
+                        fontWeight: 500,
+                        textAlign: 'center',
                       }}
                     >
                       {m.text}
