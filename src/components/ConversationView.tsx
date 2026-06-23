@@ -48,6 +48,7 @@ import {
 import type { Chat, ConvMsg, MsgStatus, MediaItem } from '../data'
 import { useT } from '../i18n'
 import { useSettings, useTimeFormatter } from '../settings'
+import { peerAvatarGradient } from '../avatarColors'
 
 const REACTIONS = ['❤️', '👍', '👎', '🔥', '🥰', '👏', '😁']
 
@@ -852,7 +853,7 @@ export default function ConversationView({ chat, onBack }: Props) {
               if (isGroup && !out && m.sender) {
                 if (!gm || gm.sender !== m.sender) {
                   flushGroup()
-                  gm = { key: i, sender: m.sender, color: m.senderColor ?? peerColor(m.sender) }
+                  gm = { key: i, sender: m.sender, color: peerAvatarGradient(m.sender) }
                 }
                 buf.push(row)
               } else {
